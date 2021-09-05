@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 public class PPMImage
 {
-    private int width = 256;
-    private int height = 256;
+    private int width;
+    private int height;
     private ArrayList<ArrayList<Integer>> pixels = new ArrayList<ArrayList<Integer>>();
     private final String beginningPartOfPPM;
 
@@ -29,13 +29,4 @@ public class PPMImage
         this.pixels = pixels;
     }
 
-    public int getWidth()
-    {
-        return width;
-    }
-
-    public int getHeight()
-    {
-        return height;
-    }
 }

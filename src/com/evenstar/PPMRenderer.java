@@ -46,7 +46,7 @@ public class PPMRenderer
         }
         catch (IOException e)
         {
-            System.out.println("Oops! An error occurred because life is pain");
+            System.out.println("Oops! An error occurred with file I/O because life is pain");
             e.printStackTrace();
         }
     }

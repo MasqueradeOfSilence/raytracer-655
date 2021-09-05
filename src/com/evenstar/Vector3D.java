@@ -37,7 +37,26 @@ public class Vector3D
 
     public void crossWithSecondVector(Vector3D secondVector)
     {
-
+        double new_x = this.y * secondVector.z - this.z * secondVector.y;
+        double new_y = this.z * secondVector.x - this.x * secondVector.z;
+        double new_z = this.x * secondVector.y - this.y * secondVector.x;
+        this.x = new_x;
+        this.y = new_y;
+        this.z = new_z;
     }
 
+    public double getX()
+    {
+        return x;
+    }
+
+    public double getY()
+    {
+        return y;
+    }
+
+    public double getZ()
+    {
+        return z;
+    }
 }

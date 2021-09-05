@@ -29,4 +29,13 @@ public class PPMImage
         this.pixels = pixels;
     }
 
+    public int getWidth()
+    {
+        return width;
+    }
+
+    public int getHeight()
+    {
+        return height;
+    }
 }

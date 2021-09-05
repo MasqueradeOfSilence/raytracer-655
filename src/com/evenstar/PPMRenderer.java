@@ -37,6 +37,14 @@ public class PPMRenderer
         return Math.round(((double)(height - 1 - currentScanLine) / (height - 1)) * 100) + "%";
     }
 
+    private Color translateColorFrom1To255Scale(Color color)
+    {
+        int int_r = (int)(255.999 * color.r());
+        int int_g = (int)(255.999 * color.g());
+        int int_b = (int)(255.999 * color.b());
+        return new Color(int_r, int_g, int_b);
+    }
+
     public void generateDefaultGradientImage()
     {
         int width = 256;
@@ -44,18 +52,17 @@ public class PPMRenderer
         PPMImage image = new PPMImage(width, height);
         ArrayList<ArrayList<Integer>> pixels = new ArrayList<>();
         // This is just the default algorithm for the computer graphics "hello world" image.
-        for (int j = height - 1; j >= 0; j--)
+        for (int j = image.getHeight() - 1; j >= 0; j--)
         {
-            System.out.println("Progress: " + computeProgress(height, j));
-            for (int i = 0; i < width; i++)
+            System.out.println("Progress: " + computeProgress(image.getHeight(), j));
+            for (int i = 0; i < image.getWidth(); i++)
             {
-                double r = (double)i / (width - 1);
-                double g = (double)j / (height - 1);
+                double r = (double)i / (image.getWidth() - 1);
+                double g = (double)j / (image.getHeight() - 1);
                 double b = 0.25;
-                int int_r = (int)(255.999 * r);
-                int int_g = (int)(255.999 * g);
-                int int_b = (int)(255.999 * b);
-                pixels.add(new ArrayList<>(Arrays.asList(int_r, int_g, int_b)));
+                Color pixelColor = new Color(r, g, b);
+                Color newColor = translateColorFrom1To255Scale(pixelColor);
+                pixels.add(new ArrayList<>(Arrays.asList((int)newColor.r(), (int)newColor.g(), (int)newColor.b())));
             }
         }
         image.setPixels(pixels);

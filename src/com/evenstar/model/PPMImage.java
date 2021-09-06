@@ -1,4 +1,4 @@
-package com.evenstar;
+package com.evenstar.model;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package com.evenstar;
+package com.evenstar.model;
 
 public class Vector3D
 {

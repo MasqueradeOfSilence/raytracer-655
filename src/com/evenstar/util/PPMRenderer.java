@@ -1,4 +1,7 @@
-package com.evenstar;
+package com.evenstar.util;
+
+import com.evenstar.model.Color;
+import com.evenstar.model.PPMImage;
 
 import java.io.FileWriter;
 import java.io.IOException;

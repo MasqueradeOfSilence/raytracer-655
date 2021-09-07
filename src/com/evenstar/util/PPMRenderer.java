@@ -1,7 +1,9 @@
 package com.evenstar.util;
 
 import com.evenstar.model.Color;
+import com.evenstar.model.Direction;
 import com.evenstar.model.PPMImage;
+import com.evenstar.model.Ray;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -46,6 +48,16 @@ public class PPMRenderer
         int int_g = (int)(255.999 * color.g());
         int int_b = (int)(255.999 * color.b());
         return new Color(int_r, int_g, int_b);
+    }
+
+    private Color skyColor(Ray ray)
+    {
+        Direction unitDirection = ray.getDirection();
+        // Create a gradient from blue to white
+        double t = 0.5 * (unitDirection.getY() * 1.0);
+        Color firstColor = new Color(new Color(1.0, 1.0, 1.0).getRgb().multiplyByScalar(1.0 - t));
+        Color secondColor = new Color(new Color(0.5, 0.7, 1.0).getRgb().multiplyByScalar(t));
+        return new Color(firstColor.getRgb().addSecondVector(secondColor.getRgb()));
     }
 
     public void generateDefaultGradientImage()

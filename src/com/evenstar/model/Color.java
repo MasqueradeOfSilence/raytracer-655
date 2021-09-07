@@ -9,6 +9,11 @@ public class Color
         rgb = new Vector3D(r, g, b);
     }
 
+    public Color(Vector3D colorVector)
+    {
+        this.rgb = colorVector;
+    }
+
     public double r()
     {
         return rgb.getX();
@@ -22,5 +27,10 @@ public class Color
     public double b()
     {
         return rgb.getZ();
+    }
+
+    public Vector3D getRgb()
+    {
+        return rgb;
     }
 }

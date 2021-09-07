@@ -6,6 +6,7 @@ public class PPMImage
 {
     private int width;
     private int height;
+    private double aspectRatio = 16.0 / 9.0;
     private ArrayList<ArrayList<Integer>> pixels = new ArrayList<ArrayList<Integer>>();
     private final String beginningPartOfPPM;
 

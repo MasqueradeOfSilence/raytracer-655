@@ -13,19 +13,31 @@ public class Vector3D
         this.z = z;
     }
 
-    // Operations affect the vector itself
-    public void addSecondVector(Vector3D secondVector)
+    // Copy constructor
+    public Vector3D(Vector3D original)
     {
-        this.x += secondVector.x;
-        this.y += secondVector.y;
-        this.z += secondVector.z;
+        this.x = original.x;
+        this.y = original.y;
+        this.z = original.z;
     }
 
-    public void subtractSecondVector(Vector3D secondVector)
+    // Operations DO NOT affect the vector itself
+    public Vector3D addSecondVector(Vector3D secondVector)
     {
-        this.x -= secondVector.x;
-        this.y -= secondVector.y;
-        this.z -= secondVector.z;
+        Vector3D copy = new Vector3D(this);
+        copy.x += secondVector.x;
+        copy.y += secondVector.y;
+        copy.z += secondVector.z;
+        return copy;
+    }
+
+    public Vector3D subtractSecondVector(Vector3D secondVector)
+    {
+        Vector3D copy = new Vector3D(this);
+        copy.x -= secondVector.x;
+        copy.y -= secondVector.y;
+        copy.z -= secondVector.z;
+        return copy;
     }
 
     public double dotWithSecondVector(Vector3D secondVector)
@@ -35,14 +47,35 @@ public class Vector3D
                 + this.z * secondVector.z;
     }
 
-    public void crossWithSecondVector(Vector3D secondVector)
+    public Vector3D crossWithSecondVector(Vector3D secondVector)
     {
+        Vector3D copy = new Vector3D(this);
         double new_x = this.y * secondVector.z - this.z * secondVector.y;
         double new_y = this.z * secondVector.x - this.x * secondVector.z;
         double new_z = this.x * secondVector.y - this.y * secondVector.x;
-        this.x = new_x;
-        this.y = new_y;
-        this.z = new_z;
+        copy.x = new_x;
+        copy.y = new_y;
+        copy.z = new_z;
+        return copy;
+    }
+
+    public Vector3D multiplyByScalar(double scalar)
+    {
+        Vector3D copy = new Vector3D(this);
+        copy.x *= scalar;
+        copy.y *= scalar;
+        copy.z *= scalar;
+        return copy;
+    }
+
+    public Vector3D getUnitVector()
+    {
+        return new Vector3D(this.x / this.length(), this.y / this.length(), this.z / this.length());
+    }
+
+    public double length()
+    {
+        return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2) + Math.pow(this.z, 2));
     }
 
     public double getX()

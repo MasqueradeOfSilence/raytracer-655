@@ -1,7 +1,6 @@
 package com.evenstar;
 
-import com.evenstar.model.Raytracer;
-import com.evenstar.util.PPMRenderer;
+import com.evenstar.util.Raytracer;
 
 public class Main
 {

@@ -1,4 +1,6 @@
-package com.evenstar.model;
+package com.evenstar.model.vectors;
+
+import com.evenstar.model.vectors.Vector3D;
 
 public class Color
 {

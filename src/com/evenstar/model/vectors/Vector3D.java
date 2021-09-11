@@ -1,4 +1,4 @@
-package com.evenstar.model;
+package com.evenstar.model.vectors;
 
 public class Vector3D
 {
@@ -65,6 +65,15 @@ public class Vector3D
         copy.x *= scalar;
         copy.y *= scalar;
         copy.z *= scalar;
+        return copy;
+    }
+
+    public Vector3D divideByScalar(double scalar)
+    {
+        Vector3D copy = new Vector3D(this);
+        copy.x /= scalar;
+        copy.y /= scalar;
+        copy.z /= scalar;
         return copy;
     }
 

@@ -9,6 +9,8 @@ public class Main
     {
 	    System.out.println("Hello raytracer!");
 	    Raytracer raytracer = new Raytracer();
-	    raytracer.generateHelloWorldGraphicsImage();
+        raytracer.raytraceHelloWorldImage();
+        raytracer.raytraceBlueSkyImage();
+        // Future: Prompt for menu options.
     }
 }

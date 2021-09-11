@@ -1,9 +1,19 @@
 package com.evenstar.model;
 
+import com.evenstar.model.vectors.Direction;
+import com.evenstar.model.vectors.Point;
+import com.evenstar.model.vectors.Vector3D;
+
 public class Ray
 {
-    private Point origin;
-    private Direction direction;
+    private final Point origin;
+    private final Direction direction;
+
+    public Ray(Point origin, Direction direction)
+    {
+        this.origin = origin;
+        this.direction = direction;
+    }
 
     public Point at(double t)
     {

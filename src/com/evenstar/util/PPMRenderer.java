@@ -1,9 +1,9 @@
 package com.evenstar.util;
 
-import com.evenstar.model.Color;
-import com.evenstar.model.Direction;
-import com.evenstar.model.PPMImage;
-import com.evenstar.model.Ray;
+import com.evenstar.model.*;
+import com.evenstar.model.vectors.Color;
+import com.evenstar.model.vectors.Direction;
+import com.evenstar.model.vectors.Point;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import java.util.Arrays;
 
 public class PPMRenderer
 {
-    private void writeImageToFile(PPMImage image, String name)
+    public void writeImageToFile(PPMImage image, String name)
     {
         assert image.getPixels().size() > 0;
         try
@@ -37,12 +37,12 @@ public class PPMRenderer
         }
     }
 
-    private String computeProgress(int height, int currentScanLine)
+    public String computeProgress(int height, int currentScanLine)
     {
         return Math.round(((double)(height - 1 - currentScanLine) / (height - 1)) * 100) + "%";
     }
 
-    private Color translateColorFrom1To255Scale(Color color)
+    public Color translateColorFrom1To255Scale(Color color)
     {
         int int_r = (int)(255.999 * color.r());
         int int_g = (int)(255.999 * color.g());
@@ -50,7 +50,7 @@ public class PPMRenderer
         return new Color(int_r, int_g, int_b);
     }
 
-    private Color skyColor(Ray ray)
+    public Color skyColor(Ray ray)
     {
         Direction unitDirection = ray.getDirection();
         // Create a gradient from blue to white
@@ -60,27 +60,40 @@ public class PPMRenderer
         return new Color(firstColor.getRgb().addSecondVector(secondColor.getRgb()));
     }
 
-    public void generateDefaultGradientImage()
+    public Direction computeRayDirectionBasedOnCamera(Camera camera, double u, double v)
     {
-        int width = 256;
-        int height = 256;
-        PPMImage image = new PPMImage(width, height);
+        Point point1 = new Point(camera.getHorizontal().getDirectionVector().multiplyByScalar(u));
+        Point point2 = new Point(camera.getVertical().getDirectionVector().multiplyByScalar(v));
+        Point point3 = new Point(camera.getLowerLeftCorner().getCoordinates().addSecondVector(point1.getCoordinates()));
+        Point point4 = new Point(point3.getCoordinates().addSecondVector(point2.getCoordinates()));
+        Direction point5 = new Direction(point4.getCoordinates().subtractSecondVector(camera.getOrigin().getCoordinates()));
+        return new Direction(point5);
+    }
+
+
+    public void generateBlueSkyImage(PPMImage blueSkyImage)
+    {
+        double viewportHeight = 2.0;
+        double viewportWidth = blueSkyImage.getAspectRatio() * viewportHeight;
+        double focalLength = 1.0;
+        Point origin = new Point(0, 0, 0);
+        Direction horizontal = new Direction(viewportWidth, 0, 0);
+        Direction vertical = new Direction(0, viewportHeight, 0);
+        Camera camera = new Camera(blueSkyImage.getAspectRatio(), viewportHeight, viewportWidth, focalLength,
+                origin, horizontal, vertical);
         ArrayList<ArrayList<Integer>> pixels = new ArrayList<>();
-        // This is just the default algorithm for the computer graphics "hello world" image.
-        for (int j = image.getHeight() - 1; j >= 0; j--)
-        {
-            System.out.println("Progress: " + computeProgress(image.getHeight(), j));
-            for (int i = 0; i < image.getWidth(); i++)
-            {
-                double r = (double)i / (image.getWidth() - 1);
-                double g = (double)j / (image.getHeight() - 1);
-                double b = 0.25;
-                Color pixelColor = new Color(r, g, b);
+        for (int j = blueSkyImage.getHeight() - 1; j >= 0; j--) {
+            System.out.println("Progress: " + computeProgress(blueSkyImage.getHeight(), j));
+            for (int i = 0; i < blueSkyImage.getWidth(); i++) {
+                double u = (double) i / (blueSkyImage.getWidth() - 1);
+                double v = (double) j / (blueSkyImage.getHeight() - 1);
+                Ray ray = new Ray(camera.getOrigin(), computeRayDirectionBasedOnCamera(camera, u, v));
+                Color pixelColor = skyColor(ray);
                 Color newColor = translateColorFrom1To255Scale(pixelColor);
-                pixels.add(new ArrayList<>(Arrays.asList((int)newColor.r(), (int)newColor.g(), (int)newColor.b())));
+                pixels.add(new ArrayList<>(Arrays.asList((int) newColor.r(), (int) newColor.g(), (int) newColor.b())));
             }
         }
-        image.setPixels(pixels);
-        this.writeImageToFile(image, "hello.ppm");
+        blueSkyImage.setPixels(pixels);
+        this.writeImageToFile(blueSkyImage, "sky.ppm");
     }
 }

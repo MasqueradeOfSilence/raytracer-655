@@ -4,10 +4,9 @@ import java.util.ArrayList;
 
 public class PPMImage
 {
-    private int width;
-    private int height;
-    private double aspectRatio = 16.0 / 9.0;
-    private ArrayList<ArrayList<Integer>> pixels = new ArrayList<ArrayList<Integer>>();
+    private final int width;
+    private final int height;
+    private ArrayList<ArrayList<Integer>> pixels = new ArrayList<>();
     private final String beginningPartOfPPM;
 
     public String getBeginningPartOfPPM() {
@@ -38,5 +37,10 @@ public class PPMImage
     public int getHeight()
     {
         return height;
+    }
+
+    public double getAspectRatio()
+    {
+        return 16.0 / 9.0;
     }
 }

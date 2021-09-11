@@ -1,8 +1,12 @@
-package com.evenstar.model;
+package com.evenstar.model.vectors;
 
-public class Point
+import com.evenstar.model.vectors.Vector3D;
+
+public class
+Point
 {
-    private Vector3D coordinates;
+    private final Vector3D coordinates;
+
     public Point(double x, double y, double z)
     {
         coordinates = new Vector3D(x, y, z);

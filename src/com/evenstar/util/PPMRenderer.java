@@ -2,10 +2,7 @@ package com.evenstar.util;
 
 import com.evenstar.model.*;
 import com.evenstar.model.shapes.Sphere;
-import com.evenstar.model.vectors.Color;
-import com.evenstar.model.vectors.Direction;
-import com.evenstar.model.vectors.Point;
-import com.evenstar.model.vectors.VectorOperations;
+import com.evenstar.model.vectors.*;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -52,14 +49,17 @@ public class PPMRenderer
 
     public Color skyColorWithSphere(Ray ray)
     {
-        Sphere redSphere = new Sphere(new Point(0, 0, -1), 0.5);
-        if (MathCalculations.sphereHitByRay(redSphere, ray))
+        Sphere normalSphere = new Sphere(new Point(0, 0, -1), 0.5);
+        double t = MathCalculations.sphereHitByRay(normalSphere, ray);
+        if (t > 0.0)
         {
-            return new Color(1, 0, 0);
+            Vector3D vector = VectorOperations.subtractVectors(ray.at(t).getVector(), new Vector3D(0, 0, -1));
+            Vector3D n = vector.getUnitVector();
+            return new Color(VectorOperations.multiplyByScalar(new Vector3D(n.getX() + 1, n.getY() + 1, n.getZ() + 1), 0.5));
         }
         Direction unitDirection = ray.getDirection();
         // Create a gradient from blue to white with a red sphere
-        double t = 0.5 * (unitDirection.getY() + 1.0);
+        t = 0.5 * (unitDirection.getY() + 1.0);
         Color firstColor = new Color(VectorOperations.multiplyByScalar(new Color(1.0, 1.0, 1.0).getVector(), 1.0 - t));
         Color secondColor = new Color(VectorOperations.multiplyByScalar(new Color(0.5, 0.7, 1.0).getVector(), t));
         return new Color(VectorOperations.addVectors(firstColor.getVector(), secondColor.getVector()));

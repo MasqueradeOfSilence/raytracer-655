@@ -33,6 +33,11 @@ public class Vector3D
         return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2) + Math.pow(this.z, 2));
     }
 
+    public double lengthSquared()
+    {
+        return Math.pow(this.x, 2) + Math.pow(this.y, 2) + Math.pow(this.z, 2);
+    }
+
     public double getX()
     {
         return x;

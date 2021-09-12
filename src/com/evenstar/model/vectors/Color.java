@@ -1,7 +1,5 @@
 package com.evenstar.model.vectors;
 
-import com.evenstar.model.vectors.Vector3D;
-
 public class Color
 {
     private final Vector3D rgb;
@@ -9,6 +7,11 @@ public class Color
     public Color(double r, double g, double b)
     {
         rgb = new Vector3D(r, g, b);
+    }
+
+    public Color(Color color)
+    {
+        this.rgb = color.rgb;
     }
 
     public Color(Vector3D colorVector)
@@ -31,7 +34,7 @@ public class Color
         return rgb.getZ();
     }
 
-    public Vector3D getRgb()
+    public Vector3D getVector()
     {
         return rgb;
     }

@@ -1,5 +1,7 @@
 package com.evenstar.model.vectors;
 
+import java.util.Objects;
+
 public class Vector3D
 {
     private double x;
@@ -19,62 +21,6 @@ public class Vector3D
         this.x = original.x;
         this.y = original.y;
         this.z = original.z;
-    }
-
-    // Operations DO NOT affect the vector itself
-    public Vector3D addSecondVector(Vector3D secondVector)
-    {
-        Vector3D copy = new Vector3D(this);
-        copy.x += secondVector.x;
-        copy.y += secondVector.y;
-        copy.z += secondVector.z;
-        return copy;
-    }
-
-    public Vector3D subtractSecondVector(Vector3D secondVector)
-    {
-        Vector3D copy = new Vector3D(this);
-        copy.x -= secondVector.x;
-        copy.y -= secondVector.y;
-        copy.z -= secondVector.z;
-        return copy;
-    }
-
-    public double dotWithSecondVector(Vector3D secondVector)
-    {
-        return this.x * secondVector.x
-                + this.y * secondVector.y
-                + this.z * secondVector.z;
-    }
-
-    public Vector3D crossWithSecondVector(Vector3D secondVector)
-    {
-        Vector3D copy = new Vector3D(this);
-        double new_x = this.y * secondVector.z - this.z * secondVector.y;
-        double new_y = this.z * secondVector.x - this.x * secondVector.z;
-        double new_z = this.x * secondVector.y - this.y * secondVector.x;
-        copy.x = new_x;
-        copy.y = new_y;
-        copy.z = new_z;
-        return copy;
-    }
-
-    public Vector3D multiplyByScalar(double scalar)
-    {
-        Vector3D copy = new Vector3D(this);
-        copy.x *= scalar;
-        copy.y *= scalar;
-        copy.z *= scalar;
-        return copy;
-    }
-
-    public Vector3D divideByScalar(double scalar)
-    {
-        Vector3D copy = new Vector3D(this);
-        copy.x /= scalar;
-        copy.y /= scalar;
-        copy.z /= scalar;
-        return copy;
     }
 
     public Vector3D getUnitVector()
@@ -100,5 +46,22 @@ public class Vector3D
     public double getZ()
     {
         return z;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Vector3D vector3D = (Vector3D) o;
+        return Double.compare(vector3D.x, x) == 0 &&
+                Double.compare(vector3D.y, y) == 0 &&
+                Double.compare(vector3D.z, z) == 0;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(x, y, z);
     }
 }

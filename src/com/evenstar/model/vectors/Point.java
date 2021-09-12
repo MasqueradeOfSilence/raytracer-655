@@ -1,15 +1,17 @@
 package com.evenstar.model.vectors;
 
-import com.evenstar.model.vectors.Vector3D;
-
-public class
-Point
+public class Point
 {
     private final Vector3D coordinates;
 
     public Point(double x, double y, double z)
     {
         coordinates = new Vector3D(x, y, z);
+    }
+
+    public Point(Point point)
+    {
+        this.coordinates = point.coordinates;
     }
 
     public Point(Vector3D coordinates)
@@ -32,7 +34,7 @@ Point
         return coordinates.getZ();
     }
 
-    public Vector3D getCoordinates()
+    public Vector3D getVector()
     {
         return coordinates;
     }

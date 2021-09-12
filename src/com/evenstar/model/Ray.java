@@ -3,6 +3,7 @@ package com.evenstar.model;
 import com.evenstar.model.vectors.Direction;
 import com.evenstar.model.vectors.Point;
 import com.evenstar.model.vectors.Vector3D;
+import com.evenstar.model.vectors.VectorOperations;
 
 public class Ray
 {
@@ -17,9 +18,9 @@ public class Ray
 
     public Point at(double t)
     {
-        Vector3D secondTerm = direction.getDirectionVector().multiplyByScalar(t);
-        Vector3D firstTerm = origin.getCoordinates();
-        Vector3D toReturn = firstTerm.addSecondVector(secondTerm);
+        Vector3D secondTerm = VectorOperations.multiplyByScalar(direction.getVector(), t);
+        Vector3D firstTerm = origin.getVector();
+        Vector3D toReturn = VectorOperations.addVectors(firstTerm, secondTerm);
         return new Point(toReturn);
     }
 

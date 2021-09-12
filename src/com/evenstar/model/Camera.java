@@ -2,6 +2,7 @@ package com.evenstar.model;
 
 import com.evenstar.model.vectors.Direction;
 import com.evenstar.model.vectors.Point;
+import com.evenstar.model.vectors.VectorOperations;
 
 public class Camera
 {
@@ -27,12 +28,13 @@ public class Camera
 
     public Point getLowerLeftCorner()
     {
-        Point point1 = new Point(horizontal.getDirectionVector().divideByScalar(2));
-        Point point2 = new Point(vertical.getDirectionVector().divideByScalar(2));
-        Point point3 = new Point(origin.getCoordinates().subtractSecondVector(point1.getCoordinates()));
-        Point point4 = new Point(point3.getCoordinates().subtractSecondVector(point2.getCoordinates()));
+        Point point1 = new Point(VectorOperations.divideByScalar(horizontal.getVector(), 2));
+        Point point2 = new Point(VectorOperations.divideByScalar(vertical.getVector(), 2));
+        Point point3 = new Point(VectorOperations.subtractVectors(origin.getVector(), point1.getVector()));
+        Point point4 = new Point(VectorOperations.subtractVectors(point3.getVector(), point2.getVector()));
+
         Point point5 = new Point(0, 0, focalLength);
-        return new Point(point4.getCoordinates().subtractSecondVector(point5.getCoordinates()));
+        return new Point(VectorOperations.subtractVectors(point4.getVector(), point5.getVector()));
     }
 
     public double getAspectRatio()

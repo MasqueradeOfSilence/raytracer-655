@@ -2,7 +2,8 @@ package com.evenstar.model.vectors;
 
 public class Direction
 {
-    private Vector3D point;
+    private final Vector3D point;
+
     public Direction(double x, double y, double z)
     {
         point = new Vector3D(x, y, z);
@@ -33,7 +34,7 @@ public class Direction
         return point.getZ();
     }
 
-    public Vector3D getDirectionVector()
+    public Vector3D getVector()
     {
         return point;
     }

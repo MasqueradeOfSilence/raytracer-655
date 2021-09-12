@@ -38,7 +38,10 @@ class VectorOperationsTest {
     @Test
     void crossProduct()
     {
-
+        Vector3D vector1 = new Vector3D(3, -3, 1);
+        Vector3D vector2 = new Vector3D(4, 9, 2);
+        Vector3D crossProduct = VectorOperations.crossProduct(vector1, vector2);
+        assertEquals(crossProduct, new Vector3D(-15, -2, 39));
     }
 
     @Test

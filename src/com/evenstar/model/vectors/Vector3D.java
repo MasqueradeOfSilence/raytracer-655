@@ -64,4 +64,14 @@ public class Vector3D
     {
         return Objects.hash(x, y, z);
     }
+
+    @Override
+    public String toString()
+    {
+        return "Vector3D{" +
+                "x=" + x +
+                ", y=" + y +
+                ", z=" + z +
+                '}';
+    }
 }

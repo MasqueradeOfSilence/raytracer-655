@@ -1,6 +1,7 @@
 package com.evenstar.util;
 
 import com.evenstar.model.*;
+import com.evenstar.model.shapes.Sphere;
 import com.evenstar.model.vectors.Color;
 import com.evenstar.model.vectors.Direction;
 import com.evenstar.model.vectors.Point;
@@ -8,8 +9,6 @@ import com.evenstar.model.vectors.VectorOperations;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class PPMRenderer
 {
@@ -51,10 +50,15 @@ public class PPMRenderer
         return new Color(int_r, int_g, int_b);
     }
 
-    public Color skyColor(Ray ray)
+    public Color skyColorWithSphere(Ray ray)
     {
+        Sphere redSphere = new Sphere(new Point(0, 0, -1), 0.5);
+        if (MathCalculations.sphereHitByRay(redSphere, ray))
+        {
+            return new Color(1, 0, 0);
+        }
         Direction unitDirection = ray.getDirection();
-        // Create a gradient from blue to white
+        // Create a gradient from blue to white with a red sphere
         double t = 0.5 * (unitDirection.getY() + 1.0);
         Color firstColor = new Color(VectorOperations.multiplyByScalar(new Color(1.0, 1.0, 1.0).getVector(), 1.0 - t));
         Color secondColor = new Color(VectorOperations.multiplyByScalar(new Color(0.5, 0.7, 1.0).getVector(), t));

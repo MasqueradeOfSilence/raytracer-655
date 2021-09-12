@@ -71,7 +71,7 @@ public class Raytracer
                 double u = (double) i / (blueSkyImage.getWidth() - 1);
                 double v = (double) j / (blueSkyImage.getHeight() - 1);
                 Ray ray = new Ray(camera.getOrigin(), ppmRenderer.computeRayDirectionBasedOnCamera(camera, u, v));
-                Color pixelColor = ppmRenderer.skyColor(ray);
+                Color pixelColor = ppmRenderer.skyColorWithSphere(ray);
                 Color newColor = ppmRenderer.translateColorFrom1To255Scale(pixelColor);
                 pixels.add(new ArrayList<>(Arrays.asList((int) newColor.r(), (int) newColor.g(), (int) newColor.b())));
             }

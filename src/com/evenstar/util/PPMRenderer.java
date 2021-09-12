@@ -55,7 +55,7 @@ public class PPMRenderer
     {
         Direction unitDirection = ray.getDirection();
         // Create a gradient from blue to white
-        double t = 0.5 * (unitDirection.getY() * 1.0);
+        double t = 0.5 * (unitDirection.getY() + 1.0);
         Color firstColor = new Color(VectorOperations.multiplyByScalar(new Color(1.0, 1.0, 1.0).getVector(), 1.0 - t));
         Color secondColor = new Color(VectorOperations.multiplyByScalar(new Color(0.5, 0.7, 1.0).getVector(), t));
         return new Color(VectorOperations.addVectors(firstColor.getVector(), secondColor.getVector()));

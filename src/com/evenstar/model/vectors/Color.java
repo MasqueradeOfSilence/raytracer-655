@@ -38,4 +38,12 @@ public class Color
     {
         return rgb;
     }
+
+    @Override
+    public String toString()
+    {
+        return "Color{" +
+                "rgb=" + rgb +
+                '}';
+    }
 }

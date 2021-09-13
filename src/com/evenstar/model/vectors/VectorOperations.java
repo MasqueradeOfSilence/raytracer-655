@@ -48,4 +48,12 @@ public final class VectorOperations
         double z = vector.getZ() / scalar;
         return new Vector3D(x, y, z);
     }
+
+    public static Vector3D negativeVector(Vector3D vector)
+    {
+        double x = -vector.getX();
+        double y = -vector.getY();
+        double z = -vector.getZ();
+        return new Vector3D(x, y, z);
+    }
 }

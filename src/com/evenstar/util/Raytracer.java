@@ -3,6 +3,9 @@ package com.evenstar.util;
 import com.evenstar.model.Camera;
 import com.evenstar.model.PPMImage;
 import com.evenstar.model.Ray;
+import com.evenstar.model.shapes.Hit;
+import com.evenstar.model.shapes.Shape;
+import com.evenstar.model.shapes.Sphere;
 import com.evenstar.model.vectors.Color;
 import com.evenstar.model.vectors.Direction;
 import com.evenstar.model.vectors.Point;
@@ -13,10 +16,12 @@ import java.util.Arrays;
 public class Raytracer
 {
     private final PPMRenderer ppmRenderer;
+    private ArrayList<Shape> shapes;
 
     public Raytracer()
     {
         ppmRenderer = new PPMRenderer();
+        shapes = new ArrayList<>();
     }
 
     public void raytraceHelloWorldImage()
@@ -26,6 +31,9 @@ public class Raytracer
 
     public void raytraceBlueSkyImage()
     {
+        // Add two spheres
+        this.shapes.add(new Sphere(new Point(0, 0, -1), 0.5));
+        this.shapes.add(new Sphere(new Point(0, -100.5, -1), 100));
         PPMImage blueSkyImage = new PPMImage(400, 225);
         this.generateBlueSkyImage(blueSkyImage);
     }
@@ -71,7 +79,7 @@ public class Raytracer
                 double u = (double) i / (blueSkyImage.getWidth() - 1);
                 double v = (double) j / (blueSkyImage.getHeight() - 1);
                 Ray ray = new Ray(camera.getOrigin(), ppmRenderer.computeRayDirectionBasedOnCamera(camera, u, v));
-                Color pixelColor = ppmRenderer.skyColorWithSphere(ray);
+                Color pixelColor = ppmRenderer.skyColorWithSphereAndGround(ray, this.shapes);
                 Color newColor = ppmRenderer.translateColorFrom1To255Scale(pixelColor);
                 pixels.add(new ArrayList<>(Arrays.asList((int) newColor.r(), (int) newColor.g(), (int) newColor.b())));
             }

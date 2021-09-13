@@ -1,11 +1,14 @@
 package com.evenstar.util;
 
 import com.evenstar.model.*;
+import com.evenstar.model.shapes.Hit;
+import com.evenstar.model.shapes.Shape;
 import com.evenstar.model.shapes.Sphere;
 import com.evenstar.model.vectors.*;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class PPMRenderer
 {
@@ -25,7 +28,7 @@ public class PPMRenderer
                 imageFileWriter.write("\n");
             }
             imageFileWriter.close();
-            System.out.println("Wrote image");
+            System.out.println("Wrote image " + name);
         }
         catch (IOException e)
         {
@@ -45,6 +48,22 @@ public class PPMRenderer
         int int_g = (int)(255.999 * color.g());
         int int_b = (int)(255.999 * color.b());
         return new Color(int_r, int_g, int_b);
+    }
+
+    public Color skyColorWithSphereAndGround(Ray ray, ArrayList<Shape> shapes)
+    {
+        Hit hit = new Hit();
+        GeometricCalculator calculator = new GeometricCalculator();
+        if (calculator.computeHits(ray, 0, Constants.infinity, hit, shapes))
+        {
+            return new Color(VectorOperations.multiplyByScalar((VectorOperations.addVectors(hit.getNormal(),
+                    new Color(1, 1, 1).getVector())), 0.5));
+        }
+        Direction unitDirection = new Direction(ray.getDirection().getVector().getUnitVector());
+        double t = 0.5 * (unitDirection.getY() + 1.0);
+        Color firstColor = new Color(VectorOperations.multiplyByScalar(new Color(1.0, 1.0, 1.0).getVector(), 1.0 - t));
+        Color secondColor = new Color(VectorOperations.multiplyByScalar(new Color(0.5, 0.7, 1.0).getVector(), t));
+        return new Color(VectorOperations.addVectors(firstColor.getVector(), secondColor.getVector()));
     }
 
     public Color skyColorWithSphere(Ray ray)

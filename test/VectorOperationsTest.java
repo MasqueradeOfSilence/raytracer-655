@@ -59,4 +59,12 @@ class VectorOperationsTest {
         Vector3D quotient = VectorOperations.divideByScalar(vector, 10);
         assertEquals(quotient, new Vector3D(4, 5, 6));
     }
+
+    @Test
+    void negativeVector()
+    {
+        Vector3D vector = new Vector3D(1, 2, 3);
+        Vector3D negative = VectorOperations.negativeVector(vector);
+        assertEquals(negative, new Vector3D(-1, -2, -3));
+    }
 }

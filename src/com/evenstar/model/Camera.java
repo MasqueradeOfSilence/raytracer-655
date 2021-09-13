@@ -32,7 +32,6 @@ public class Camera
         Point point2 = new Point(VectorOperations.divideByScalar(vertical.getVector(), 2));
         Point point3 = new Point(VectorOperations.subtractVectors(origin.getVector(), point1.getVector()));
         Point point4 = new Point(VectorOperations.subtractVectors(point3.getVector(), point2.getVector()));
-
         Point point5 = new Point(0, 0, focalLength);
         return new Point(VectorOperations.subtractVectors(point4.getVector(), point5.getVector()));
     }

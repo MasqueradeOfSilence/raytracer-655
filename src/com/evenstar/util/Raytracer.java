@@ -24,6 +24,12 @@ public class Raytracer
         shapes = new ArrayList<>();
     }
 
+    public void render()
+    {
+        
+    }
+
+    //<editor-fold desc="code specific to tutorial">
     public void raytraceHelloWorldImage()
     {
         this.generateDefaultGradientImage();
@@ -87,4 +93,5 @@ public class Raytracer
         blueSkyImage.setPixels(pixels);
         ppmRenderer.writeImageToFile(blueSkyImage, "sky.ppm");
     }
+    //</editor-fold>
 }

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 public class GeometricCalculator
 {
+    // TODO MAY NOT NEED THIS
     public boolean computeHits(Ray ray, double tMin, double tMax, Hit hit, ArrayList<Shape> shapes)
     {
         // Double check -- risk zone

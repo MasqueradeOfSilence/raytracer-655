@@ -1,6 +1,7 @@
 package com.evenstar.model.shapes;
 
 import com.evenstar.model.Ray;
+import com.evenstar.model.textures.Material;
 import com.evenstar.model.vectors.Point;
 import com.evenstar.model.vectors.Vector3D;
 import com.evenstar.model.vectors.VectorOperations;
@@ -9,11 +10,13 @@ public class Sphere implements Shape
 {
     private final Point center;
     private final double radius;
+    private final Material material;
 
-    public Sphere(Point center, double radius)
+    public Sphere(Point center, double radius, Material material)
     {
         this.center = center;
         this.radius = radius;
+        this.material = material;
     }
 
     public Point getCenter()
@@ -26,6 +29,12 @@ public class Sphere implements Shape
         return radius;
     }
 
+    public Material getMaterial()
+    {
+        return material;
+    }
+
+    // TODO examine this function
     @Override
     public Hit hitByRay(Ray ray, double tMin, double tMax, Hit hit)
     {

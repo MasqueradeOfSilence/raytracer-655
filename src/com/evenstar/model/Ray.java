@@ -16,6 +16,7 @@ public class Ray
         this.direction = direction;
     }
 
+    // TODO Do you understand what this is doing? Is it needed?
     public Point at(double t)
     {
         Vector3D secondTerm = VectorOperations.multiplyByScalar(direction.getVector(), t);

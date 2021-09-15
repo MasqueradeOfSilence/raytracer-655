@@ -54,6 +54,7 @@ public class Hit
         this.whereHit = whereHit;
     }
 
+    // TODO this may have been from the tutorial and no longer needed
     public void setFaceNormal(Ray ray, Vector3D outwardNormal)
     {
         // It's front facing if the dot product is negative

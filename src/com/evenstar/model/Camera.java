@@ -6,14 +6,28 @@ import com.evenstar.model.vectors.VectorOperations;
 
 public class Camera
 {
-    private final double aspectRatio;
-    private final double viewportHeight;
-    private final double viewportWidth;
-    private final double focalLength;
-    private final Point origin;
-    private final Direction horizontal;
-    private final Direction vertical;
+    private Direction lookAt;
+    private Direction lookFrom;
+    private Direction lookUp;
+    private int fieldOfView;
 
+    private double aspectRatio;
+    private double viewportHeight;
+    private double viewportWidth;
+    private double focalLength;
+    private Point origin;
+    private Direction horizontal;
+    private Direction vertical;
+
+    public Camera(Direction lookAt, Direction lookFrom, Direction lookUp, int fieldOfView)
+    {
+        this.lookAt = lookAt;
+        this.lookFrom = lookFrom;
+        this.lookUp = lookUp;
+        this.fieldOfView = fieldOfView;
+    }
+
+    // May not need this anymore
     public Camera(double aspectRatio, double viewportHeight, double viewportWidth, double focalLength, Point origin,
                   Direction horizontal, Direction vertical)
     {

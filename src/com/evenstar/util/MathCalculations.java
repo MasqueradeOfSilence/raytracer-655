@@ -7,6 +7,7 @@ import com.evenstar.model.vectors.VectorOperations;
 
 public final class MathCalculations
 {
+    // TODO is this necessary? Why do we have both calculating classes?
     public static double sphereHitByRay(Sphere sphere, Ray ray)
     {
         Vector3D originToCenter = VectorOperations.subtractVectors(ray.getOrigin().getVector(), sphere.getCenter().getVector());

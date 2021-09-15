@@ -3,6 +3,7 @@ package com.evenstar.util;
 import com.evenstar.model.Camera;
 import com.evenstar.model.PPMImage;
 import com.evenstar.model.Ray;
+import com.evenstar.model.Scene;
 import com.evenstar.model.shapes.Hit;
 import com.evenstar.model.shapes.Shape;
 import com.evenstar.model.shapes.Sphere;
@@ -24,11 +25,12 @@ public class Raytracer
         shapes = new ArrayList<>();
     }
 
-    public void render()
+    public void render(Scene scene)
     {
-        
+
     }
 
+    // TODO delete this and any functions that become gray as a result
     //<editor-fold desc="code specific to tutorial">
     public void raytraceHelloWorldImage()
     {
@@ -38,8 +40,8 @@ public class Raytracer
     public void raytraceBlueSkyImage()
     {
         // Add two spheres
-        this.shapes.add(new Sphere(new Point(0, 0, -1), 0.5));
-        this.shapes.add(new Sphere(new Point(0, -100.5, -1), 100));
+//        this.shapes.add(new Sphere(new Point(0, 0, -1), 0.5));
+//        this.shapes.add(new Sphere(new Point(0, -100.5, -1), 100));
         PPMImage blueSkyImage = new PPMImage(400, 225);
         this.generateBlueSkyImage(blueSkyImage);
     }

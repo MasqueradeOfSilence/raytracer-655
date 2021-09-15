@@ -50,6 +50,7 @@ public class PPMRenderer
         return new Color(int_r, int_g, int_b);
     }
 
+    // TODO delete this
     //<editor-fold desc="code specific to tutorial">
     public Color skyColorWithSphereAndGround(Ray ray, ArrayList<Shape> shapes)
     {

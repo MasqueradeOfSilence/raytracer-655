@@ -56,6 +56,7 @@ public class SceneFileParser
                 break;
             }
             default:
+                System.err.println("Not a valid material");
                 break;
         }
         return scene;

@@ -16,12 +16,6 @@ public class Triangle implements Shape
         this.vertex3 = vertex3;
     }
 
-    @Override
-    public Hit hitByRay(Ray ray, double tMin, double tMax, Hit hit)
-    {
-        return null;
-    }
-
     public Point getVertex1()
     {
         return vertex1;

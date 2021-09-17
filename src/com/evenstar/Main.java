@@ -43,18 +43,11 @@ public class Main
     public static void main(String[] args)
     {
 	    System.out.println("Hello raytracer!");
-	    Raytracer raytracer = new Raytracer();
 	    // Scene name and image size should be read from command line.
         String sceneDescriptionFileName = getSceneDescriptionFileName(args);
         int squareImageDimension = getSquareImageDimension(args);
         System.out.println("Parsing image " + sceneDescriptionFileName + " with dimension " + squareImageDimension);
 
         readFileAndRaytrace(sceneDescriptionFileName, squareImageDimension);
-
-        // TODO: yeet all these
-	    //<editor-fold desc="functions used in tutorial -- currently commented out">
-        //raytracer.raytraceHelloWorldImage();
-        //raytracer.raytraceBlueSkyImage();
-        //</editor-fold>
     }
 }

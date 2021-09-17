@@ -27,19 +27,6 @@ public class Camera
         this.fieldOfView = fieldOfView;
     }
 
-    // TODO May not need this anymore
-    public Camera(double aspectRatio, double viewportHeight, double viewportWidth, double focalLength, Point origin,
-                  Direction horizontal, Direction vertical)
-    {
-        this.aspectRatio = aspectRatio;
-        this.viewportHeight = viewportHeight;
-        this.viewportWidth = viewportWidth;
-        this.focalLength = focalLength;
-        this.origin = origin;
-        this.horizontal = horizontal;
-        this.vertical = vertical;
-    }
-
     public Point getLowerLeftCorner()
     {
         Point point1 = new Point(VectorOperations.divideByScalar(horizontal.getVector(), 2));

@@ -6,18 +6,10 @@ import com.evenstar.model.vectors.VectorOperations;
 
 public class Camera
 {
-    private Direction lookAt;
-    private Direction lookFrom;
-    private Direction lookUp;
-    private int fieldOfView;
-
-    private double aspectRatio;
-    private double viewportHeight;
-    private double viewportWidth;
-    private double focalLength;
-    private Point origin;
-    private Direction horizontal;
-    private Direction vertical;
+    private final Direction lookAt;
+    private final Direction lookFrom;
+    private final Direction lookUp;
+    private final int fieldOfView;
 
     public Camera(Direction lookAt, Direction lookFrom, Direction lookUp, int fieldOfView)
     {
@@ -27,48 +19,14 @@ public class Camera
         this.fieldOfView = fieldOfView;
     }
 
-    public Point getLowerLeftCorner()
+    @Override
+    public String toString()
     {
-        Point point1 = new Point(VectorOperations.divideByScalar(horizontal.getVector(), 2));
-        Point point2 = new Point(VectorOperations.divideByScalar(vertical.getVector(), 2));
-        Point point3 = new Point(VectorOperations.subtractVectors(origin.getVector(), point1.getVector()));
-        Point point4 = new Point(VectorOperations.subtractVectors(point3.getVector(), point2.getVector()));
-        Point point5 = new Point(0, 0, focalLength);
-        return new Point(VectorOperations.subtractVectors(point4.getVector(), point5.getVector()));
-    }
-
-    public double getAspectRatio()
-    {
-        return aspectRatio;
-    }
-
-    public double getViewportHeight()
-    {
-        return viewportHeight;
-    }
-
-    public double getViewportWidth()
-    {
-        return viewportWidth;
-    }
-
-    public double getFocalLength()
-    {
-        return focalLength;
-    }
-
-    public Point getOrigin()
-    {
-        return origin;
-    }
-
-    public Direction getHorizontal()
-    {
-        return horizontal;
-    }
-
-    public Direction getVertical()
-    {
-        return vertical;
+        return "Camera{" +
+                "lookAt=" + lookAt +
+                ", lookFrom=" + lookFrom +
+                ", lookUp=" + lookUp +
+                ", fieldOfView=" + fieldOfView +
+                '}';
     }
 }

@@ -30,4 +30,14 @@ public class Sphere implements Shape
     {
         return material;
     }
+
+    @Override
+    public String toString()
+    {
+        return "Sphere{" +
+                "center=" + center +
+                ", radius=" + radius +
+                ", material=" + material +
+                '}';
+    }
 }

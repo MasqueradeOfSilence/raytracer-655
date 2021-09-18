@@ -5,9 +5,9 @@ import com.evenstar.model.Scene;
 import com.evenstar.model.lights.AmbientLight;
 import com.evenstar.model.lights.DirectionalLight;
 import com.evenstar.model.shapes.Sphere;
+import com.evenstar.model.shapes.Triangle;
 import com.evenstar.model.textures.Diffuse;
-import com.evenstar.model.textures.Material;
-import com.evenstar.model.textures.Specular;
+import com.evenstar.model.textures.Reflective;
 import com.evenstar.model.vectors.Color;
 import com.evenstar.model.vectors.Direction;
 import com.evenstar.model.vectors.Point;
@@ -24,6 +24,37 @@ public class SceneFileParser
 
     private Scene handleTriangles(Scanner scanner, Scene scene)
     {
+        Point vertex1 = new Point(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
+        Point vertex2 = new Point(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
+        Point vertex3 = new Point(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
+        this.skipLine(scanner);
+        String materialType = scanner.next();
+        switch (materialType)
+        {
+            case "Diffuse" ->
+            {
+                Vector3D xyz = new Vector3D(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
+                this.skipLine(scanner);
+                Vector3D specularHighlight = new Vector3D(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
+                this.skipLine(scanner);
+                int phongConstant = scanner.nextInt();
+                Diffuse diffuse = new Diffuse(xyz, specularHighlight, phongConstant);
+                Triangle triangle = new Triangle(vertex1, vertex2, vertex3, diffuse);
+                scene.addShape(triangle);
+            }
+            case "Reflective" ->
+            {
+                Vector3D xyz = new Vector3D(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
+                Reflective reflective = new Reflective(xyz);
+                Triangle triangle = new Triangle(vertex1, vertex2, vertex3, reflective);
+                scene.addShape(triangle);
+            }
+            default ->
+            {
+                System.err.println("Not a valid material!");
+            }
+        }
+
         return scene;
     }
 
@@ -33,31 +64,30 @@ public class SceneFileParser
         Point center = new Point(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
         this.skipLine(scanner);
         double radius = scanner.nextDouble();
+        this.skipLine(scanner);
         String materialType = scanner.next();
         Vector3D xyz = new Vector3D(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
         switch (materialType)
         {
-            case "Reflective":
+            case "Diffuse" ->
             {
+                /* It may seem confusing, but diffuse objects have specular highlights
+                    and phong constants, NOT reflective objects.*/
                 this.skipLine(scanner);
                 Vector3D specularHighlight = new Vector3D(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
                 this.skipLine(scanner);
                 int phongConstant = scanner.nextInt();
-                Specular specular = new Specular(xyz, specularHighlight, phongConstant);
-                Sphere sphere = new Sphere(center, radius, specular);
-                scene.addShape(sphere);
-                break;
-            }
-            case "Diffuse":
-            {
-                Diffuse diffuse = new Diffuse(xyz);
+                Diffuse diffuse = new Diffuse(xyz, specularHighlight, phongConstant);
                 Sphere sphere = new Sphere(center, radius, diffuse);
                 scene.addShape(sphere);
-                break;
             }
-            default:
-                System.err.println("Not a valid material");
-                break;
+            case "Reflective" ->
+            {
+                Reflective reflective = new Reflective(xyz);
+                Sphere sphere = new Sphere(center, radius, reflective);
+                scene.addShape(sphere);
+            }
+            default -> System.err.println("Not a valid material");
         }
         return scene;
     }
@@ -81,7 +111,7 @@ public class SceneFileParser
                     scene = handleTriangles(scanner, scene);
                     break;
                 }
-                //<editor-fold desc="Not yet implemented">
+                //<editor-fold desc="Not yet implemented switch cases">
                 case "polygon":
                 {
                     break;
@@ -156,26 +186,47 @@ public class SceneFileParser
         return new Camera(lookAt, lookFrom, lookUp, fieldOfView);
     }
 
+    private Scene parseCameraInformation(Scanner scanner, Scene scene)
+    {
+        Camera camera = getCameraData(scanner);
+        scene.setCamera(camera);
+        return scene;
+    }
+
+    private Scene parseDirectionalLightInformation(Scanner scanner, Scene scene)
+    {
+        DirectionalLight directionalLight = getDirectionalLight(scanner);
+        scene.setDirectionalLight(directionalLight);
+        return scene;
+    }
+
+    private Scene parseAmbientLightInformation(Scanner scanner, Scene scene)
+    {
+        AmbientLight ambientLight = getAmbientLight(scanner);
+        scene.setAmbientLight(ambientLight);
+        return scene;
+    }
+
+    private Scene parseBackgroundColor(Scanner scanner, Scene scene)
+    {
+        Color backgroundColor = getBackgroundColor(scanner);
+        scene.setBackgroundColor(backgroundColor);
+        return scene;
+    }
+
+    private Scene parseCommonInformation(Scanner scanner, Scene scene)
+    {
+        scene = parseCameraInformation(scanner, scene);
+        scene = parseDirectionalLightInformation(scanner, scene);
+        scene = parseAmbientLightInformation(scanner, scene);
+        scene = parseBackgroundColor(scanner, scene);
+        return scene;
+    }
+
     public Scene parseSceneFile(Scanner scanner, int dimension)
     {
         Scene scene = new Scene();
-
-        // Camera
-        Camera camera = getCameraData(scanner);
-        scene.setCamera(camera);
-
-        // Directional light
-        DirectionalLight directionalLight = getDirectionalLight(scanner);
-        scene.setDirectionalLight(directionalLight);
-
-        // Ambient light
-        AmbientLight ambientLight = getAmbientLight(scanner);
-        scene.setAmbientLight(ambientLight);
-
-        // Background color
-        Color backgroundColor = getBackgroundColor(scanner);
-        scene.setBackgroundColor(backgroundColor);
-
+        scene = parseCommonInformation(scanner, scene);
         // Shapes, lights, additional materials, textured shapes
         scene = readDynamicObjects(scanner, scene);
 

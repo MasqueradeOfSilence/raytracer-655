@@ -66,18 +66,17 @@ public class Scene
         this.shapes.add(shape);
     }
 
-    // will need to re-generate
     @Override
     public String toString()
     {
         return "Scene{" +
-                "camera=" + camera +
-                ", lights=" + lights +
-                ", backgroundColor=" + backgroundColor +
-                ", materials=" + materials +
-                ", shapes=" + shapes +
-                ", directionalLight=" + directionalLight +
-                ", ambientLight=" + ambientLight +
+                "camera=" + camera + "\n" +
+                "lights=" + lights + "\n" +
+                "backgroundColor=" + backgroundColor + "\n" +
+                "materials=" + materials + "\n" +
+                "shapes=" + shapes + "\n" +
+                "directionalLight=" + directionalLight + "\n" +
+                "ambientLight=" + ambientLight +
                 '}';
     }
 }

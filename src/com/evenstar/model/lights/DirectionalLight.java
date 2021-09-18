@@ -25,4 +25,13 @@ public class DirectionalLight implements Light
     {
         return lightColor;
     }
+
+    @Override
+    public String toString()
+    {
+        return "DirectionalLight{" +
+                "direction=" + direction +
+                ", lightColor=" + lightColor +
+                '}';
+    }
 }

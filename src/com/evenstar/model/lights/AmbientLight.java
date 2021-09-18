@@ -16,4 +16,12 @@ public class AmbientLight implements Light
     {
         return lightColor;
     }
+
+    @Override
+    public String toString()
+    {
+        return "AmbientLight{" +
+                "lightColor=" + lightColor +
+                '}';
+    }
 }

@@ -30,7 +30,7 @@ public class Main
             scanner = new Scanner(new FileReader(sceneDescriptionFileName));
             // parse information from file into Scene object, then put the Scene object into the Raytracer.
             Scene scene = sceneFileParser.parseSceneFile(scanner);
-            raytracer.render(scene);
+            raytracer.render(scene, dimension);
             scanner.close();
         }
         catch (FileNotFoundException e)

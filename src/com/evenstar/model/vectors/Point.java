@@ -1,5 +1,7 @@
 package com.evenstar.model.vectors;
 
+import java.util.Objects;
+
 public class Point
 {
     private final Vector3D coordinates;
@@ -45,5 +47,20 @@ public class Point
         return "Point{" +
                 "coordinates=" + coordinates +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Point point = (Point) o;
+        return Objects.equals(coordinates, point.coordinates);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(coordinates);
     }
 }

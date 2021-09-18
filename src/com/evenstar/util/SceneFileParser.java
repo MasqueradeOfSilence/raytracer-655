@@ -223,7 +223,7 @@ public class SceneFileParser
         return scene;
     }
 
-    public Scene parseSceneFile(Scanner scanner, int dimension)
+    public Scene parseSceneFile(Scanner scanner)
     {
         Scene scene = new Scene();
         scene = parseCommonInformation(scanner, scene);

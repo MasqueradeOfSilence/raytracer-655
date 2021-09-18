@@ -12,17 +12,16 @@ import java.util.ArrayList;
 public class Scene
 {
     private Camera camera;
-    private ArrayList<Light> lights;
+    // Additional lights (beyond the standard ambient and directional)
+    private ArrayList<Light> miscellaneousLights;
     private Color backgroundColor;
-    private ArrayList<Material> materials;
     private ArrayList<Shape> shapes;
     private DirectionalLight directionalLight;
     private AmbientLight ambientLight;
 
     public Scene()
     {
-        this.lights = new ArrayList<>();
-        this.materials = new ArrayList<>();
+        this.miscellaneousLights = new ArrayList<>();
         this.shapes = new ArrayList<>();
     }
 
@@ -31,9 +30,9 @@ public class Scene
         this.camera = camera;
     }
 
-    public void setLights(ArrayList<Light> lights)
+    public void setMiscellaneousLights(ArrayList<Light> miscellaneousLights)
     {
-        this.lights = lights;
+        this.miscellaneousLights = miscellaneousLights;
     }
 
     public void setBackgroundColor(Color backgroundColor)
@@ -41,10 +40,6 @@ public class Scene
         this.backgroundColor = backgroundColor;
     }
 
-    public void setMaterials(ArrayList<Material> materials)
-    {
-        this.materials = materials;
-    }
 
     public void setShapes(ArrayList<Shape> shapes)
     {
@@ -66,14 +61,43 @@ public class Scene
         this.shapes.add(shape);
     }
 
+    public Camera getCamera()
+    {
+        return camera;
+    }
+
+    public ArrayList<Light> getMiscellaneousLights()
+    {
+        return miscellaneousLights;
+    }
+
+    public Color getBackgroundColor()
+    {
+        return backgroundColor;
+    }
+
+    public ArrayList<Shape> getShapes()
+    {
+        return shapes;
+    }
+
+    public DirectionalLight getDirectionalLight()
+    {
+        return directionalLight;
+    }
+
+    public AmbientLight getAmbientLight()
+    {
+        return ambientLight;
+    }
+
     @Override
     public String toString()
     {
         return "Scene{" +
                 "camera=" + camera + "\n" +
-                "lights=" + lights + "\n" +
+                "misc lights=" + miscellaneousLights + "\n" +
                 "backgroundColor=" + backgroundColor + "\n" +
-                "materials=" + materials + "\n" +
                 "shapes=" + shapes + "\n" +
                 "directionalLight=" + directionalLight + "\n" +
                 "ambientLight=" + ambientLight +

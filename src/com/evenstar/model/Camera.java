@@ -27,4 +27,24 @@ public class Camera
                 ", fieldOfView=" + fieldOfView +
                 '}';
     }
+
+    public Direction getLookAt()
+    {
+        return lookAt;
+    }
+
+    public Direction getLookFrom()
+    {
+        return lookFrom;
+    }
+
+    public Direction getLookUp()
+    {
+        return lookUp;
+    }
+
+    public int getFieldOfView()
+    {
+        return fieldOfView;
+    }
 }

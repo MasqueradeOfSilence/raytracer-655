@@ -38,4 +38,12 @@ public class Point
     {
         return coordinates;
     }
+
+    @Override
+    public String toString()
+    {
+        return "Point{" +
+                "coordinates=" + coordinates +
+                '}';
+    }
 }

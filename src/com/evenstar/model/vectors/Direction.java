@@ -38,4 +38,12 @@ public class Direction
     {
         return point;
     }
+
+    @Override
+    public String toString()
+    {
+        return "Direction{" +
+                "point=" + point +
+                '}';
+    }
 }

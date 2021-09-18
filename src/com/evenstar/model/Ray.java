@@ -2,8 +2,6 @@ package com.evenstar.model;
 
 import com.evenstar.model.vectors.Direction;
 import com.evenstar.model.vectors.Point;
-import com.evenstar.model.vectors.Vector3D;
-import com.evenstar.model.vectors.VectorOperations;
 
 public class Ray
 {
@@ -24,5 +22,14 @@ public class Ray
     public Direction getDirection()
     {
         return direction;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Ray{" +
+                "origin=" + origin +
+                ", direction=" + direction +
+                '}';
     }
 }

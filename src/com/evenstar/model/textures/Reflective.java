@@ -16,4 +16,12 @@ public class Reflective implements Material
     {
         return xyz;
     }
+
+    @Override
+    public String toString()
+    {
+        return "Reflective{" +
+                "xyz=" + xyz +
+                '}';
+    }
 }

@@ -20,4 +20,14 @@ public class Diffuse implements Material
     {
         return xyz;
     }
+
+    @Override
+    public String toString()
+    {
+        return "Diffuse{" +
+                "xyz=" + xyz +
+                ", specularHighlight=" + specularHighlight +
+                ", phongConstant=" + phongConstant +
+                '}';
+    }
 }

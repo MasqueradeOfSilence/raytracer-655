@@ -1,8 +1,6 @@
 package com.evenstar.model;
 
 import com.evenstar.model.vectors.Direction;
-import com.evenstar.model.vectors.Point;
-import com.evenstar.model.vectors.VectorOperations;
 
 public class Camera
 {

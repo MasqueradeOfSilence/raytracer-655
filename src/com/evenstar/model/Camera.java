@@ -1,15 +1,16 @@
 package com.evenstar.model;
 
 import com.evenstar.model.vectors.Direction;
+import com.evenstar.model.vectors.Point;
 
 public class Camera
 {
-    private final Direction lookAt;
-    private final Direction lookFrom;
-    private final Direction lookUp;
+    private final Point lookAt;
+    private final Point lookFrom;
+    private final Point lookUp;
     private final int fieldOfView;
 
-    public Camera(Direction lookAt, Direction lookFrom, Direction lookUp, int fieldOfView)
+    public Camera(Point lookAt, Point lookFrom, Point lookUp, int fieldOfView)
     {
         this.lookAt = lookAt;
         this.lookFrom = lookFrom;
@@ -28,17 +29,17 @@ public class Camera
                 '}';
     }
 
-    public Direction getLookAt()
+    public Point getLookAt()
     {
         return lookAt;
     }
 
-    public Direction getLookFrom()
+    public Point getLookFrom()
     {
         return lookFrom;
     }
 
-    public Direction getLookUp()
+    public Point getLookUp()
     {
         return lookUp;
     }

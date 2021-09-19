@@ -176,11 +176,11 @@ public class SceneFileParser
     private Camera getCameraData(Scanner scanner)
     {
         this.skipLine(scanner);
-        Direction lookAt = new Direction(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
+        Point lookAt = new Point(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
         this.skipLine(scanner);
-        Direction lookFrom = new Direction(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
+        Point lookFrom = new Point(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
         this.skipLine(scanner);
-        Direction lookUp = new Direction(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
+        Point lookUp = new Point(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
         this.skipLine(scanner);
         int fieldOfView = scanner.nextInt();
         return new Camera(lookAt, lookFrom, lookUp, fieldOfView);

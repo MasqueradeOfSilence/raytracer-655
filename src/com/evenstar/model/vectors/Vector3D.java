@@ -4,9 +4,9 @@ import java.util.Objects;
 
 public class Vector3D
 {
-    private final double x;
-    private final double y;
-    private final double z;
+    private double x;
+    private double y;
+    private double z;
 
     public Vector3D(double x, double y, double z)
     {
@@ -26,6 +26,14 @@ public class Vector3D
     public Vector3D getUnitVector()
     {
         return new Vector3D(this.x / this.length(), this.y / this.length(), this.z / this.length());
+    }
+
+    public void normalize()
+    {
+        double length = this.length();
+        this.x /= length;
+        this.y /= length;
+        this.z /= length;
     }
 
     public double length()

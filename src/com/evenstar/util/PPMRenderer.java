@@ -12,13 +12,16 @@ public class PPMRenderer
         assert image.getPixels().size() > 0;
         try
         {
+            System.out.println("Name: " + name);
             FileWriter imageFileWriter = new FileWriter(name);
             imageFileWriter.write(image.getBeginningPartOfPPM());
+            System.out.println("Writing image...");
             for (int i = 0; i < image.getPixels().size(); i++)
             {
+                System.out.println("Progress: " + computeProgress(image.getPixels().size(), i));
                 for (int j = 0; j < image.getPixels().get(i).size(); j++)
                 {
-                    imageFileWriter.write(image.getPixels().get(i).get(j) + " ");
+                    imageFileWriter.write(image.getPixels().get(i).get(j).convertAndPrintForPPM());
                 }
                 imageFileWriter.write("\n");
             }

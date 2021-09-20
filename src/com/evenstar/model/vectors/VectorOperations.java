@@ -56,4 +56,12 @@ public final class VectorOperations
         double z = -vector.getZ();
         return new Vector3D(x, y, z);
     }
+
+    public static Vector3D normalize(Vector3D vector)
+    {
+        double x = vector.getX() / vector.length();
+        double y = vector.getY() / vector.length();
+        double z = vector.getZ() / vector.length();
+        return new Vector3D(x, y, z);
+    }
 }

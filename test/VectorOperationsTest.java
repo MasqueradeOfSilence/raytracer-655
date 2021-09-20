@@ -67,4 +67,14 @@ class VectorOperationsTest {
         Vector3D negative = VectorOperations.negativeVector(vector);
         assertEquals(negative, new Vector3D(-1, -2, -3));
     }
+
+    @Test
+    void normalize()
+    {
+        Vector3D vector = new Vector3D(3, 4, 5);
+        Vector3D normalized = VectorOperations.normalize(vector);
+        assertEquals(normalized, new Vector3D(0.4242640687119285, 0.565685424949238,
+                0.7071067811865475));
+    }
+
 }

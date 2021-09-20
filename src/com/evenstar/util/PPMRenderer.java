@@ -37,6 +37,6 @@ public class PPMRenderer
 
     public String computeProgress(int height, int currentScanLine)
     {
-        return Math.round(((double)(height - 1 - currentScanLine) / (height - 1)) * 100) + "%";
+        return (100 - Math.round(((double)(height - 1 - currentScanLine) / (height - 1)) * 100)) + "%";
     }
 }

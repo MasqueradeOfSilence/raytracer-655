@@ -24,13 +24,13 @@ public class Main
     {
         Scanner scanner;
         SceneFileParser sceneFileParser = new SceneFileParser();
-        Raytracer raytracer = new Raytracer();
         try
         {
             scanner = new Scanner(new FileReader(sceneDescriptionFileName));
             // parse information from file into Scene object, then put the Scene object into the Raytracer.
             Scene scene = sceneFileParser.parseSceneFile(scanner);
-            raytracer.render(scene, dimension, sceneDescriptionFileName);
+            Raytracer raytracer = new Raytracer(scene);
+            raytracer.render(dimension, sceneDescriptionFileName);
             scanner.close();
         }
         catch (FileNotFoundException e)

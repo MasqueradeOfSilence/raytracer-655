@@ -1,4 +1,5 @@
 import com.evenstar.model.vectors.Vector3D;
+import com.evenstar.model.vectors.VectorOperations;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,6 +24,15 @@ class Vector3DTest {
         Vector3D vector = new Vector3D(2, 4, 4);
         double length = vector.length();
         assertEquals(length, 6);
+    }
+
+    @Test
+    void normalize()
+    {
+        Vector3D vector = new Vector3D(3, 4, 5);
+        vector.normalize();
+        assertEquals(vector, new Vector3D(0.4242640687119285, 0.565685424949238,
+                0.7071067811865475));
     }
 
     @Test

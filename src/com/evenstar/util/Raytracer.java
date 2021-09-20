@@ -10,6 +10,7 @@ import com.evenstar.model.shapes.Triangle;
 import com.evenstar.model.vectors.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Raytracer
 {
@@ -57,12 +58,10 @@ public class Raytracer
         double discriminant = Math.pow(b, 2) - (4 * a * c);
         if (discriminant < 0)
         {
-            System.out.println("nope!");
             return -1.0;
         }
         else
         {
-            System.out.println("Intersected a sphere!");
             return (-b - Math.sqrt(discriminant)) / (2.0 * a);
         }
     }
@@ -79,34 +78,58 @@ public class Raytracer
         }
     }
 
-    private Pixel colorPixel(Ray ray, Color backgroundColor)
+    private boolean allMisses(ArrayList<Double> distancesOfShapes)
     {
-        // ray-shape intersection algorithm goes here
-        ArrayList<Shape> shapes = this.scene.getShapes();
-        ArrayList<Shape> intersectedShapes = new ArrayList<>();
-        for (int i = 0; i < shapes.size(); i++)
+        boolean allMisses = true;
+        for (int i = 0; i < distancesOfShapes.size(); i++)
         {
-            Shape currentShape = shapes.get(i);
-            if (intersects(ray, currentShape) != -1.0)
+            if (distancesOfShapes.get(i) != -1.0)
             {
-                intersectedShapes.add(currentShape);
+                allMisses = false;
             }
         }
-        if (intersectedShapes.size() == 0)
+        return allMisses;
+    }
+
+    private Pixel getColorOfClosestShape(ArrayList<Double> distancesOfShapes, ArrayList<Shape> shapes)
+    {
+        int minDistance = distancesOfShapes.indexOf(Collections.min(distancesOfShapes));
+        Shape closestShape = shapes.get(minDistance);
+        if (closestShape.getClass().toString().contains("Sphere"))
+        {
+            Sphere sphere = (Sphere) closestShape;
+            return new Pixel(sphere.getMaterial().getVector());
+        }
+        else if (closestShape.getClass().toString().contains("Triangle"))
+        {
+            Triangle triangle = (Triangle) closestShape;
+            return new Pixel(triangle.getMaterial().getVector());
+        }
+        else
+        {
+            // Not implemented shape
+            return new Pixel(this.scene.getBackgroundColor());
+        }
+    }
+
+    private Pixel colorPixel(Ray ray, Color backgroundColor)
+    {
+        ArrayList<Shape> shapes = this.scene.getShapes();
+        ArrayList<Double> distancesOfShapes = new ArrayList<>();
+        for (Shape currentShape : shapes)
+        {
+            double intersectionDistance = intersects(ray, currentShape);
+            distancesOfShapes.add(intersectionDistance);
+        }
+        assert (shapes.size() == distancesOfShapes.size());
+        if (allMisses(distancesOfShapes))
         {
             return new Pixel(backgroundColor);
         }
         else
         {
-            // remove this. just a test
-            return new Pixel(new Color(0, 0, 255));
+            return getColorOfClosestShape(distancesOfShapes, shapes);
         }
-//        Shape closestShape = intersectedShapes.get(0);
-//        for (int i = 0; i < intersectedShapes.size(); i++)
-//        {
-//
-//        }
-//        return new Pixel(backgroundColor);
     }
 
     private double computeDistanceToImagePlane(double fov)
@@ -116,8 +139,6 @@ public class Raytracer
 
     private Ray buildRay(int i, int j, int dimension, Camera camera)
     {
-//        Vector3D pixelTemp = new Vector3D(i, j, 0);
-//        Direction rayDirection = new Direction(VectorOperations.subtractVectors(pixelTemp, camera.getLookFrom().getVector()));
         double x = ((2 * (i + .5)) / dimension) - 1;
         double y = ((2 * (j + .5)) / dimension) - 1;
         double z = (computeDistanceToImagePlane(camera.getFieldOfView()));

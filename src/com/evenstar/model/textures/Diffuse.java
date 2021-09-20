@@ -1,5 +1,6 @@
 package com.evenstar.model.textures;
 
+import com.evenstar.model.vectors.Color;
 import com.evenstar.model.vectors.Vector3D;
 
 import java.util.Objects;

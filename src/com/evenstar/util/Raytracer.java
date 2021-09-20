@@ -96,12 +96,17 @@ public class Raytracer
         {
             return new Pixel(backgroundColor);
         }
-        Shape closestShape = intersectedShapes.get(0);
-        for (int i = 0; i < intersectedShapes.size(); i++)
+        else
         {
-
+            // remove this. just a test
+            return new Pixel(new Color(0, 0, 255));
         }
-        return new Pixel(backgroundColor);
+//        Shape closestShape = intersectedShapes.get(0);
+//        for (int i = 0; i < intersectedShapes.size(); i++)
+//        {
+//
+//        }
+//        return new Pixel(backgroundColor);
     }
 
     private double computeDistanceToImagePlane(double fov)

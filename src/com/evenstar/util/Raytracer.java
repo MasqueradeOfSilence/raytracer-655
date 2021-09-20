@@ -40,40 +40,34 @@ public class Raytracer
         return number < 0.00001;
     }
 
-    private boolean triangleIntersection(Ray ray, Triangle triangle)
+    private double triangleIntersection(Ray ray, Triangle triangle)
     {
-        return false;
+        return -1.0;
     }
 
-    private boolean collideWithSphere(Vector3D rayToSphere, Sphere sphere)
+    private double sphereIntersection(Ray ray, Sphere sphere)
     {
-        System.out.println("The norm: " + rayToSphere.length());
-        return rayToSphere.length() <= sphere.getRadius();
-    }
-
-    // incorrect -- redo
-    private boolean sphereIntersection(Ray ray, Sphere sphere)
-    {
-        // Take vector between camera origin and sphere. Make sure it's in the right direction. If not, it's behind the camera.
-        Vector3D cameraToSphere = VectorOperations.subtractVectors(sphere.getCenter().getVector(),
-                ray.getOrigin().getVector());
-        double lengthOfProjectionOntoRay = VectorOperations.dotProduct(cameraToSphere, ray.getDirection().getVector());
-        if (isNegative(lengthOfProjectionOntoRay))
+        Vector3D originToCenter = VectorOperations.subtractVectors(ray.getOrigin().getVector(),
+                sphere.getCenter().getVector());
+        double a = VectorOperations.dotProduct(ray.getDirection().getVector(),
+                ray.getDirection().getVector());
+        double b = 2.0 * VectorOperations.dotProduct(originToCenter, ray.getDirection().getVector());
+        double c = VectorOperations.dotProduct(originToCenter, originToCenter) -
+                (sphere.getRadius() * sphere.getRadius());
+        double discriminant = Math.pow(b, 2) - (4 * a * c);
+        if (discriminant < 0)
         {
-            // Wrong direction
-            return false;
+            System.out.println("nope!");
+            return -1.0;
         }
-        // Take vector between ray and sphere
-        Vector3D rayToSphere = VectorOperations.subtractVectors(VectorOperations.multiplyByScalar(
-                ray.getDirection().getVector(), lengthOfProjectionOntoRay), cameraToSphere);
-        if (collideWithSphere(rayToSphere, sphere))
+        else
         {
-            System.out.println("Sphere collision");
+            System.out.println("Intersected a sphere!");
+            return (-b - Math.sqrt(discriminant)) / (2.0 * a);
         }
-        return false;
     }
 
-    private boolean intersects(Ray ray, Shape shape)
+    private double intersects(Ray ray, Shape shape)
     {
         if (shape.getClass().toString().contains("Triangle"))
         {
@@ -93,7 +87,7 @@ public class Raytracer
         for (int i = 0; i < shapes.size(); i++)
         {
             Shape currentShape = shapes.get(i);
-            if (intersects(ray, currentShape))
+            if (intersects(ray, currentShape) != -1.0)
             {
                 intersectedShapes.add(currentShape);
             }
@@ -117,9 +111,11 @@ public class Raytracer
 
     private Ray buildRay(int i, int j, int dimension, Camera camera)
     {
-        double x = ((2 * i + .5) / dimension) - 1;
-        double y = -((2 * j + .5) / dimension) - 1;
-        double z = -(computeDistanceToImagePlane(camera.getFieldOfView()));
+//        Vector3D pixelTemp = new Vector3D(i, j, 0);
+//        Direction rayDirection = new Direction(VectorOperations.subtractVectors(pixelTemp, camera.getLookFrom().getVector()));
+        double x = ((2 * (i + .5)) / dimension) - 1;
+        double y = ((2 * (j + .5)) / dimension) - 1;
+        double z = (computeDistanceToImagePlane(camera.getFieldOfView()));
         Direction rayDirection = new Direction(x, y, z);
         rayDirection.getVector().normalize();
         return new Ray(camera.getLookFrom(), rayDirection);

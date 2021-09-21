@@ -36,13 +36,51 @@ public class Raytracer
         return "output/" + fileName.split("\\.")[0] + ".ppm";
     }
 
-    private boolean isNegative(double number)
+    private boolean parallel(Vector3D normal, Direction direction)
     {
-        return number < 0.00001;
+        return Math.abs(VectorOperations.dotProduct(normal, direction.getVector())) > 0.000001;
+    }
+
+    private boolean isHitPointInsideOfTriangle(Vector3D hitPoint, Triangle triangle, Vector3D normal)
+    {
+        Vector3D edge1 = VectorOperations.subtractVectors(triangle.getVertex2().getVector(),
+                triangle.getVertex1().getVector());
+        Vector3D edge2 = VectorOperations.subtractVectors(triangle.getVertex3().getVector(),
+                triangle.getVertex2().getVector());
+        Vector3D edge3 = VectorOperations.subtractVectors(triangle.getVertex1().getVector(),
+                triangle.getVertex3().getVector());
+        Vector3D C1 = VectorOperations.subtractVectors(hitPoint, triangle.getVertex1().getVector());
+        Vector3D C2 = VectorOperations.subtractVectors(hitPoint, triangle.getVertex2().getVector());
+        Vector3D C3 = VectorOperations.subtractVectors(hitPoint, triangle.getVertex3().getVector());
+        return VectorOperations.dotProduct(normal, VectorOperations.crossProduct(edge1, C1)) > 0 &&
+                VectorOperations.dotProduct(normal, VectorOperations.crossProduct(edge2, C2)) > 0 &&
+                VectorOperations.dotProduct(normal, VectorOperations.crossProduct(edge3, C3)) > 0;
     }
 
     private double triangleIntersection(Ray ray, Triangle triangle)
     {
+        Vector3D ab = VectorOperations.subtractVectors(triangle.getVertex2().getVector(),
+                triangle.getVertex1().getVector());
+        Vector3D ac = VectorOperations.subtractVectors(triangle.getVertex3().getVector(),
+                triangle.getVertex1().getVector());
+        Vector3D normal = VectorOperations.crossProduct(ab, ac);
+        normal.normalize();
+        if (parallel(normal, ray.getDirection()))
+        {
+            double D = -VectorOperations.dotProduct(normal, triangle.getVertex1().getVector());
+            double t = -(VectorOperations.dotProduct(normal, ray.getOrigin().getVector()) + D) /
+                    VectorOperations.dotProduct(normal, ray.getDirection().getVector());
+            if (-t > 0)
+            {
+                Vector3D hitPoint = VectorOperations.addVectors(ray.getOrigin().getVector(),
+                        VectorOperations.multiplyByScalar(ray.getDirection().getVector(), t));
+                if (isHitPointInsideOfTriangle(hitPoint, triangle, normal))
+                {
+//                    System.out.println("We got a hit! " + VectorOperations.distance(ray.getOrigin().getVector(), hitPoint));
+                    return -VectorOperations.distance(ray.getOrigin().getVector(), hitPoint);
+                }
+            }
+        }
         return -1.0;
     }
 
@@ -56,7 +94,7 @@ public class Raytracer
         double c = VectorOperations.dotProduct(originToCenter, originToCenter) -
                 (sphere.getRadius() * sphere.getRadius());
         double discriminant = Math.pow(b, 2) - (4 * a * c);
-        if (discriminant < 0)
+        if (discriminant < 0.0)
         {
             return -1.0;
         }
@@ -81,11 +119,11 @@ public class Raytracer
     private boolean allMisses(ArrayList<Double> distancesOfShapes)
     {
         boolean allMisses = true;
-        for (int i = 0; i < distancesOfShapes.size(); i++)
+        for (Double distancesOfShape : distancesOfShapes)
         {
-            if (distancesOfShapes.get(i) != -1.0)
-            {
+            if (distancesOfShape != -1.0) {
                 allMisses = false;
+                break;
             }
         }
         return allMisses;

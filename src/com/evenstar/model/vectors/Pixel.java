@@ -44,4 +44,12 @@ public class Pixel
     {
         return this.rgb.getVector().getZ();
     }
+
+    @Override
+    public String toString()
+    {
+        return "Pixel{" +
+                "rgb=" + rgb +
+                '}';
+    }
 }

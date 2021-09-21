@@ -77,4 +77,13 @@ class VectorOperationsTest {
                 0.7071067811865475));
     }
 
+    @Test
+    void distance()
+    {
+        Vector3D vector1 = new Vector3D(1, 0, 5);
+        Vector3D vector2 = new Vector3D(0, 2, 4);
+        double distance = VectorOperations.distance(vector1, vector2);
+        assertEquals(distance, Math.sqrt(6));
+    }
+
 }

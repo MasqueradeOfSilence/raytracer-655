@@ -64,4 +64,11 @@ public final class VectorOperations
         double z = vector.getZ() / vector.length();
         return new Vector3D(x, y, z);
     }
+
+    public static double distance(Vector3D vector1, Vector3D vector2)
+    {
+        return Math.sqrt(Math.pow(vector1.getX() - vector2.getX(), 2) +
+                Math.pow(vector1.getY() - vector2.getY(), 2) +
+                Math.pow(vector1.getZ() - vector2.getZ(), 2));
+    }
 }

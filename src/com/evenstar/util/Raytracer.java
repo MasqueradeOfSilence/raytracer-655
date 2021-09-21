@@ -80,7 +80,7 @@ public class Raytracer
                 }
             }
         }
-        return -1.0;
+        return 100000000;
     }
 
     private double sphereIntersection(Ray ray, Sphere sphere)
@@ -95,7 +95,7 @@ public class Raytracer
         double discriminant = Math.pow(b, 2) - (4 * a * c);
         if (discriminant < 0.0)
         {
-            return -1.0;
+            return 100000000;
         }
         else
         {
@@ -156,14 +156,7 @@ public class Raytracer
         for (Shape currentShape : shapes)
         {
             double intersectionDistance = intersects(ray, currentShape);
-            if (intersectionDistance == -1.0)
-            {
-                intersectionDistance = 100000000;
-            }
-            else
-            {
-                intersectionDistance = Math.abs(intersectionDistance);
-            }
+            intersectionDistance = Math.abs(intersectionDistance);
             distancesOfShapes.add(intersectionDistance);
         }
         assert (shapes.size() == distancesOfShapes.size());

@@ -70,14 +70,13 @@ public class Raytracer
             double D = -VectorOperations.dotProduct(normal, triangle.getVertex1().getVector());
             double t = -(VectorOperations.dotProduct(normal, ray.getOrigin().getVector()) + D) /
                     VectorOperations.dotProduct(normal, ray.getDirection().getVector());
-            if (-t > 0)
+            if (t < 0)
             {
                 Vector3D hitPoint = VectorOperations.addVectors(ray.getOrigin().getVector(),
                         VectorOperations.multiplyByScalar(ray.getDirection().getVector(), t));
                 if (isHitPointInsideOfTriangle(hitPoint, triangle, normal))
                 {
-//                    System.out.println("We got a hit! " + VectorOperations.distance(ray.getOrigin().getVector(), hitPoint));
-                    return -VectorOperations.distance(ray.getOrigin().getVector(), hitPoint);
+                    return VectorOperations.distance(ray.getOrigin().getVector(), hitPoint);
                 }
             }
         }
@@ -121,7 +120,7 @@ public class Raytracer
         boolean allMisses = true;
         for (Double distancesOfShape : distancesOfShapes)
         {
-            if (distancesOfShape != -1.0) {
+            if (distancesOfShape != 100000000) {
                 allMisses = false;
                 break;
             }
@@ -145,7 +144,7 @@ public class Raytracer
         }
         else
         {
-            // Not implemented shape
+            System.out.println("Shape not implemented yet. Returning background color");
             return new Pixel(this.scene.getBackgroundColor());
         }
     }
@@ -157,6 +156,14 @@ public class Raytracer
         for (Shape currentShape : shapes)
         {
             double intersectionDistance = intersects(ray, currentShape);
+            if (intersectionDistance == -1.0)
+            {
+                intersectionDistance = 100000000;
+            }
+            else
+            {
+                intersectionDistance = Math.abs(intersectionDistance);
+            }
             distancesOfShapes.add(intersectionDistance);
         }
         assert (shapes.size() == distancesOfShapes.size());
@@ -177,15 +184,16 @@ public class Raytracer
 
     private Ray buildRay(int i, int j, int dimension, Camera camera)
     {
-        double x = ((2 * (i + .5)) / dimension) - 1;
-        double y = ((2 * (j + .5)) / dimension) - 1;
+        // Modifications to make it the right orientation
+        double x = -(((2 * (j + .5)) / dimension) - 1);
+        double y = ((2 * (i + .5)) / dimension) - 1;
         double z = (computeDistanceToImagePlane(camera.getFieldOfView()));
         Direction rayDirection = new Direction(x, y, z);
         rayDirection.getVector().normalize();
         return new Ray(camera.getLookFrom(), rayDirection);
     }
 
-    private PPMImage shootRayAtEachPixelAndLight(int dimension, PPMImage image)
+    private PPMImage shootRayAtEachPixelAndLightIt(int dimension, PPMImage image)
     {
         for (int i = 0; i < dimension; i++)
         {
@@ -207,7 +215,7 @@ public class Raytracer
     {
         // with antialiasing, look here
         PPMImage renderedImage = new PPMImage(dimension, dimension);
-        renderedImage = shootRayAtEachPixelAndLight(dimension, renderedImage);
+        renderedImage = shootRayAtEachPixelAndLightIt(dimension, renderedImage);
         return renderedImage;
     }
 }

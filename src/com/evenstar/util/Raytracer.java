@@ -128,6 +128,32 @@ public class Raytracer
         return allMisses;
     }
 
+    private Color computeAmbient()
+    {
+        return null;
+    }
+
+    private Color computeDiffuse()
+    {
+        return null;
+    }
+
+    private Color computeSpecular(Vector3D normal, Direction directionToLight)
+    {
+        return null;
+    }
+
+    private Pixel computeIlluminationEquation(Color ambient, Color diffuse, Color specular)
+    {
+        double newX = Math.max(Math.min(ambient.getVector().getX() + diffuse.getVector().getX() +
+                specular.getVector().getX(), 1), 0);
+        double newY = Math.max(Math.min(ambient.getVector().getY() + diffuse.getVector().getY() +
+                specular.getVector().getY(), 1), 0);
+        double newZ = Math.max(Math.min(ambient.getVector().getZ() + diffuse.getVector().getZ() +
+                specular.getVector().getZ(), 1), 0);
+        return new Pixel(new Color(newX, newY, newZ));
+    }
+
     private Pixel getColorOfClosestShape(ArrayList<Double> distancesOfShapes, ArrayList<Shape> shapes)
     {
         // add illumination equation for the first two. do not put reflection rays here. 

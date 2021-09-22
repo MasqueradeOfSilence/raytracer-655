@@ -130,6 +130,7 @@ public class Raytracer
 
     private Pixel getColorOfClosestShape(ArrayList<Double> distancesOfShapes, ArrayList<Shape> shapes)
     {
+        // add illumination equation for the first two. do not put reflection rays here. 
         int minDistance = distancesOfShapes.indexOf(Collections.min(distancesOfShapes));
         Shape closestShape = shapes.get(minDistance);
         if (closestShape.getClass().toString().contains("Sphere"))

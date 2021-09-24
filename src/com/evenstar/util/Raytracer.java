@@ -4,9 +4,14 @@ import com.evenstar.model.Camera;
 import com.evenstar.model.PPMImage;
 import com.evenstar.model.Ray;
 import com.evenstar.model.Scene;
+import com.evenstar.model.physics.Intersector;
+import com.evenstar.model.physics.Lighter;
+import com.evenstar.model.physics.Shadower;
 import com.evenstar.model.shapes.Shape;
 import com.evenstar.model.shapes.Sphere;
 import com.evenstar.model.shapes.Triangle;
+import com.evenstar.model.textures.Diffuse;
+import com.evenstar.model.textures.Material;
 import com.evenstar.model.vectors.*;
 
 import java.util.ArrayList;
@@ -16,10 +21,16 @@ public class Raytracer
 {
     private final PPMRenderer ppmRenderer;
     private Scene scene;
+    private final Lighter lighter;
+    private final Shadower shadower;
+    private final Intersector intersector;
 
     public Raytracer(Scene scene)
     {
-        ppmRenderer = new PPMRenderer();
+        this.ppmRenderer = new PPMRenderer();
+        this.lighter = new Lighter();
+        this.shadower = new Shadower();
+        this.intersector = new Intersector();
         this.scene = scene;
     }
 
@@ -36,91 +47,12 @@ public class Raytracer
         return "output/" + fileName.split("\\.")[0] + ".ppm";
     }
 
-    private boolean parallel(Vector3D normal, Direction direction)
-    {
-        return Math.abs(VectorOperations.dotProduct(normal, direction.getVector())) > 0.000001;
-    }
-
-    private boolean isHitPointInsideOfTriangle(Vector3D hitPoint, Triangle triangle, Vector3D normal)
-    {
-        Vector3D edge1 = VectorOperations.subtractVectors(triangle.getVertex2().getVector(),
-                triangle.getVertex1().getVector());
-        Vector3D edge2 = VectorOperations.subtractVectors(triangle.getVertex3().getVector(),
-                triangle.getVertex2().getVector());
-        Vector3D edge3 = VectorOperations.subtractVectors(triangle.getVertex1().getVector(),
-                triangle.getVertex3().getVector());
-        Vector3D C1 = VectorOperations.subtractVectors(hitPoint, triangle.getVertex1().getVector());
-        Vector3D C2 = VectorOperations.subtractVectors(hitPoint, triangle.getVertex2().getVector());
-        Vector3D C3 = VectorOperations.subtractVectors(hitPoint, triangle.getVertex3().getVector());
-        return VectorOperations.dotProduct(normal, VectorOperations.crossProduct(edge1, C1)) > 0 &&
-                VectorOperations.dotProduct(normal, VectorOperations.crossProduct(edge2, C2)) > 0 &&
-                VectorOperations.dotProduct(normal, VectorOperations.crossProduct(edge3, C3)) > 0;
-    }
-
-    private double triangleIntersection(Ray ray, Triangle triangle)
-    {
-        Vector3D ab = VectorOperations.subtractVectors(triangle.getVertex2().getVector(),
-                triangle.getVertex1().getVector());
-        Vector3D ac = VectorOperations.subtractVectors(triangle.getVertex3().getVector(),
-                triangle.getVertex1().getVector());
-        Vector3D normal = VectorOperations.crossProduct(ab, ac);
-        normal.normalize();
-        if (parallel(normal, ray.getDirection()))
-        {
-            double D = -VectorOperations.dotProduct(normal, triangle.getVertex1().getVector());
-            double t = -(VectorOperations.dotProduct(normal, ray.getOrigin().getVector()) + D) /
-                    VectorOperations.dotProduct(normal, ray.getDirection().getVector());
-            if (t < 0)
-            {
-                Vector3D hitPoint = VectorOperations.addVectors(ray.getOrigin().getVector(),
-                        VectorOperations.multiplyByScalar(ray.getDirection().getVector(), t));
-                if (isHitPointInsideOfTriangle(hitPoint, triangle, normal))
-                {
-                    return VectorOperations.distance(ray.getOrigin().getVector(), hitPoint);
-                }
-            }
-        }
-        return 100000000;
-    }
-
-    private double sphereIntersection(Ray ray, Sphere sphere)
-    {
-        Vector3D originToCenter = VectorOperations.subtractVectors(ray.getOrigin().getVector(),
-                sphere.getCenter().getVector());
-        double a = VectorOperations.dotProduct(ray.getDirection().getVector(),
-                ray.getDirection().getVector());
-        double b = 2.0 * VectorOperations.dotProduct(originToCenter, ray.getDirection().getVector());
-        double c = VectorOperations.dotProduct(originToCenter, originToCenter) -
-                (sphere.getRadius() * sphere.getRadius());
-        double discriminant = Math.pow(b, 2) - (4 * a * c);
-        if (discriminant < 0.0)
-        {
-            return 100000000;
-        }
-        else
-        {
-            return (-b - Math.sqrt(discriminant)) / (2.0 * a);
-        }
-    }
-
-    private double intersects(Ray ray, Shape shape)
-    {
-        if (shape.getClass().toString().contains("Triangle"))
-        {
-            return this.triangleIntersection(ray, (Triangle) shape);
-        }
-        else
-        {
-            return this.sphereIntersection(ray, (Sphere) shape);
-        }
-    }
-
     private boolean allMisses(ArrayList<Double> distancesOfShapes)
     {
         boolean allMisses = true;
         for (Double distancesOfShape : distancesOfShapes)
         {
-            if (distancesOfShape != 100000000) {
+            if (distancesOfShape != Constants.NO_INTERSECTION) {
                 allMisses = false;
                 break;
             }
@@ -128,49 +60,44 @@ public class Raytracer
         return allMisses;
     }
 
-    private Color computeAmbient()
-    {
-        return null;
-    }
-
-    private Color computeDiffuse()
-    {
-        return null;
-    }
-
-    private Color computeSpecular(Vector3D normal, Direction directionToLight)
-    {
-        return null;
-    }
-
-    private Pixel computeIlluminationEquation(Color ambient, Color diffuse, Color specular)
-    {
-        double newX = Math.max(Math.min(ambient.getVector().getX() + diffuse.getVector().getX() +
-                specular.getVector().getX(), 1), 0);
-        double newY = Math.max(Math.min(ambient.getVector().getY() + diffuse.getVector().getY() +
-                specular.getVector().getY(), 1), 0);
-        double newZ = Math.max(Math.min(ambient.getVector().getZ() + diffuse.getVector().getZ() +
-                specular.getVector().getZ(), 1), 0);
-        return new Pixel(new Color(newX, newY, newZ));
-    }
-
-    private Pixel getColorOfClosestShape(ArrayList<Double> distancesOfShapes, ArrayList<Shape> shapes)
+    private Pixel getColorOfClosestShape(ArrayList<Double> distancesOfShapes, ArrayList<Shape> shapes, Ray ray)
     {
         // add illumination equation for the first two. do not put reflection rays here. 
         int minDistance = distancesOfShapes.indexOf(Collections.min(distancesOfShapes));
         Shape closestShape = shapes.get(minDistance);
-        if (closestShape.getClass().toString().contains("Sphere"))
+        if (ClassIdentifier.isSphere(closestShape))
         {
             Sphere sphere = (Sphere) closestShape;
+            if (ClassIdentifier.isDiffuse(sphere.getMaterial()))
+            {
+                if (this.shadower.isInShadow(sphere))
+                {
+                    return new Pixel(this.scene.getAmbientLight().getLightColor());
+                }
+                // will eventually iterate through all lights here
+                return this.lighter.getFinalColorDiffuse(new Color(sphere.getMaterial().getVector()), sphere.getHitPair().getNormal(),
+                        scene.getDirectionalLight(), (Diffuse)sphere.getMaterial(), sphere.getHitPair().getHitPoint(), ray, this.scene);
+            }
+            // specular material -- will need reflections
             return new Pixel(sphere.getMaterial().getVector());
         }
-        else if (closestShape.getClass().toString().contains("Triangle"))
+        else if (ClassIdentifier.isTriangle(closestShape))
         {
             Triangle triangle = (Triangle) closestShape;
+            if (ClassIdentifier.isDiffuse(triangle.getMaterial()))
+            {
+                if (this.shadower.isInShadow(triangle))
+                {
+                    return new Pixel(this.scene.getAmbientLight().getLightColor());
+                }
+                return this.lighter.getFinalColorDiffuse(new Color(triangle.getMaterial().getVector()), triangle.getHitPair().getNormal(),
+                        scene.getDirectionalLight(), (Diffuse)triangle.getMaterial(), triangle.getHitPair().getHitPoint(), ray, this.scene);
+            }
             return new Pixel(triangle.getMaterial().getVector());
         }
         else
         {
+            // specular material -- will need reflections
             System.out.println("Shape not implemented yet. Returning background color");
             return new Pixel(this.scene.getBackgroundColor());
         }
@@ -180,9 +107,18 @@ public class Raytracer
     {
         ArrayList<Shape> shapes = this.scene.getShapes();
         ArrayList<Double> distancesOfShapes = new ArrayList<>();
-        for (Shape currentShape : shapes)
+        for (int i = 0; i < shapes.size(); i++)
         {
-            double intersectionDistance = intersects(ray, currentShape);
+            Shape currentShape = shapes.get(i);
+            double intersectionDistance = this.intersector.intersects(ray, currentShape);
+            if (ClassIdentifier.isSphere(currentShape))
+            {
+                shapes.set(i, this.intersector.setHitPointSphere(intersectionDistance, ray, (Sphere) currentShape));
+            }
+            else if (ClassIdentifier.isTriangle(currentShape))
+            {
+                shapes.set(i, this.intersector.setHitPointTriangle(intersectionDistance, ray, (Triangle) currentShape));
+            }
             intersectionDistance = Math.abs(intersectionDistance);
             distancesOfShapes.add(intersectionDistance);
         }
@@ -193,7 +129,7 @@ public class Raytracer
         }
         else
         {
-            return getColorOfClosestShape(distancesOfShapes, shapes);
+            return getColorOfClosestShape(distancesOfShapes, shapes, ray);
         }
     }
 

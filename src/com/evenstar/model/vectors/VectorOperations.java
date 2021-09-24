@@ -71,4 +71,12 @@ public final class VectorOperations
                 Math.pow(vector1.getY() - vector2.getY(), 2) +
                 Math.pow(vector1.getZ() - vector2.getZ(), 2));
     }
+
+    public static Vector3D multiplyVectors(Vector3D vector1, Vector3D vector2)
+    {
+        double x = vector1.getX() * vector2.getX();
+        double y = vector1.getY() * vector2.getY();
+        double z = vector1.getZ() * vector2.getZ();
+        return new Vector3D(x, y, z);
+    }
 }

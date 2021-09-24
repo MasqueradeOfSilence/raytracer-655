@@ -24,6 +24,16 @@ public class Diffuse implements Material
         return xyz;
     }
 
+    public Vector3D getSpecularHighlight()
+    {
+        return specularHighlight;
+    }
+
+    public int getPhongConstant()
+    {
+        return phongConstant;
+    }
+
     @Override
     public String toString()
     {

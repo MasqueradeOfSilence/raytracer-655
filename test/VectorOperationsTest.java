@@ -86,4 +86,13 @@ class VectorOperationsTest {
         assertEquals(distance, Math.sqrt(6));
     }
 
+    @Test
+    void multiplyVectors()
+    {
+        Vector3D vector1 = new Vector3D(1, 2, 3);
+        Vector3D vector2 = new Vector3D(2, 4, 6);
+        Vector3D product = VectorOperations.multiplyVectors(vector1, vector2);
+        assertEquals(product, new Vector3D(2, 8, 18));
+    }
+
 }

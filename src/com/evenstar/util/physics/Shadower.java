@@ -27,13 +27,18 @@ public class Shadower
         return new Point(offsetVector);
     }
 
+    private DirectionalLight reverseXDirectionOfLight(DirectionalLight directionalLight)
+    {
+        return new DirectionalLight(new Direction(-directionalLight.getDirectionToLight().getX(), directionalLight.getDirectionToLight().getY(), directionalLight.getDirectionToLight().getZ()), directionalLight.getLightColor());
+    }
+
     private Ray computeShadowRay(Point hitPoint, Light light)
     {
         if (ClassIdentifier.isDirectionalLight(light))
         {
             Point offsetOrigin = getOffsetPoint(hitPoint);
             DirectionalLight directionalLight = (DirectionalLight) light;
-            DirectionalLight newLight = new DirectionalLight(new Direction(-directionalLight.getDirectionToLight().getX(), directionalLight.getDirectionToLight().getY(), directionalLight.getDirectionToLight().getZ()), directionalLight.getLightColor());
+            DirectionalLight newLight = reverseXDirectionOfLight(directionalLight);
             return new Ray(offsetOrigin, newLight.getDirectionToLight());
         }
         return null;
@@ -59,10 +64,6 @@ public class Shadower
             if (this.intersector.intersects(shadowRay, currentShape) != Constants.NO_INTERSECTION
                 && !currentShape.equals(shape))
             {
-                if (ClassIdentifier.isTriangle(currentShape))
-                {
-                    System.out.println("I have a triangle");
-                }
                 return true;
             }
         }

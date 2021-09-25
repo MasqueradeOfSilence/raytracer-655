@@ -41,7 +41,6 @@ public class Lighter
                 light.getLightColor().getVector()));
         if (this.isDirectionalLight(light))
         {
-            // do we need to normalize anything?
             double dotProduct = VectorOperations.dotProduct(normalAtHitPoint, directionToLight.getVector());
             double max = Math.max(0, dotProduct);
             return new Color(VectorOperations.multiplyByScalar(strengthenedColor.getVector(), max));

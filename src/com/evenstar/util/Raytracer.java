@@ -4,6 +4,7 @@ import com.evenstar.model.Camera;
 import com.evenstar.model.PPMImage;
 import com.evenstar.model.Ray;
 import com.evenstar.model.Scene;
+import com.evenstar.model.lights.DirectionalLight;
 import com.evenstar.util.physics.Intersector;
 import com.evenstar.util.physics.Lighter;
 import com.evenstar.util.physics.Shadower;
@@ -61,21 +62,21 @@ public class Raytracer
 
     private Pixel getColorOfClosestShape(ArrayList<Double> distancesOfShapes, ArrayList<Shape> shapes, Ray ray)
     {
-        // add illumination equation for the first two. do not put reflection rays here. 
         int minDistance = distancesOfShapes.indexOf(Collections.min(distancesOfShapes));
         Shape closestShape = shapes.get(minDistance);
         if (ClassIdentifier.isSphere(closestShape))
         {
             Sphere sphere = (Sphere) closestShape;
-            sphere = this.intersector.setHitPointSphere(minDistance, ray, sphere);
             if (ClassIdentifier.isDiffuse(sphere.getMaterial()))
             {
-//                if (this.shadower.isInShadow(sphere.getHitPair().getHitPoint(), this.scene, sphere))
+//                if (this.shadower.isInShadow(this.scene, sphere))
 //                {
 //                    return new Pixel(this.scene.getAmbientLight().getLightColor());
 //                }
                 // will eventually iterate through all lights here
-                ray = new Ray(ray.getOrigin(), new Direction(-ray.getDirection().getX(), ray.getDirection().getY(), ray.getDirection().getZ()));
+                Pixel returnMe = this.lighter.getFinalColorDiffuse(new Color(sphere.getMaterial().getVector()), sphere.getHitPair().getNormal(),
+                        scene.getDirectionalLight(), (Diffuse)sphere.getMaterial(), sphere.getHitPair().getHitPoint().getVector(), ray, this.scene);
+                System.out.println("SPHERE PIXEL: " + returnMe.toString());
                 return this.lighter.getFinalColorDiffuse(new Color(sphere.getMaterial().getVector()), sphere.getHitPair().getNormal(),
                         scene.getDirectionalLight(), (Diffuse)sphere.getMaterial(), sphere.getHitPair().getHitPoint().getVector(), ray, this.scene);
             }
@@ -88,7 +89,7 @@ public class Raytracer
             triangle = this.intersector.setHitPointTriangle(ray, triangle);
             if (ClassIdentifier.isDiffuse(triangle.getMaterial()))
             {
-                // Testing shadow for the individual pixel on the triangle
+                // Checking if individual pixel is in shadow
                 if (this.shadower.isInShadow(this.scene, triangle))
                 {
                     return new Pixel(this.scene.getAmbientLight().getLightColor());
@@ -96,11 +97,11 @@ public class Raytracer
                 return this.lighter.getFinalColorDiffuse(new Color(triangle.getMaterial().getVector()), triangle.getHitPair().getNormal(),
                         scene.getDirectionalLight(), (Diffuse)triangle.getMaterial(), triangle.getHitPair().getHitPoint().getVector(), ray, this.scene);
             }
+            // specular material -- will need reflections
             return new Pixel(triangle.getMaterial().getVector());
         }
         else
         {
-            // specular material -- will need reflections
             System.out.println("Shape not implemented yet. Returning background color");
             return new Pixel(this.scene.getBackgroundColor());
         }
@@ -114,7 +115,11 @@ public class Raytracer
         {
             Shape currentShape = shapes.get(i);
             double intersectionDistance = this.intersector.intersects(ray, currentShape);
-            intersectionDistance = Math.abs(intersectionDistance);
+            if (ClassIdentifier.isSphere(currentShape))
+            {
+                shapes.set(i, this.intersector.setHitPointSphere(intersectionDistance, ray, (Sphere) currentShape));
+            }
+//            intersectionDistance = Math.abs(intersectionDistance);
             distancesOfShapes.add(intersectionDistance);
         }
         assert (shapes.size() == distancesOfShapes.size());

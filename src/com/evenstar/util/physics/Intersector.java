@@ -84,6 +84,17 @@ public class Intersector
         }
         else
         {
+//            double numerator = -b - Math.sqrt(discriminant);
+//            if (numerator > 0.0)
+//            {
+//                return numerator / (2.0 * a);
+//            }
+//            numerator = -b + Math.sqrt(discriminant);
+//            if (numerator > 0.0)
+//            {
+//                return numerator / (2.0 * a);
+//            }
+//            return Constants.NO_INTERSECTION;
             double t0 = (-b - Math.sqrt(discriminant)) / (2.0 * a);
             double t1 = (-b + Math.sqrt(discriminant)) / (2.0 * a);
             if (t1 > 0)

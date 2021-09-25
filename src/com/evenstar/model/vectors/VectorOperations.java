@@ -87,4 +87,12 @@ public final class VectorOperations
         double z = vector.getZ() + scalar;
         return new Vector3D(x, y, z);
     }
+
+    public static Vector3D absoluteValue(Vector3D vector)
+    {
+        double x = Math.abs(vector.getX());
+        double y = Math.abs(vector.getY());
+        double z = Math.abs(vector.getZ());
+        return new Vector3D(x, y, z);
+    }
 }

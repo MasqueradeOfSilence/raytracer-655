@@ -103,4 +103,12 @@ class VectorOperationsTest {
         assertEquals(offset, new Vector3D(3, 3, 3));
     }
 
+    @Test
+    void absoluteValue()
+    {
+        Vector3D vector = new Vector3D(-1, -2, 6);
+        Vector3D absoluteValue = VectorOperations.absoluteValue(vector);
+        assertEquals(absoluteValue, new Vector3D(1, 2, 6));
+    }
+
 }

@@ -80,14 +80,6 @@ public class Lighter
         return new Pixel(new Color(newX, newY, newZ));
     }
 
-    private Pixel ambientAndDiffuseOnly(Color ambient, Color diffuse)
-    {
-        double newX = Math.max(Math.min(ambient.getVector().getX() + diffuse.getVector().getX(), 1), 0);
-        double newY = Math.max(Math.min(ambient.getVector().getY() + diffuse.getVector().getY(), 1), 0);
-        double newZ = Math.max(Math.min(ambient.getVector().getZ() + diffuse.getVector().getZ(), 1), 0);
-        return new Pixel(new Color(newX, newY, newZ));
-    }
-
     public Pixel getFinalColorDiffuse(Color baseColor, Vector3D normalAtHitPoint, Light light, Diffuse diffuseMaterial,
                                        Vector3D hitPoint, Ray ray, Scene scene)
     {
@@ -99,6 +91,5 @@ public class Lighter
         Color specular = computeSpecular(normalAtHitPoint, directionToLight,
                 Constants.DEFAULT_COEFFICIENT, diffuseMaterial, hitPoint, ray);
         return this.phongLightingModel(ambient, diffuse, specular);
-        //return this.ambientAndDiffuseOnly(ambient, diffuse);
     }
 }

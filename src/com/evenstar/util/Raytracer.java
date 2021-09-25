@@ -67,16 +67,18 @@ public class Raytracer
         if (ClassIdentifier.isSphere(closestShape))
         {
             Sphere sphere = (Sphere) closestShape;
-//            if (ClassIdentifier.isDiffuse(sphere.getMaterial()))
-//            {
+            sphere = this.intersector.setHitPointSphere(minDistance, ray, sphere);
+            if (ClassIdentifier.isDiffuse(sphere.getMaterial()))
+            {
 //                if (this.shadower.isInShadow(sphere.getHitPair().getHitPoint(), this.scene, sphere))
 //                {
 //                    return new Pixel(this.scene.getAmbientLight().getLightColor());
 //                }
-//                // will eventually iterate through all lights here
-//                return this.lighter.getFinalColorDiffuse(new Color(sphere.getMaterial().getVector()), sphere.getHitPair().getNormal(),
-//                        scene.getDirectionalLight(), (Diffuse)sphere.getMaterial(), sphere.getHitPair().getHitPoint().getVector(), ray, this.scene);
-//            }
+                // will eventually iterate through all lights here
+                ray = new Ray(ray.getOrigin(), new Direction(-ray.getDirection().getX(), ray.getDirection().getY(), ray.getDirection().getZ()));
+                return this.lighter.getFinalColorDiffuse(new Color(sphere.getMaterial().getVector()), sphere.getHitPair().getNormal(),
+                        scene.getDirectionalLight(), (Diffuse)sphere.getMaterial(), sphere.getHitPair().getHitPoint().getVector(), ray, this.scene);
+            }
             // specular material -- will need reflections
             return new Pixel(sphere.getMaterial().getVector());
         }
@@ -112,14 +114,6 @@ public class Raytracer
         {
             Shape currentShape = shapes.get(i);
             double intersectionDistance = this.intersector.intersects(ray, currentShape);
-//            if (ClassIdentifier.isSphere(currentShape))
-//            {
-//                shapes.set(i, this.intersector.setHitPointSphere(intersectionDistance, ray, (Sphere) currentShape));
-//            }
-//            else if (ClassIdentifier.isTriangle(currentShape))
-//            {
-//                shapes.set(i, this.intersector.setHitPointTriangle(ray, (Triangle) currentShape));
-//            }
             intersectionDistance = Math.abs(intersectionDistance);
             distancesOfShapes.add(intersectionDistance);
         }

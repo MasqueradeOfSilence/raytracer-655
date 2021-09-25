@@ -37,6 +37,7 @@ public class Triangle implements Shape
         return vertex3;
     }
 
+    @Override
     public HitPair getHitPair()
     {
         return hitPair;

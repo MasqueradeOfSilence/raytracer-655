@@ -79,4 +79,12 @@ public final class VectorOperations
         double z = vector1.getZ() * vector2.getZ();
         return new Vector3D(x, y, z);
     }
+
+    public static Vector3D addScalar(Vector3D vector, double scalar)
+    {
+        double x = vector.getX() + scalar;
+        double y = vector.getY() + scalar;
+        double z = vector.getZ() + scalar;
+        return new Vector3D(x, y, z);
+    }
 }

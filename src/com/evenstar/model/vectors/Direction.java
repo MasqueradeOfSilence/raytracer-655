@@ -1,5 +1,7 @@
 package com.evenstar.model.vectors;
 
+import java.util.Objects;
+
 public class Direction
 {
     private final Vector3D point;
@@ -45,5 +47,20 @@ public class Direction
         return "Direction{" +
                 "point=" + point +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Direction direction = (Direction) o;
+        return Objects.equals(point, direction.point);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(point);
     }
 }

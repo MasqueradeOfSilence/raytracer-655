@@ -1,5 +1,6 @@
 package com.evenstar.util;
 
+import com.evenstar.model.lights.Light;
 import com.evenstar.model.shapes.Shape;
 import com.evenstar.model.textures.Material;
 
@@ -18,5 +19,10 @@ public final class ClassIdentifier
     public static boolean isSphere(Shape shape)
     {
         return shape.getClass().toString().contains("Sphere");
+    }
+
+    public static boolean isDirectionalLight(Light light)
+    {
+        return light.getClass().toString().contains("Directional");
     }
 }

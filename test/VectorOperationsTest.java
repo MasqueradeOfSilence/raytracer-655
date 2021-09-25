@@ -95,4 +95,12 @@ class VectorOperationsTest {
         assertEquals(product, new Vector3D(2, 8, 18));
     }
 
+    @Test
+    void addScalar()
+    {
+        Vector3D vector = new Vector3D(2, 2, 2);
+        Vector3D offset = VectorOperations.addScalar(vector, 1);
+        assertEquals(offset, new Vector3D(3, 3, 3));
+    }
+
 }

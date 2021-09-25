@@ -80,16 +80,25 @@ public class Lighter
         return new Pixel(new Color(newX, newY, newZ));
     }
 
+    private Pixel ambientAndDiffuseOnly(Color ambient, Color diffuse)
+    {
+        double newX = Math.max(Math.min(ambient.getVector().getX() + diffuse.getVector().getX(), 1), 0);
+        double newY = Math.max(Math.min(ambient.getVector().getY() + diffuse.getVector().getY(), 1), 0);
+        double newZ = Math.max(Math.min(ambient.getVector().getZ() + diffuse.getVector().getZ(), 1), 0);
+        return new Pixel(new Color(newX, newY, newZ));
+    }
+
     public Pixel getFinalColorDiffuse(Color baseColor, Vector3D normalAtHitPoint, Light light, Diffuse diffuseMaterial,
                                        Vector3D hitPoint, Ray ray, Scene scene)
     {
-        Color ambient = computeAmbient(Constants.DEFAULT_COEFFICIENT, scene);
         // Ambient lights won't have a direction, but all others will, and no ambient lights will be passed here
-        // That getter should probably return a Direction, not a Vector3D
+        Direction directionToLight = ((DirectionalLight)light).getDirectionToLight();
+        Color ambient = computeAmbient(Constants.DEFAULT_COEFFICIENT, scene);
         Color diffuse = computeDiffuse(baseColor, Constants.DEFAULT_COEFFICIENT, normalAtHitPoint, light,
-                new Direction(((DirectionalLight)light).getDirectionToLight()));
-        Color specular = computeSpecular(normalAtHitPoint, new Direction(((DirectionalLight)light).getDirectionToLight()),
+                directionToLight);
+        Color specular = computeSpecular(normalAtHitPoint, directionToLight,
                 Constants.DEFAULT_COEFFICIENT, diffuseMaterial, hitPoint, ray);
         return this.phongLightingModel(ambient, diffuse, specular);
+        //return this.ambientAndDiffuseOnly(ambient, diffuse);
     }
 }

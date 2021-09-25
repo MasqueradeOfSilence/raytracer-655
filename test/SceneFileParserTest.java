@@ -4,6 +4,7 @@ import com.evenstar.model.shapes.Sphere;
 import com.evenstar.model.shapes.Triangle;
 import com.evenstar.model.textures.Diffuse;
 import com.evenstar.model.textures.Reflective;
+import com.evenstar.model.vectors.Direction;
 import com.evenstar.model.vectors.Point;
 import com.evenstar.model.vectors.Vector3D;
 import com.evenstar.util.SceneFileParser;
@@ -29,7 +30,7 @@ public class SceneFileParserTest
         assertEquals(scene.getCamera().getLookFrom().getVector(), new Vector3D(0, 0, 1));
         assertEquals(scene.getCamera().getLookUp().getVector(), new Vector3D(0, 1, 0));
         assertEquals(scene.getCamera().getFieldOfView(), 28);
-        assertEquals(scene.getDirectionalLight().getDirectionToLight(), new Vector3D(1, 0, 0));
+        assertEquals(scene.getDirectionalLight().getDirectionToLight(), new Direction(1, 0, 0));
         assertEquals(scene.getDirectionalLight().getLightColor().getVector(), new Vector3D(1, 1, 1));
         assertEquals(scene.getAmbientLight().getLightColor().getVector(), new Vector3D(.1, .1, .1));
         assertEquals(scene.getBackgroundColor().getVector(), new Vector3D(.2, .2, .2));
@@ -57,7 +58,7 @@ public class SceneFileParserTest
         assertEquals(scene2.getCamera().getLookFrom().getVector(), new Vector3D(0, 0, 1.2));
         assertEquals(scene2.getCamera().getLookUp().getVector(), new Vector3D(0, 1, 0));
         assertEquals(scene2.getCamera().getFieldOfView(), 55);
-        assertEquals(scene2.getDirectionalLight().getDirectionToLight(), new Vector3D(0, 1, 0));
+        assertEquals(scene2.getDirectionalLight().getDirectionToLight(), new Direction(0, 1, 0));
         assertEquals(scene2.getDirectionalLight().getLightColor().getVector(), new Vector3D(1, 1, 1));
         assertEquals(scene2.getAmbientLight().getLightColor().getVector(), new Vector3D(0, 0, 0));
         assertEquals(scene2.getBackgroundColor().getVector(), new Vector3D(.2, .2, .2));

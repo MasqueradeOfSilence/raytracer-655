@@ -30,6 +30,7 @@ public class Sphere implements Shape
         return radius;
     }
 
+    @Override
     public HitPair getHitPair()
     {
         return hitPair;

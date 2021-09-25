@@ -2,7 +2,6 @@ package com.evenstar.model.lights;
 
 import com.evenstar.model.vectors.Color;
 import com.evenstar.model.vectors.Direction;
-import com.evenstar.model.vectors.Vector3D;
 
 public class DirectionalLight implements Light
 {
@@ -15,9 +14,9 @@ public class DirectionalLight implements Light
         this.lightColor = lightColor;
     }
 
-    public Vector3D getDirectionToLight()
+    public Direction getDirectionToLight()
     {
-        return direction.getVector();
+        return direction;
     }
 
     @Override

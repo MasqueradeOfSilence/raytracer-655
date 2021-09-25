@@ -11,7 +11,6 @@ import com.evenstar.model.shapes.Shape;
 import com.evenstar.model.shapes.Sphere;
 import com.evenstar.model.shapes.Triangle;
 import com.evenstar.model.textures.Diffuse;
-import com.evenstar.model.textures.Material;
 import com.evenstar.model.vectors.*;
 
 import java.util.ArrayList;
@@ -68,30 +67,32 @@ public class Raytracer
         if (ClassIdentifier.isSphere(closestShape))
         {
             Sphere sphere = (Sphere) closestShape;
-            if (ClassIdentifier.isDiffuse(sphere.getMaterial()))
-            {
-                if (this.shadower.isInShadow(sphere))
-                {
-                    return new Pixel(this.scene.getAmbientLight().getLightColor());
-                }
-                // will eventually iterate through all lights here
-                return this.lighter.getFinalColorDiffuse(new Color(sphere.getMaterial().getVector()), sphere.getHitPair().getNormal(),
-                        scene.getDirectionalLight(), (Diffuse)sphere.getMaterial(), sphere.getHitPair().getHitPoint(), ray, this.scene);
-            }
+//            if (ClassIdentifier.isDiffuse(sphere.getMaterial()))
+//            {
+//                if (this.shadower.isInShadow(sphere.getHitPair().getHitPoint(), this.scene, sphere))
+//                {
+//                    return new Pixel(this.scene.getAmbientLight().getLightColor());
+//                }
+//                // will eventually iterate through all lights here
+//                return this.lighter.getFinalColorDiffuse(new Color(sphere.getMaterial().getVector()), sphere.getHitPair().getNormal(),
+//                        scene.getDirectionalLight(), (Diffuse)sphere.getMaterial(), sphere.getHitPair().getHitPoint().getVector(), ray, this.scene);
+//            }
             // specular material -- will need reflections
             return new Pixel(sphere.getMaterial().getVector());
         }
         else if (ClassIdentifier.isTriangle(closestShape))
         {
             Triangle triangle = (Triangle) closestShape;
+            triangle = this.intersector.setHitPointTriangle(ray, triangle);
             if (ClassIdentifier.isDiffuse(triangle.getMaterial()))
             {
-                if (this.shadower.isInShadow(triangle))
+                // Testing shadow for the individual pixel on the triangle
+                if (this.shadower.isInShadow(this.scene, triangle))
                 {
                     return new Pixel(this.scene.getAmbientLight().getLightColor());
                 }
                 return this.lighter.getFinalColorDiffuse(new Color(triangle.getMaterial().getVector()), triangle.getHitPair().getNormal(),
-                        scene.getDirectionalLight(), (Diffuse)triangle.getMaterial(), triangle.getHitPair().getHitPoint(), ray, this.scene);
+                        scene.getDirectionalLight(), (Diffuse)triangle.getMaterial(), triangle.getHitPair().getHitPoint().getVector(), ray, this.scene);
             }
             return new Pixel(triangle.getMaterial().getVector());
         }
@@ -111,14 +112,14 @@ public class Raytracer
         {
             Shape currentShape = shapes.get(i);
             double intersectionDistance = this.intersector.intersects(ray, currentShape);
-            if (ClassIdentifier.isSphere(currentShape))
-            {
-                shapes.set(i, this.intersector.setHitPointSphere(intersectionDistance, ray, (Sphere) currentShape));
-            }
-            else if (ClassIdentifier.isTriangle(currentShape))
-            {
-                shapes.set(i, this.intersector.setHitPointTriangle(intersectionDistance, ray, (Triangle) currentShape));
-            }
+//            if (ClassIdentifier.isSphere(currentShape))
+//            {
+//                shapes.set(i, this.intersector.setHitPointSphere(intersectionDistance, ray, (Sphere) currentShape));
+//            }
+//            else if (ClassIdentifier.isTriangle(currentShape))
+//            {
+//                shapes.set(i, this.intersector.setHitPointTriangle(ray, (Triangle) currentShape));
+//            }
             intersectionDistance = Math.abs(intersectionDistance);
             distancesOfShapes.add(intersectionDistance);
         }

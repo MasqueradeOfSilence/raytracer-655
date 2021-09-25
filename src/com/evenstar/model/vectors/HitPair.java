@@ -2,16 +2,16 @@ package com.evenstar.model.vectors;
 
 public class HitPair
 {
-    private final Vector3D hitPoint;
+    private final Point hitPoint;
     private final Vector3D normal;
 
-    public HitPair(Vector3D hitPoint, Vector3D normal)
+    public HitPair(Point hitPoint, Vector3D normal)
     {
         this.hitPoint = hitPoint;
         this.normal = normal;
     }
 
-    public Vector3D getHitPoint()
+    public Point getHitPoint()
     {
         return hitPoint;
     }

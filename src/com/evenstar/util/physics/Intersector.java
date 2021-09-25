@@ -1,4 +1,4 @@
-package com.evenstar.model.physics;
+package com.evenstar.util.physics;
 
 import com.evenstar.model.Ray;
 import com.evenstar.model.shapes.Shape;

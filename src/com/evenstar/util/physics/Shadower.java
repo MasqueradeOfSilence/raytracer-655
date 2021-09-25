@@ -1,12 +1,10 @@
-package com.evenstar.model.physics;
+package com.evenstar.util.physics;
 
 import com.evenstar.model.Ray;
 import com.evenstar.model.Scene;
 import com.evenstar.model.lights.DirectionalLight;
 import com.evenstar.model.lights.Light;
 import com.evenstar.model.shapes.Shape;
-import com.evenstar.model.shapes.Sphere;
-import com.evenstar.model.shapes.Triangle;
 import com.evenstar.model.vectors.Direction;
 import com.evenstar.model.vectors.Point;
 import com.evenstar.model.vectors.Vector3D;

@@ -21,7 +21,7 @@ public class Intersector
         }
     }
 
-    private boolean parallel(Vector3D normal, Direction direction)
+    private boolean notParallel(Vector3D normal, Direction direction)
     {
         return Math.abs(VectorOperations.dotProduct(normal, direction.getVector())) > 0.000001;
     }
@@ -50,7 +50,7 @@ public class Intersector
                 triangle.getVertex1().getVector());
         Vector3D normal = VectorOperations.crossProduct(ab, ac);
         normal.normalize();
-        if (parallel(normal, ray.getDirection()))
+        if (notParallel(normal, ray.getDirection()))
         {
             double D = -VectorOperations.dotProduct(normal, triangle.getVertex1().getVector());
             double t = -(VectorOperations.dotProduct(normal, ray.getOrigin().getVector()) + D) /
@@ -117,7 +117,7 @@ public class Intersector
                 triangle.getVertex1().getVector());
         Vector3D normal = VectorOperations.crossProduct(ab, ac);
         normal.normalize();
-        if (parallel(normal, ray.getDirection()))
+        if (notParallel(normal, ray.getDirection()))
         {
             double D = -VectorOperations.dotProduct(normal, triangle.getVertex1().getVector());
             double t = -(VectorOperations.dotProduct(normal, ray.getOrigin().getVector()) + D) /

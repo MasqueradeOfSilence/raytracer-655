@@ -69,14 +69,11 @@ public class Raytracer
             Sphere sphere = (Sphere) closestShape;
             if (ClassIdentifier.isDiffuse(sphere.getMaterial()))
             {
-//                if (this.shadower.isInShadow(this.scene, sphere))
-//                {
-//                    return new Pixel(this.scene.getAmbientLight().getLightColor());
-//                }
+                if (this.shadower.isInShadow(this.scene, sphere))
+                {
+                    return new Pixel(this.scene.getAmbientLight().getLightColor());
+                }
                 // will eventually iterate through all lights here
-                Pixel returnMe = this.lighter.getFinalColorDiffuse(new Color(sphere.getMaterial().getVector()), sphere.getHitPair().getNormal(),
-                        scene.getDirectionalLight(), (Diffuse)sphere.getMaterial(), sphere.getHitPair().getHitPoint().getVector(), ray, this.scene);
-                System.out.println("SPHERE PIXEL: " + returnMe.toString());
                 return this.lighter.getFinalColorDiffuse(new Color(sphere.getMaterial().getVector()), sphere.getHitPair().getNormal(),
                         scene.getDirectionalLight(), (Diffuse)sphere.getMaterial(), sphere.getHitPair().getHitPoint().getVector(), ray, this.scene);
             }
@@ -138,15 +135,27 @@ public class Raytracer
         return 1 / Math.tan(Math.toRadians(fov));
     }
 
-    private Ray buildRay(int i, int j, int dimension, Camera camera)
+//    private Ray buildRay(int i, int j, int dimension, Camera camera)
+//    {
+//        // Modifications to make it the right orientation
+//        double x = -(((2 * (j + .5)) / dimension) - 1);
+//        double y = ((2 * (i + .5)) / dimension) - 1;
+////        double x = ((2 * (i + .5)) / dimension) - 1;
+////        double y = ((2 * (j + .5)) / dimension) - 1;
+//        double z = (computeDistanceToImagePlane(camera.getFieldOfView()));
+//        Direction rayDirection = new Direction(x, y, z);
+//        rayDirection.getVector().normalize();
+//        return new Ray(camera.getLookFrom(), rayDirection);
+//    }
+
+    public Ray buildRay(int i, int j, int dimension, Camera camera)
     {
-        // Modifications to make it the right orientation
-        double x = -(((2 * (j + .5)) / dimension) - 1);
-        double y = ((2 * (i + .5)) / dimension) - 1;
-        double z = (computeDistanceToImagePlane(camera.getFieldOfView()));
+        double x = ((2 * (i + .5)) / dimension) - 1;
+        double y = 1 - ((2 * (j + .5)) / dimension);
+        double z = computeDistanceToImagePlane(camera.getFieldOfView());
         Direction rayDirection = new Direction(x, y, z);
-        rayDirection.getVector().normalize();
-        return new Ray(camera.getLookFrom(), rayDirection);
+        Point rayOrigin = camera.getLookFrom();
+        return new Ray(rayOrigin, rayDirection);
     }
 
     private PPMImage shootRayAtEachPixelAndLightIt(int dimension, PPMImage image)

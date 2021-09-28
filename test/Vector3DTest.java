@@ -1,5 +1,4 @@
 import com.evenstar.model.vectors.Vector3D;
-import com.evenstar.model.vectors.VectorOperations;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

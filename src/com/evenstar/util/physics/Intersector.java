@@ -84,28 +84,17 @@ public class Intersector
         }
         else
         {
-//            double numerator = -b - Math.sqrt(discriminant);
-//            if (numerator > 0.0)
-//            {
-//                return numerator / (2.0 * a);
-//            }
-//            numerator = -b + Math.sqrt(discriminant);
-//            if (numerator > 0.0)
-//            {
-//                return numerator / (2.0 * a);
-//            }
-//            return Constants.NO_INTERSECTION;
             double t0 = (-b - Math.sqrt(discriminant)) / (2.0 * a);
             double t1 = (-b + Math.sqrt(discriminant)) / (2.0 * a);
-            if (t1 > 0)
-            {
-                return t1;
-            }
-            else if (t0 > 0)
+            if (t0 < 0)
             {
                 return t0;
             }
-            return t0;
+            else if (t1 < 0)
+            {
+                return t1;
+            }
+            return Constants.NO_INTERSECTION;
         }
     }
 
@@ -135,10 +124,10 @@ public class Intersector
         return triangle;
     }
 
-    public Sphere setHitPointSphere(double whereHit, Ray ray, Sphere sphere)
+    public Sphere setHitPointSphere(double distanceToHitPoint, Ray ray, Sphere sphere)
     {
         Vector3D hitPoint = VectorOperations.addVectors(ray.getOrigin().getVector(),
-                VectorOperations.multiplyByScalar(ray.getDirection().getVector(), whereHit));
+                VectorOperations.multiplyByScalar(ray.getDirection().getVector(), distanceToHitPoint));
         double normalX = (hitPoint.getX() - sphere.getCenter().getX()) / sphere.getRadius();
         double normalY = (hitPoint.getY() - sphere.getCenter().getY()) / sphere.getRadius();
         double normalZ = (hitPoint.getZ() - sphere.getCenter().getZ()) / sphere.getRadius();

@@ -46,8 +46,6 @@ public class Shadower
 
     public boolean isInShadow(Scene scene, Shape shape)
     {
-        // should I use hit point or normal?
-        // normal = fully black, hit point = no color at all
         Ray shadowRay = this.computeShadowRay(shape.getHitPair().getHitPoint(), scene.getDirectionalLight());
         if (shadowRay == null)
         {
@@ -57,10 +55,6 @@ public class Shadower
         for (int i = 0; i < scene.getShapes().size(); i++)
         {
             Shape currentShape = scene.getShapes().get(i);
-            if (ClassIdentifier.isSphere(currentShape))
-            {
-                continue; // delete this
-            }
             if (this.intersector.intersects(shadowRay, currentShape) != Constants.NO_INTERSECTION
                 && !currentShape.equals(shape))
             {

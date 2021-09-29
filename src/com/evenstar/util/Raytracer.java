@@ -130,20 +130,25 @@ public class Raytracer
         }
     }
 
-    private Color colorShape(Shape shape)
+    private Color colorShape(Hit hit, Ray ray)
     {
+        Shape shape = hit.getCorrespondingShape();
         if (ClassIdentifier.isSphere(shape))
         {
             Sphere sphere = (Sphere) shape;
             if (ClassIdentifier.isDiffuse(sphere.getMaterial()))
             {
-                return new Color(sphere.getMaterial().getVector());
+                SphereNormal sphereNormal = new SphereNormal(hit.getHitPoint(), sphere.getCenter());
+                return this.lighter.getFinalColor(new Color(sphere.getMaterial().getVector()),
+                        sphereNormal.getVector(), this.scene.getDirectionalLight(), (Diffuse)sphere.getMaterial(),
+                        hit.getHitPoint().getVector(), ray, this.scene);
             }
+            return new Color(sphere.getMaterial().getVector());
         }
         return new Color(0, 0, 0);
     }
 
-    private Shape getClosestShape(ArrayList<Hit> hits)
+    private Hit getClosestHit(ArrayList<Hit> hits)
     {
         assert (hits.size() > 0);
         Hit closestHit = hits.get(0);
@@ -155,7 +160,7 @@ public class Raytracer
                 closestHit = currentHit;
             }
         }
-        return closestHit.getCorrespondingShape();
+        return closestHit;
     }
 
     private boolean nothingHit(ArrayList<Hit> distancesFromRayToShapes)
@@ -171,14 +176,14 @@ public class Raytracer
         {
             return new Pixel(backgroundColor);
         }
-        Shape closest = getClosestShape(rayShapeHits);
-        return new Pixel(this.colorShape(closest));
+        Hit closest = getClosestHit(rayShapeHits);
+        return new Pixel(this.colorShape(closest, ray));
     }
 
     private double computeDistanceToImagePlane(double fov)
     {
-        // Negative due to graphics standard. The .15 is a magic number to move away from the image plane
-        return -(1 / Math.tan(Math.toRadians(fov))) - .15;
+        // Negative due to graphics standard. The .12 is a magic number to move away from the image plane
+        return -(1 / Math.tan(Math.toRadians(fov))) - .12;
     }
 
 //    private Ray buildRay(int i, int j, int dimension, Camera camera)

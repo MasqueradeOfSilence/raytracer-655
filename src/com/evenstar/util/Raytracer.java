@@ -4,7 +4,7 @@ import com.evenstar.model.Camera;
 import com.evenstar.model.PPMImage;
 import com.evenstar.model.Ray;
 import com.evenstar.model.Scene;
-import com.evenstar.model.lights.DirectionalLight;
+import com.evenstar.model.physics.Hit;
 import com.evenstar.util.physics.Intersector;
 import com.evenstar.util.physics.Lighter;
 import com.evenstar.util.physics.Shadower;
@@ -130,9 +130,55 @@ public class Raytracer
         }
     }
 
+    private Color colorShape(Shape shape)
+    {
+        if (ClassIdentifier.isSphere(shape))
+        {
+            Sphere sphere = (Sphere) shape;
+            if (ClassIdentifier.isDiffuse(sphere.getMaterial()))
+            {
+                return new Color(sphere.getMaterial().getVector());
+            }
+        }
+        return new Color(0, 0, 0);
+    }
+
+    private Shape getClosestShape(ArrayList<Hit> hits)
+    {
+        assert (hits.size() > 0);
+        Hit closestHit = hits.get(0);
+        for (int i = 1; i < hits.size(); i++)
+        {
+            Hit currentHit = hits.get(i);
+            if (currentHit.getDistanceToRay() < closestHit.getDistanceToRay())
+            {
+                closestHit = currentHit;
+            }
+        }
+        return closestHit.getCorrespondingShape();
+    }
+
+    private boolean nothingHit(ArrayList<Hit> distancesFromRayToShapes)
+    {
+        return distancesFromRayToShapes.size() == 0;
+    }
+
+    // The NEW pixel color algorithm! Making it public to unit-test it
+    public Pixel computeColorOfPixel(Ray ray, Color backgroundColor)
+    {
+        ArrayList<Hit> rayShapeHits = this.intersector.computeRayShapeHits(ray, this.scene.getShapes());
+        if (this.nothingHit(rayShapeHits))
+        {
+            return new Pixel(backgroundColor);
+        }
+        Shape closest = getClosestShape(rayShapeHits);
+        return new Pixel(this.colorShape(closest));
+    }
+
     private double computeDistanceToImagePlane(double fov)
     {
-        return 1 / Math.tan(Math.toRadians(fov));
+        // Negative due to graphics standard
+        return -(1 / Math.tan(Math.toRadians(fov)));
     }
 
 //    private Ray buildRay(int i, int j, int dimension, Camera camera)
@@ -154,18 +200,24 @@ public class Raytracer
         double y = 1 - ((2 * (j + .5)) / dimension);
         double z = computeDistanceToImagePlane(camera.getFieldOfView());
         Direction rayDirection = new Direction(x, y, z);
+        rayDirection.getVector().normalize();
         Point rayOrigin = camera.getLookFrom();
         return new Ray(rayOrigin, rayDirection);
     }
 
     private PPMImage shootRayAtEachPixelAndLightIt(int dimension, PPMImage image)
     {
+//        Camera camera = scene.getCamera();
+//        camera.setLookFrom(new Point(camera.getLookFrom().getX(), camera.getLookFrom().getY(), -camera.getLookFrom().getZ()));
+//        scene.setCamera(camera);
         for (int i = 0; i < dimension; i++)
         {
             for (int j = 0; j < dimension; j++)
             {
-                Ray ray = buildRay(i, j, dimension, scene.getCamera());
-                Pixel coloredPixel = colorPixel(ray, scene.getBackgroundColor());
+                // j and i must be switched due to how a PPM is structured
+                Ray ray = buildRay(j, i, dimension, scene.getCamera());
+                // Pixel coloredPixel = colorPixel(ray, scene.getBackgroundColor());
+                Pixel coloredPixel = this.computeColorOfPixel(ray, scene.getBackgroundColor());
                 image.addPixel(coloredPixel, i, j);
             }
         }

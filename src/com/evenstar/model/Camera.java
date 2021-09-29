@@ -6,7 +6,7 @@ import com.evenstar.model.vectors.Point;
 public class Camera
 {
     private final Point lookAt;
-    private final Point lookFrom;
+    private Point lookFrom;
     private final Point lookUp;
     private final int fieldOfView;
 
@@ -47,5 +47,10 @@ public class Camera
     public int getFieldOfView()
     {
         return fieldOfView;
+    }
+
+    public void setLookFrom(Point lookFrom)
+    {
+        this.lookFrom = lookFrom;
     }
 }

@@ -1,5 +1,7 @@
 package com.evenstar.model.vectors;
 
+import java.util.Objects;
+
 public class Color
 {
     private final Vector3D rgb;
@@ -45,5 +47,20 @@ public class Color
         return "Color{" +
                 "rgb=" + rgb +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Color color = (Color) o;
+        return Objects.equals(rgb, color.rgb);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(rgb);
     }
 }

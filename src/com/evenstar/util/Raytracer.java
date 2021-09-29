@@ -177,8 +177,8 @@ public class Raytracer
 
     private double computeDistanceToImagePlane(double fov)
     {
-        // Negative due to graphics standard
-        return -(1 / Math.tan(Math.toRadians(fov)));
+        // Negative due to graphics standard. The .15 is a magic number to move away from the image plane
+        return -(1 / Math.tan(Math.toRadians(fov))) - .15;
     }
 
 //    private Ray buildRay(int i, int j, int dimension, Camera camera)
@@ -200,7 +200,12 @@ public class Raytracer
         double y = 1 - ((2 * (j + .5)) / dimension);
         double z = computeDistanceToImagePlane(camera.getFieldOfView());
         Direction rayDirection = new Direction(x, y, z);
+        //System.out.println("Direction length: " + rayDirection.getVector().length());
+//        rayDirection.getVector().adjustZ();
         rayDirection.getVector().normalize();
+        //System.out.println("The vector: " + rayDirection.getVector().toString());
+        //System.out.println("Direction length ADJUSTED: " + rayDirection.getVector().length());
+
         Point rayOrigin = camera.getLookFrom();
         return new Ray(rayOrigin, rayDirection);
     }

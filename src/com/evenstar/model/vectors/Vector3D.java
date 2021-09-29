@@ -36,6 +36,13 @@ public class Vector3D
         this.z /= length;
     }
 
+    public void adjustZ()
+    {
+       double a = this.z / (Math.sqrt(Math.abs(1 - Math.pow(this.x, 2) - Math.pow(this.y, 2))));
+       System.out.println("a: " + a);
+       this.z /= Math.abs(a);
+    }
+
     public double length()
     {
         return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2) + Math.pow(this.z, 2));

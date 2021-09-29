@@ -21,7 +21,7 @@ class RaytracerTest
                 28);
         Raytracer raytracer = new Raytracer(new Scene());
         Ray ray = raytracer.buildRay(i1, j1, dimension, camera);
-        Direction direction = new Direction(-0.998046875, 0.998046875, -1.880726465346332);
+        Direction direction = new Direction(-0.998046875, 0.998046875, -2.030726465346332);//-1.880726465346332);
         direction.getVector().normalize();
         assertEquals(ray, new Ray(new Point(0, 0, 1), direction));
     }

@@ -57,7 +57,10 @@ public class Raytracer
             {
                 if (this.shadower.isInShadow(this.scene, sphere, hit))
                 {
-                    return this.scene.getAmbientLight().getLightColor();
+                    // Tint the ambient light
+                    Vector3D combined = VectorOperations.multiplyVectors(sphere.getMaterial().getVector(),
+                            scene.getAmbientLight().getLightColor().getVector());
+                    return new Color(combined);
                 }
                 SphereNormal sphereNormal = new SphereNormal(hit.getHitPoint(), sphere.getCenter());
                 return this.lighter.getFinalColor(new Color(sphere.getMaterial().getVector()),
@@ -73,7 +76,9 @@ public class Raytracer
             {
                 if (this.shadower.isInShadow(this.scene, triangle, hit))
                 {
-                    return this.scene.getAmbientLight().getLightColor();
+                    Vector3D combined = VectorOperations.multiplyVectors(triangle.getMaterial().getVector(),
+                            scene.getAmbientLight().getLightColor().getVector());
+                    return new Color(combined);
                 }
                 Vector3D ab = VectorOperations.subtractVectors(triangle.getVertex2().getVector(),
                         triangle.getVertex1().getVector());

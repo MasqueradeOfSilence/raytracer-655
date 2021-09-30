@@ -149,6 +149,26 @@ public class Raytracer
             }
             return new Color(sphere.getMaterial().getVector());
         }
+        else if (ClassIdentifier.isTriangle(shape))
+        {
+            Triangle triangle = (Triangle) shape;
+            if (ClassIdentifier.isDiffuse(triangle.getMaterial()))
+            {
+                if (this.shadower.isInShadow(this.scene, triangle, hit))
+                {
+                    return this.scene.getAmbientLight().getLightColor();
+                }
+                Vector3D ab = VectorOperations.subtractVectors(triangle.getVertex2().getVector(),
+                        triangle.getVertex1().getVector());
+                Vector3D ac = VectorOperations.subtractVectors(triangle.getVertex3().getVector(),
+                        triangle.getVertex1().getVector());
+                TriangleNormal triangleNormal = new TriangleNormal(ab, ac);
+                return this.lighter.getFinalColor(new Color(triangle.getMaterial().getVector()),
+                        triangleNormal.getVector(), this.scene.getDirectionalLight(), (Diffuse)triangle.getMaterial(),
+                        hit.getHitPoint().getVector(), ray, this.scene);
+            }
+            return new Color(triangle.getMaterial().getVector());
+        }
         return new Color(0, 0, 0);
     }
 
@@ -156,9 +176,17 @@ public class Raytracer
     {
         assert (hits.size() > 0);
         Hit closestHit = hits.get(0);
+        if (closestHit.getCorrespondingShape().getMaterial().getVector().equals(new Vector3D(0, 0, 1)))
+        {
+            System.out.println("The blue triangle was hit");
+        }
         for (int i = 1; i < hits.size(); i++)
         {
             Hit currentHit = hits.get(i);
+            if (currentHit.getCorrespondingShape().getMaterial().getVector().equals(new Vector3D(0, 0, 1)))
+            {
+                System.out.println("the blue triangle was a hit");
+            }
             if (currentHit.getDistanceToRay() < closestHit.getDistanceToRay())
             {
                 closestHit = currentHit;
@@ -190,19 +218,6 @@ public class Raytracer
         // Negative due to graphics standard. The .12 is a magic number to move away from the image plane
         return -(1 / Math.tan(Math.toRadians(fov))) + zoom;
     }
-
-//    private Ray buildRay(int i, int j, int dimension, Camera camera)
-//    {
-//        // Modifications to make it the right orientation
-//        double x = -(((2 * (j + .5)) / dimension) - 1);
-//        double y = ((2 * (i + .5)) / dimension) - 1;
-////        double x = ((2 * (i + .5)) / dimension) - 1;
-////        double y = ((2 * (j + .5)) / dimension) - 1;
-//        double z = (computeDistanceToImagePlane(camera.getFieldOfView()));
-//        Direction rayDirection = new Direction(x, y, z);
-//        rayDirection.getVector().normalize();
-//        return new Ray(camera.getLookFrom(), rayDirection);
-//    }
 
     public Ray buildRay(int i, int j, int dimension, Camera camera)
     {

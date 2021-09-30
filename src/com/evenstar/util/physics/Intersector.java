@@ -144,6 +144,34 @@ public class Intersector
 
     // ignore everything above this comment for now
 
+    private Hit computeTriangleHit(Ray ray, Triangle triangle)
+    {
+        Vector3D ab = VectorOperations.subtractVectors(triangle.getVertex2().getVector(),
+                triangle.getVertex1().getVector());
+        Vector3D ac = VectorOperations.subtractVectors(triangle.getVertex3().getVector(),
+                triangle.getVertex1().getVector());
+        TriangleNormal normal = new TriangleNormal(ab, ac);
+        if (notParallel(normal.getVector(), ray.getDirection()))
+        {
+            double D = -VectorOperations.dotProduct(normal.getVector(), triangle.getVertex1().getVector());
+            double t = -(VectorOperations.dotProduct(normal.getVector(), ray.getOrigin().getVector()) + D) /
+                    VectorOperations.dotProduct(normal.getVector(), ray.getDirection().getVector());
+            if (t > 0)
+            {
+                Vector3D hitPoint = VectorOperations.addVectors(ray.getOrigin().getVector(),
+                        VectorOperations.multiplyByScalar(ray.getDirection().getVector(), t));
+                if (isHitPointInsideOfTriangle(hitPoint, triangle, normal.getVector()))
+                {
+                    return new Hit(new Point(hitPoint), this.computeDistance(ray.getOrigin(), new Point(hitPoint)),
+                            triangle, ray);
+                }
+            }
+        }
+        return null;
+    }
+
+    // maybe use the one above this
+
     private Vector3D computeSphereCenterToRayOrigin(Point sphereCenter, Point rayOrigin)
     {
         return VectorOperations.subtractVectors(sphereCenter.getVector(), rayOrigin.getVector());
@@ -239,6 +267,20 @@ public class Intersector
                 if (sphereHit != null)
                 {
                     hits.add(sphereHit);
+                }
+            }
+            else if (ClassIdentifier.isTriangle(current))
+            {
+                Triangle triangle = (Triangle) current;
+                Hit triangleHit = computeTriangleHit(ray, triangle);
+                if (triangleHit != null)
+                {
+                    boolean isBlueTriangle2 = triangle.getMaterial().getVector().equals(new Vector3D(0, 0, 1));
+                    if (isBlueTriangle2)
+                    {
+                        System.out.println("Blue triangle hit");
+                    }
+                    hits.add(triangleHit);
                 }
             }
         }

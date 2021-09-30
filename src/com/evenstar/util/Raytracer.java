@@ -47,89 +47,6 @@ public class Raytracer
         return "output/" + fileName.split("\\.")[0] + ".ppm";
     }
 
-    private boolean allMisses(ArrayList<Double> distancesOfShapes)
-    {
-        boolean allMisses = true;
-        for (Double distancesOfShape : distancesOfShapes)
-        {
-            if (distancesOfShape != Constants.NO_INTERSECTION) {
-                allMisses = false;
-                break;
-            }
-        }
-        return allMisses;
-    }
-
-    private Pixel getColorOfClosestShape(ArrayList<Double> distancesOfShapes, ArrayList<Shape> shapes, Ray ray)
-    {
-        int minDistance = distancesOfShapes.indexOf(Collections.min(distancesOfShapes));
-        Shape closestShape = shapes.get(minDistance);
-        if (ClassIdentifier.isSphere(closestShape))
-        {
-            Sphere sphere = (Sphere) closestShape;
-            if (ClassIdentifier.isDiffuse(sphere.getMaterial()))
-            {
-//                if (this.shadower.isInShadow(this.scene, sphere))
-//                {
-//                    return new Pixel(this.scene.getAmbientLight().getLightColor());
-//                }
-                // will eventually iterate through all lights here
-                return this.lighter.getFinalColorDiffuse(new Color(sphere.getMaterial().getVector()), sphere.getHitPair().getNormal(),
-                        scene.getDirectionalLight(), (Diffuse)sphere.getMaterial(), sphere.getHitPair().getHitPoint().getVector(), ray, this.scene);
-            }
-            // specular material -- will need reflections
-            return new Pixel(sphere.getMaterial().getVector());
-        }
-        else if (ClassIdentifier.isTriangle(closestShape))
-        {
-            Triangle triangle = (Triangle) closestShape;
-            triangle = this.intersector.setHitPointTriangle(ray, triangle);
-            if (ClassIdentifier.isDiffuse(triangle.getMaterial()))
-            {
-                // Checking if individual pixel is in shadow
-//                if (this.shadower.isInShadow(this.scene, triangle))
-//                {
-//                    return new Pixel(this.scene.getAmbientLight().getLightColor());
-//                }
-                return this.lighter.getFinalColorDiffuse(new Color(triangle.getMaterial().getVector()), triangle.getHitPair().getNormal(),
-                        scene.getDirectionalLight(), (Diffuse)triangle.getMaterial(), triangle.getHitPair().getHitPoint().getVector(), ray, this.scene);
-            }
-            // specular material -- will need reflections
-            return new Pixel(triangle.getMaterial().getVector());
-        }
-        else
-        {
-            System.out.println("Shape not implemented yet. Returning background color");
-            return new Pixel(this.scene.getBackgroundColor());
-        }
-    }
-
-    private Pixel colorPixel(Ray ray, Color backgroundColor)
-    {
-        ArrayList<Shape> shapes = this.scene.getShapes();
-        ArrayList<Double> distancesOfShapes = new ArrayList<>();
-        for (int i = 0; i < shapes.size(); i++)
-        {
-            Shape currentShape = shapes.get(i);
-            double intersectionDistance = this.intersector.intersects(ray, currentShape);
-            if (ClassIdentifier.isSphere(currentShape))
-            {
-                shapes.set(i, this.intersector.setHitPointSphere(intersectionDistance, ray, (Sphere) currentShape));
-            }
-//            intersectionDistance = Math.abs(intersectionDistance);
-            distancesOfShapes.add(intersectionDistance);
-        }
-        assert (shapes.size() == distancesOfShapes.size());
-        if (allMisses(distancesOfShapes))
-        {
-            return new Pixel(backgroundColor);
-        }
-        else
-        {
-            return getColorOfClosestShape(distancesOfShapes, shapes, ray);
-        }
-    }
-
     private Color colorShape(Hit hit, Ray ray)
     {
         Shape shape = hit.getCorrespondingShape();
@@ -176,17 +93,9 @@ public class Raytracer
     {
         assert (hits.size() > 0);
         Hit closestHit = hits.get(0);
-        if (closestHit.getCorrespondingShape().getMaterial().getVector().equals(new Vector3D(0, 0, 1)))
-        {
-            System.out.println("The blue triangle was hit");
-        }
         for (int i = 1; i < hits.size(); i++)
         {
             Hit currentHit = hits.get(i);
-            if (currentHit.getCorrespondingShape().getMaterial().getVector().equals(new Vector3D(0, 0, 1)))
-            {
-                System.out.println("the blue triangle was a hit");
-            }
             if (currentHit.getDistanceToRay() < closestHit.getDistanceToRay())
             {
                 closestHit = currentHit;
@@ -200,7 +109,6 @@ public class Raytracer
         return distancesFromRayToShapes.size() == 0;
     }
 
-    // The NEW pixel color algorithm! Making it public to unit-test it
     public Pixel computeColorOfPixel(Ray ray, Color backgroundColor)
     {
         ArrayList<Hit> rayShapeHits = this.intersector.computeRayShapeHits(ray, this.scene.getShapes());
@@ -214,9 +122,9 @@ public class Raytracer
 
     private double computeDistanceToImagePlane(double fov)
     {
-        double zoom = -.12;
-        // Negative due to graphics standard. The .12 is a magic number to move away from the image plane
-        return -(1 / Math.tan(Math.toRadians(fov))) + zoom;
+        double zoomOut = -.12;
+        // Negative due to graphics standard.
+        return -(1 / Math.tan(Math.toRadians(fov))) + zoomOut;
     }
 
     public Ray buildRay(int i, int j, int dimension, Camera camera)
@@ -238,7 +146,6 @@ public class Raytracer
             {
                 // j and i must be switched due to how a PPM is structured
                 Ray ray = buildRay(j, i, dimension, scene.getCamera());
-                // Pixel coloredPixel = colorPixel(ray, scene.getBackgroundColor());
                 Pixel coloredPixel = this.computeColorOfPixel(ray, scene.getBackgroundColor());
                 image.addPixel(coloredPixel, i, j);
             }

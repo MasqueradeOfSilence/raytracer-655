@@ -1,7 +1,6 @@
 package com.evenstar.model.shapes;
 
 import com.evenstar.model.textures.Material;
-import com.evenstar.model.vectors.HitPair;
 import com.evenstar.model.vectors.Point;
 
 import java.util.Objects;
@@ -12,7 +11,6 @@ public class Triangle implements Shape
     private final Point vertex2;
     private final Point vertex3;
     private final Material material;
-    private HitPair hitPair = null;
 
     public Triangle(Point vertex1, Point vertex2, Point vertex3, Material material)
     {
@@ -35,17 +33,6 @@ public class Triangle implements Shape
     public Point getVertex3()
     {
         return vertex3;
-    }
-
-    @Override
-    public HitPair getHitPair()
-    {
-        return hitPair;
-    }
-
-    public void setHitPair(HitPair hitPair)
-    {
-        this.hitPair = hitPair;
     }
 
     @Override

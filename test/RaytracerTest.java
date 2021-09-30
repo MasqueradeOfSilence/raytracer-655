@@ -1,6 +1,8 @@
 import com.evenstar.model.Camera;
 import com.evenstar.model.Ray;
 import com.evenstar.model.Scene;
+import com.evenstar.model.lights.AmbientLight;
+import com.evenstar.model.lights.DirectionalLight;
 import com.evenstar.model.shapes.Sphere;
 import com.evenstar.model.textures.Diffuse;
 import com.evenstar.model.vectors.*;
@@ -21,7 +23,7 @@ class RaytracerTest
                 28);
         Raytracer raytracer = new Raytracer(new Scene());
         Ray ray = raytracer.buildRay(i1, j1, dimension, camera);
-        Direction direction = new Direction(-0.998046875, 0.998046875, -2.030726465346332);//-1.880726465346332);
+        Direction direction = new Direction(-0.998046875, 0.998046875, -2.000726465346332);
         direction.getVector().normalize();
         assertEquals(ray, new Ray(new Point(0, 0, 1), direction));
     }
@@ -52,6 +54,8 @@ class RaytracerTest
         scene.addShape(greenSphere);
         scene.addShape(redSphere);
         scene.addShape(whiteSphere);
+        scene.setDirectionalLight(new DirectionalLight(new Direction(1, 0, 0), new Color(1, 1, 1)));
+        scene.setAmbientLight(new AmbientLight(new Color(.1, .1, .1)));
         Raytracer raytracer = new Raytracer(scene);
         Ray ray = raytracer.buildRay(i1, j1, dimension, camera);
         Color backgroundColor = new Color(.2, .2, .2);
@@ -62,7 +66,6 @@ class RaytracerTest
         Pixel greenColor2 = raytracer.computeColorOfPixel(ray2, backgroundColor);
         assertNotEquals(greenColor2.getColor(), backgroundColor);
         Ray ray3 = raytracer.buildRay(i3, j3, dimension, camera);
-        // Distortion case failed
         Pixel grayColor = raytracer.computeColorOfPixel(ray3, backgroundColor);
         assertEquals(grayColor.getColor(), backgroundColor);
         Ray ray4 = raytracer.buildRay(i4, j4, dimension, camera);

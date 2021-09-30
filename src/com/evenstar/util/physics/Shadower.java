@@ -4,6 +4,7 @@ import com.evenstar.model.Ray;
 import com.evenstar.model.Scene;
 import com.evenstar.model.lights.DirectionalLight;
 import com.evenstar.model.lights.Light;
+import com.evenstar.model.physics.Hit;
 import com.evenstar.model.shapes.Shape;
 import com.evenstar.model.vectors.Direction;
 import com.evenstar.model.vectors.Point;
@@ -11,6 +12,8 @@ import com.evenstar.model.vectors.Vector3D;
 import com.evenstar.model.vectors.VectorOperations;
 import com.evenstar.util.ClassIdentifier;
 import com.evenstar.util.Constants;
+
+import java.util.ArrayList;
 
 public class Shadower
 {
@@ -38,29 +41,20 @@ public class Shadower
         {
             Point offsetOrigin = getOffsetPoint(hitPoint);
             DirectionalLight directionalLight = (DirectionalLight) light;
-            DirectionalLight newLight = reverseXDirectionOfLight(directionalLight);
-            return new Ray(offsetOrigin, newLight.getDirectionToLight());
+            //DirectionalLight newLight = reverseXDirectionOfLight(directionalLight);
+            return new Ray(offsetOrigin, directionalLight.getDirectionToLight());
         }
         return null;
     }
 
-    public boolean isInShadow(Scene scene, Shape shape)
+    public boolean isInShadow(Scene scene, Shape shape, Hit hit)
     {
-        Ray shadowRay = this.computeShadowRay(shape.getHitPair().getHitPoint(), scene.getDirectionalLight());
+        Ray shadowRay = this.computeShadowRay(hit.getHitPoint(), scene.getDirectionalLight());
         if (shadowRay == null)
         {
             return false;
         }
-
-        for (int i = 0; i < scene.getShapes().size(); i++)
-        {
-            Shape currentShape = scene.getShapes().get(i);
-            if (this.intersector.intersects(shadowRay, currentShape) != Constants.NO_INTERSECTION
-                && !currentShape.equals(shape))
-            {
-                return true;
-            }
-        }
-        return false;
+        ArrayList<Hit> hits = this.intersector.computeRayShapeHits(shadowRay, scene.getShapes());
+        return hits.size() > 0;
     }
 }

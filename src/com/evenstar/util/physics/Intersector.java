@@ -199,22 +199,15 @@ public class Intersector
         if (this.sphereIsInFrontOfRay(ray.getDirection(), sphereCenterToRayOrigin))
         {
             Vector3D puv = computePUV(ray.getDirection().getVector(), sphereCenterToRayOrigin);
-//            System.out.println("PUV: " + puv.toString());
             Point qPrime = computeQPrime(ray.getOrigin(), puv);
-//            System.out.println("q': " + qPrime.toString());
             // distance from (center) to (the point at which the center projects onto the ray)
             double projectionDistance = this.computeDistance(sphere.getCenter(), qPrime);
-//            System.out.println("Sphere: " + sphere.toString());
-//            System.out.println("Projection distance " + projectionDistance);
             if (projectionDistance == sphere.getRadius())
             {
-                System.out.println("Hit case 1");
-                // Double check on this distance
                 return new Hit(qPrime, this.computeDistance(qPrime, ray.getOrigin()), sphere, ray);
             }
             else if (projectionDistance < sphere.getRadius())
             {
-                System.out.println("I hit sort of");
                 Vector3D vpc = VectorOperations.subtractVectors(sphere.getCenter().getVector(), ray.getOrigin().getVector());
                 if (vpc.length() > sphere.getRadius())
                 {
@@ -224,7 +217,6 @@ public class Intersector
                             this.distanceFromRayOriginToSphereIntersection(qPrime, ray.getOrigin(), x);
                     Point i1 = this.computeIntersectionPoint(ray.getOrigin(), ray.getDirection(),
                             distanceFromRayOriginToSphereIntersection);
-                    System.out.println("Hit case 2");
                     return new Hit(i1, distanceFromRayOriginToSphereIntersection, sphere, ray);
                 }
             }

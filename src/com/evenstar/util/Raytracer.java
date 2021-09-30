@@ -69,10 +69,10 @@ public class Raytracer
             Sphere sphere = (Sphere) closestShape;
             if (ClassIdentifier.isDiffuse(sphere.getMaterial()))
             {
-                if (this.shadower.isInShadow(this.scene, sphere))
-                {
-                    return new Pixel(this.scene.getAmbientLight().getLightColor());
-                }
+//                if (this.shadower.isInShadow(this.scene, sphere))
+//                {
+//                    return new Pixel(this.scene.getAmbientLight().getLightColor());
+//                }
                 // will eventually iterate through all lights here
                 return this.lighter.getFinalColorDiffuse(new Color(sphere.getMaterial().getVector()), sphere.getHitPair().getNormal(),
                         scene.getDirectionalLight(), (Diffuse)sphere.getMaterial(), sphere.getHitPair().getHitPoint().getVector(), ray, this.scene);
@@ -87,10 +87,10 @@ public class Raytracer
             if (ClassIdentifier.isDiffuse(triangle.getMaterial()))
             {
                 // Checking if individual pixel is in shadow
-                if (this.shadower.isInShadow(this.scene, triangle))
-                {
-                    return new Pixel(this.scene.getAmbientLight().getLightColor());
-                }
+//                if (this.shadower.isInShadow(this.scene, triangle))
+//                {
+//                    return new Pixel(this.scene.getAmbientLight().getLightColor());
+//                }
                 return this.lighter.getFinalColorDiffuse(new Color(triangle.getMaterial().getVector()), triangle.getHitPair().getNormal(),
                         scene.getDirectionalLight(), (Diffuse)triangle.getMaterial(), triangle.getHitPair().getHitPoint().getVector(), ray, this.scene);
             }
@@ -138,6 +138,10 @@ public class Raytracer
             Sphere sphere = (Sphere) shape;
             if (ClassIdentifier.isDiffuse(sphere.getMaterial()))
             {
+                if (this.shadower.isInShadow(this.scene, sphere, hit))
+                {
+                    return this.scene.getAmbientLight().getLightColor();
+                }
                 SphereNormal sphereNormal = new SphereNormal(hit.getHitPoint(), sphere.getCenter());
                 return this.lighter.getFinalColor(new Color(sphere.getMaterial().getVector()),
                         sphereNormal.getVector(), this.scene.getDirectionalLight(), (Diffuse)sphere.getMaterial(),
@@ -182,8 +186,9 @@ public class Raytracer
 
     private double computeDistanceToImagePlane(double fov)
     {
+        double zoom = -.12;
         // Negative due to graphics standard. The .12 is a magic number to move away from the image plane
-        return -(1 / Math.tan(Math.toRadians(fov))) - .12;
+        return -(1 / Math.tan(Math.toRadians(fov))) + zoom;
     }
 
 //    private Ray buildRay(int i, int j, int dimension, Camera camera)
@@ -205,21 +210,13 @@ public class Raytracer
         double y = 1 - ((2 * (j + .5)) / dimension);
         double z = computeDistanceToImagePlane(camera.getFieldOfView());
         Direction rayDirection = new Direction(x, y, z);
-        //System.out.println("Direction length: " + rayDirection.getVector().length());
-//        rayDirection.getVector().adjustZ();
         rayDirection.getVector().normalize();
-        //System.out.println("The vector: " + rayDirection.getVector().toString());
-        //System.out.println("Direction length ADJUSTED: " + rayDirection.getVector().length());
-
         Point rayOrigin = camera.getLookFrom();
         return new Ray(rayOrigin, rayDirection);
     }
 
     private PPMImage shootRayAtEachPixelAndLightIt(int dimension, PPMImage image)
     {
-//        Camera camera = scene.getCamera();
-//        camera.setLookFrom(new Point(camera.getLookFrom().getX(), camera.getLookFrom().getY(), -camera.getLookFrom().getZ()));
-//        scene.setCamera(camera);
         for (int i = 0; i < dimension; i++)
         {
             for (int j = 0; j < dimension; j++)

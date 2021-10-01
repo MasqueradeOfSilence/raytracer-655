@@ -67,6 +67,12 @@ public class Raytracer
                         sphereNormal.getVector(), this.scene.getDirectionalLight(), (Diffuse)sphere.getMaterial(),
                         hit.getHitPoint().getVector(), ray, this.scene);
             }
+            else if (ClassIdentifier.isReflective(sphere.getMaterial()))
+            {
+                System.out.println("Reflective sphere");
+                return new Color(VectorOperations.multiplyVectors(sphere.getMaterial().getVector(),
+                        this.scene.getBackgroundColor().getVector()));
+            }
             return new Color(sphere.getMaterial().getVector());
         }
         else if (ClassIdentifier.isTriangle(shape))

@@ -29,9 +29,9 @@ public class Intersector
         Vector3D C1 = VectorOperations.subtractVectors(hitPoint, triangle.getVertex1().getVector());
         Vector3D C2 = VectorOperations.subtractVectors(hitPoint, triangle.getVertex2().getVector());
         Vector3D C3 = VectorOperations.subtractVectors(hitPoint, triangle.getVertex3().getVector());
-        return VectorOperations.dotProduct(normal, VectorOperations.crossProduct(edge1, C1)) > 0 &&
-                VectorOperations.dotProduct(normal, VectorOperations.crossProduct(edge2, C2)) > 0 &&
-                VectorOperations.dotProduct(normal, VectorOperations.crossProduct(edge3, C3)) > 0;
+        return VectorOperations.dotProduct(normal, VectorOperations.crossProduct(edge1, C1)) > -0.01 &&
+                VectorOperations.dotProduct(normal, VectorOperations.crossProduct(edge2, C2)) > -0.01 &&
+                VectorOperations.dotProduct(normal, VectorOperations.crossProduct(edge3, C3)) > -0.01;
     }
 
     private Hit computeTriangleHit(Ray ray, Triangle triangle)
@@ -46,7 +46,7 @@ public class Intersector
             double D = -VectorOperations.dotProduct(normal.getVector(), triangle.getVertex1().getVector());
             double t = -(VectorOperations.dotProduct(normal.getVector(), ray.getOrigin().getVector()) + D) /
                     VectorOperations.dotProduct(normal.getVector(), ray.getDirection().getVector());
-            if (t > 0)
+            if (t > 0.001)
             {
                 Vector3D hitPoint = VectorOperations.addVectors(ray.getOrigin().getVector(),
                         VectorOperations.multiplyByScalar(ray.getDirection().getVector(), t));

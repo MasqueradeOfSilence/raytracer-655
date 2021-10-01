@@ -69,7 +69,6 @@ public class Raytracer
             }
             else if (ClassIdentifier.isReflective(sphere.getMaterial()))
             {
-                System.out.println("Reflective sphere");
                 return new Color(VectorOperations.multiplyVectors(sphere.getMaterial().getVector(),
                         this.scene.getBackgroundColor().getVector()));
             }

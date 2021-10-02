@@ -7,6 +7,7 @@ import com.evenstar.model.Scene;
 import com.evenstar.model.physics.Hit;
 import com.evenstar.util.physics.Intersector;
 import com.evenstar.util.physics.Lighter;
+import com.evenstar.util.physics.Reflector;
 import com.evenstar.util.physics.Shadower;
 import com.evenstar.model.shapes.Shape;
 import com.evenstar.model.shapes.Sphere;
@@ -24,6 +25,7 @@ public class Raytracer
     private final Lighter lighter;
     private final Shadower shadower;
     private final Intersector intersector;
+    private final Reflector reflector;
 
     public Raytracer(Scene scene)
     {
@@ -31,6 +33,7 @@ public class Raytracer
         this.lighter = new Lighter();
         this.shadower = new Shadower();
         this.intersector = new Intersector();
+        this.reflector = new Reflector();
         this.scene = scene;
     }
 
@@ -47,12 +50,13 @@ public class Raytracer
         return "output/" + fileName.split("\\.")[0] + ".ppm";
     }
 
-    private Color colorShape(Hit hit, Ray ray)
+    public Color colorShape(Hit hit, Ray ray)
     {
         Shape shape = hit.getCorrespondingShape();
         if (ClassIdentifier.isSphere(shape))
         {
             Sphere sphere = (Sphere) shape;
+            SphereNormal sphereNormal = new SphereNormal(hit.getHitPoint(), sphere.getCenter());
             if (ClassIdentifier.isDiffuse(sphere.getMaterial()))
             {
                 if (this.shadower.isInShadow(this.scene, sphere, hit))
@@ -62,15 +66,14 @@ public class Raytracer
                             scene.getAmbientLight().getLightColor().getVector());
                     return new Color(combined);
                 }
-                SphereNormal sphereNormal = new SphereNormal(hit.getHitPoint(), sphere.getCenter());
                 return this.lighter.getFinalColor(new Color(sphere.getMaterial().getVector()),
                         sphereNormal.getVector(), this.scene.getDirectionalLight(), (Diffuse)sphere.getMaterial(),
                         hit.getHitPoint().getVector(), ray, this.scene);
             }
             else if (ClassIdentifier.isReflective(sphere.getMaterial()))
             {
-                return new Color(VectorOperations.multiplyVectors(sphere.getMaterial().getVector(),
-                        this.scene.getBackgroundColor().getVector()));
+                return this.reflector.getReflectionColor(ray, sphereNormal, hit.getHitPoint(), sphere, this.scene,
+                        this.intersector, this);
             }
             return new Color(sphere.getMaterial().getVector());
         }
@@ -99,7 +102,7 @@ public class Raytracer
         return new Color(0, 0, 0);
     }
 
-    private Hit getClosestHit(ArrayList<Hit> hits)
+    public Hit getClosestHit(ArrayList<Hit> hits)
     {
         assert (hits.size() > 0);
         Hit closestHit = hits.get(0);
@@ -114,7 +117,7 @@ public class Raytracer
         return closestHit;
     }
 
-    private boolean nothingHit(ArrayList<Hit> distancesFromRayToShapes)
+    public boolean nothingHit(ArrayList<Hit> distancesFromRayToShapes)
     {
         return distancesFromRayToShapes.size() == 0;
     }

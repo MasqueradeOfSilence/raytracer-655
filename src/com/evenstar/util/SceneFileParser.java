@@ -4,6 +4,7 @@ import com.evenstar.model.Camera;
 import com.evenstar.model.Scene;
 import com.evenstar.model.lights.AmbientLight;
 import com.evenstar.model.lights.DirectionalLight;
+import com.evenstar.model.lights.PointLight;
 import com.evenstar.model.shapes.Sphere;
 import com.evenstar.model.shapes.Triangle;
 import com.evenstar.model.textures.Diffuse;
@@ -17,7 +18,7 @@ import java.util.Scanner;
 
 public class SceneFileParser
 {
-    private void skipLine(Scanner scanner)
+    private void skipWord(Scanner scanner)
     {
         scanner.next();
     }
@@ -27,16 +28,16 @@ public class SceneFileParser
         Point vertex1 = new Point(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
         Point vertex2 = new Point(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
         Point vertex3 = new Point(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
-        this.skipLine(scanner);
+        this.skipWord(scanner);
         String materialType = scanner.next();
         switch (materialType)
         {
             case "Diffuse" ->
             {
                 Vector3D xyz = new Vector3D(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
-                this.skipLine(scanner);
+                this.skipWord(scanner);
                 Vector3D specularHighlight = new Vector3D(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
-                this.skipLine(scanner);
+                this.skipWord(scanner);
                 int phongConstant = scanner.nextInt();
                 Diffuse diffuse = new Diffuse(xyz, specularHighlight, phongConstant);
                 Triangle triangle = new Triangle(vertex1, vertex2, vertex3, diffuse);
@@ -60,11 +61,11 @@ public class SceneFileParser
 
     private Scene handleSpheres(Scanner scanner, Scene scene)
     {
-        this.skipLine(scanner);
+        this.skipWord(scanner);
         Point center = new Point(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
-        this.skipLine(scanner);
+        this.skipWord(scanner);
         double radius = scanner.nextDouble();
-        this.skipLine(scanner);
+        this.skipWord(scanner);
         String materialType = scanner.next();
         Vector3D xyz = new Vector3D(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
         switch (materialType)
@@ -73,9 +74,9 @@ public class SceneFileParser
             {
                 /* It may seem confusing, but diffuse objects have specular highlights
                     and phong constants, NOT reflective objects.*/
-                this.skipLine(scanner);
+                this.skipWord(scanner);
                 Vector3D specularHighlight = new Vector3D(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
-                this.skipLine(scanner);
+                this.skipWord(scanner);
                 int phongConstant = scanner.nextInt();
                 Diffuse diffuse = new Diffuse(xyz, specularHighlight, phongConstant);
                 Sphere sphere = new Sphere(center, radius, diffuse);
@@ -92,6 +93,16 @@ public class SceneFileParser
         return scene;
     }
 
+    private Scene handlePointLights(Scanner scanner, Scene scene)
+    {
+        Point location = new Point(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
+        this.skipWord(scanner);
+        Color color = new Color(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
+        PointLight pointLight = new PointLight(color, location);
+        scene.addMiscLight(pointLight);
+        return scene;
+    }
+
     private Scene readDynamicObjects(Scanner scanner, Scene scene)
     {
         while (scanner.hasNext())
@@ -102,21 +113,22 @@ public class SceneFileParser
                 case "sphere":
                 {
                     // Reassigning "scene" because Java passes by value, not reference, and we modify it
-                    scene = handleSpheres(scanner, scene);
+                    scene = this.handleSpheres(scanner, scene);
                     break;
                 }
                 case "triangle":
                 {
                     // Reassigning "scene" because Java passes by value, not reference, and we modify it
-                    scene = handleTriangles(scanner, scene);
+                    scene = this.handleTriangles(scanner, scene);
+                    break;
+                }
+                case "pointlight":
+                {
+                    scene = this.handlePointLights(scanner, scene);
                     break;
                 }
                 //<editor-fold desc="Not yet implemented switch cases">
                 case "polygon":
-                {
-                    break;
-                }
-                case "point_light":
                 {
                     break;
                 }
@@ -154,34 +166,34 @@ public class SceneFileParser
 
     private Color getBackgroundColor(Scanner scanner)
     {
-        this.skipLine(scanner);
+        this.skipWord(scanner);
         return new Color(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
     }
 
     private AmbientLight getAmbientLight(Scanner scanner)
     {
-        this.skipLine(scanner);
+        this.skipWord(scanner);
         return new AmbientLight(new Color(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble()));
     }
 
     private DirectionalLight getDirectionalLight(Scanner scanner)
     {
-        this.skipLine(scanner);
+        this.skipWord(scanner);
         Direction directionToLight = new Direction(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
-        this.skipLine(scanner);
+        this.skipWord(scanner);
         Color directionalLightColor = new Color(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
         return new DirectionalLight(directionToLight, directionalLightColor);
     }
 
     private Camera getCameraData(Scanner scanner)
     {
-        this.skipLine(scanner);
+        this.skipWord(scanner);
         Point lookAt = new Point(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
-        this.skipLine(scanner);
+        this.skipWord(scanner);
         Point lookFrom = new Point(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
-        this.skipLine(scanner);
+        this.skipWord(scanner);
         Point lookUp = new Point(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
-        this.skipLine(scanner);
+        this.skipWord(scanner);
         int fieldOfView = scanner.nextInt();
         return new Camera(lookAt, lookFrom, lookUp, fieldOfView);
     }

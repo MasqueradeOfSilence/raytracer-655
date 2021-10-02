@@ -35,6 +35,11 @@ public class Scene
         this.miscellaneousLights = miscellaneousLights;
     }
 
+    public void addMiscLight(Light light)
+    {
+        this.miscellaneousLights.add(light);
+    }
+
     public void setBackgroundColor(Color backgroundColor)
     {
         this.backgroundColor = backgroundColor;

@@ -16,7 +16,6 @@ import com.evenstar.model.textures.Diffuse;
 import com.evenstar.model.vectors.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class Raytracer
 {

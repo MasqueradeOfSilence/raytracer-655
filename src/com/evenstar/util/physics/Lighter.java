@@ -4,8 +4,10 @@ import com.evenstar.model.Ray;
 import com.evenstar.model.Scene;
 import com.evenstar.model.lights.DirectionalLight;
 import com.evenstar.model.lights.Light;
+import com.evenstar.model.lights.PointLight;
 import com.evenstar.model.textures.Diffuse;
 import com.evenstar.model.vectors.*;
+import com.evenstar.util.ClassIdentifier;
 import com.evenstar.util.Constants;
 
 public class Lighter
@@ -81,6 +83,15 @@ public class Lighter
         return new Color(newX, newY, newZ);
     }
 
+    private Direction pointLightDirection(Point originOfPointLight, Point surfacePoint)
+    {
+        Vector3D numerator = VectorOperations.subtractVectors(originOfPointLight.getVector(),
+                surfacePoint.getVector());
+        double denominator = numerator.length();
+        Vector3D result = VectorOperations.divideByScalar(numerator, denominator);
+        return new Direction(result);
+    }
+
     public Color getFinalColor(Color baseColor, Vector3D normalAtHitPoint, Light light, Diffuse diffuseMaterial,
                                       Vector3D hitPoint, Ray ray, Scene scene)
     {
@@ -91,6 +102,21 @@ public class Lighter
                 directionToLight);
         Color specular = computeSpecular(normalAtHitPoint, directionToLight,
                 Constants.DEFAULT_COEFFICIENT, diffuseMaterial, hitPoint, ray);
+//        for (int i = 0; i < scene.getMiscellaneousLights().size(); i++)
+//        {
+//            Light currentLight = scene.getMiscellaneousLights().get(i);
+//            if (ClassIdentifier.isPointLight(currentLight))
+//            {
+//                PointLight pointLight = (PointLight) currentLight;
+//                Direction locationOfPointLight = this.pointLightDirection(pointLight.getLocation(), new Point(hitPoint));
+//                Color diffusePoint = computeDiffuse(baseColor, Constants.DEFAULT_COEFFICIENT, normalAtHitPoint, pointLight,
+//                        locationOfPointLight);
+//                Color specularPoint = computeSpecular(normalAtHitPoint, locationOfPointLight, Constants.DEFAULT_COEFFICIENT,
+//                        diffuseMaterial, hitPoint, ray);
+//                diffuse = new Color(VectorOperations.addVectors(diffuse.getVector(), diffusePoint.getVector()));
+//                specular = new Color(VectorOperations.addVectors(specular.getVector(), specularPoint.getVector()));
+//            }
+//        }
         return this.phongLighting(ambient, diffuse, specular);
     }
 }

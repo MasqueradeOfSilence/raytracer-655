@@ -30,4 +30,9 @@ public final class ClassIdentifier
     {
         return light.getClass().toString().contains("Directional");
     }
+
+    public static boolean isPointLight(Light light)
+    {
+        return light.getClass().toString().contains("Point");
+    }
 }

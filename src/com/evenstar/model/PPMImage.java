@@ -33,12 +33,17 @@ public class PPMImage
         return beginningPartOfPPM;
     }
 
+    private int antialias(int dimension)
+    {
+        return dimension / 2;
+    }
+
     public PPMImage(int width, int height)
     {
         this.width = width;
         this.height = height;
         this.prefillPixels(width);
-        beginningPartOfPPM = "P3" + "\n" + width + "\n" + height + "\n" + "255" + "\n";
+        beginningPartOfPPM = "P3" + "\n" + antialias(width) + "\n" + antialias(height) + "\n" + "255" + "\n";
     }
 
     public void addPixel(Pixel pixel, int i, int j)

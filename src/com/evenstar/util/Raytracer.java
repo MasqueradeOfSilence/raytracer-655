@@ -166,13 +166,18 @@ public class Raytracer
         return image;
     }
 
+    private int antialiasDimension(int dimension)
+    {
+        return dimension * 2;
+    }
+
     /**
      * Raytrace only currently works for square pixels
      * @param dimension: how big our image will be. Can double for antialiasing
      */
     private PPMImage raytrace(int dimension)
     {
-        // with antialiasing, look here
+        dimension = antialiasDimension(dimension);
         PPMImage renderedImage = new PPMImage(dimension, dimension);
         renderedImage = shootRayAtEachPixelAndLightIt(dimension, renderedImage);
         return renderedImage;

@@ -23,7 +23,7 @@ public class Reflector
     public Color getReflectionColor(Ray incidentRay, Normal normalAtIntersectionPoint, Point intersectionPoint, Sphere sphere,
                          Scene scene, Intersector intersector, Raytracer raytracer)
     {
-        // If I decide to make reflection recursive later, I'll start by looking here. 
+        // If I decide to make reflection recursive later, I'll start by looking here.
         Ray reflectionRay = computeReflectionRay(incidentRay, normalAtIntersectionPoint, intersectionPoint);
         Color reflectiveBackground = new Color(VectorOperations.multiplyVectors(sphere.getMaterial().getVector(),
                 scene.getBackgroundColor().getVector()));

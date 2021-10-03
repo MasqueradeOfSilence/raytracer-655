@@ -58,7 +58,7 @@ public class Raytracer
             SphereNormal sphereNormal = new SphereNormal(hit.getHitPoint(), sphere.getCenter());
             if (ClassIdentifier.isDiffuse(sphere.getMaterial()))
             {
-                if (this.shadower.isInShadow(this.scene, sphere, hit))
+                if (this.shadower.isInShadow(this.scene, hit))
                 {
                     // Tint the ambient light
                     Vector3D combined = VectorOperations.multiplyVectors(sphere.getMaterial().getVector(),
@@ -81,7 +81,7 @@ public class Raytracer
             Triangle triangle = (Triangle) shape;
             if (ClassIdentifier.isDiffuse(triangle.getMaterial()))
             {
-                if (this.shadower.isInShadow(this.scene, triangle, hit))
+                if (this.shadower.isInShadow(this.scene, hit))
                 {
                     Vector3D combined = VectorOperations.multiplyVectors(triangle.getMaterial().getVector(),
                             scene.getAmbientLight().getLightColor().getVector());
@@ -176,6 +176,8 @@ public class Raytracer
      */
     private PPMImage raytrace(int dimension)
     {
+        this.scene.getDirectionalLight().turnOff();
+        this.scene.getMiscellaneousLights().get(0).turnOff();
         dimension = antialiasDimension(dimension);
         PPMImage renderedImage = new PPMImage(dimension, dimension);
         renderedImage = shootRayAtEachPixelAndLightIt(dimension, renderedImage);

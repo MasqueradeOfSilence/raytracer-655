@@ -10,6 +10,8 @@ import com.evenstar.model.vectors.*;
 import com.evenstar.util.ClassIdentifier;
 import com.evenstar.util.Constants;
 
+import java.util.ArrayList;
+
 public class Lighter
 {
     private boolean isDirectionalLight(Light light)
@@ -83,40 +85,84 @@ public class Lighter
         return new Color(newX, newY, newZ);
     }
 
-    private Direction pointLightDirection(Point originOfPointLight, Point surfacePoint)
+    private Direction pointLightDirection(Point originOfPointLight, Point hitPoint)
     {
-        Vector3D numerator = VectorOperations.subtractVectors(originOfPointLight.getVector(),
-                surfacePoint.getVector());
-        double denominator = numerator.length();
-        Vector3D result = VectorOperations.divideByScalar(numerator, denominator);
-        return new Direction(result);
+        Vector3D minuend = VectorOperations.subtractVectors(originOfPointLight.getVector(),
+                hitPoint.getVector());
+        minuend.normalize();
+        return new Direction(minuend);
     }
 
-    public Color getFinalColor(Color baseColor, Vector3D normalAtHitPoint, Light light, Diffuse diffuseMaterial,
+    private Vector3D computeLightIntensityAtPoint(Direction lightDirection, double baseIntensity, Color lightColor)
+    {
+        Vector3D scaled = VectorOperations.multiplyByScalar(lightColor.getVector(), baseIntensity);
+        double denominator = 4 * Math.PI * lightDirection.getVector().length();
+        return VectorOperations.divideByScalar(scaled, denominator);
+    }
+
+    private boolean isInReachOfPointLight(double intersectionDistance, double distanceBetweenHitPointAndLight)
+    {
+        return Math.abs(intersectionDistance) > Math.abs(distanceBetweenHitPointAndLight);
+    }
+
+    public Color getFinalColor(Color baseColor, Vector3D normalAtHitPoint, DirectionalLight directionalLight, Diffuse diffuseMaterial,
                                       Vector3D hitPoint, Ray ray, Scene scene)
     {
-        // Ambient lights won't have a direction, but all others will, and no ambient lights will be passed here
-        Direction directionToLight = ((DirectionalLight)light).getDirectionToLight();
-        Color ambient = computeAmbient(Constants.DEFAULT_COEFFICIENT, scene, diffuseMaterial);
-        Color diffuse = computeDiffuse(baseColor, Constants.DEFAULT_COEFFICIENT, normalAtHitPoint, light,
-                directionToLight);
-        Color specular = computeSpecular(normalAtHitPoint, directionToLight,
-                Constants.DEFAULT_COEFFICIENT, diffuseMaterial, hitPoint, ray);
-//        for (int i = 0; i < scene.getMiscellaneousLights().size(); i++)
-//        {
-//            Light currentLight = scene.getMiscellaneousLights().get(i);
-//            if (ClassIdentifier.isPointLight(currentLight))
-//            {
-//                PointLight pointLight = (PointLight) currentLight;
-//                Direction locationOfPointLight = this.pointLightDirection(pointLight.getLocation(), new Point(hitPoint));
-//                Color diffusePoint = computeDiffuse(baseColor, Constants.DEFAULT_COEFFICIENT, normalAtHitPoint, pointLight,
-//                        locationOfPointLight);
-//                Color specularPoint = computeSpecular(normalAtHitPoint, locationOfPointLight, Constants.DEFAULT_COEFFICIENT,
-//                        diffuseMaterial, hitPoint, ray);
-//                diffuse = new Color(VectorOperations.addVectors(diffuse.getVector(), diffusePoint.getVector()));
-//                specular = new Color(VectorOperations.addVectors(specular.getVector(), specularPoint.getVector()));
-//            }
-//        }
-        return this.phongLighting(ambient, diffuse, specular);
+        ArrayList<Color> colorsToCombine = new ArrayList<>();
+        if (directionalLight.isOn())
+        {
+            // Ambient lights won't have a direction, but all others will, and no ambient lights will be passed here
+            Direction directionToLight = directionalLight.getDirectionToLight();
+            Color ambient = computeAmbient(Constants.DEFAULT_COEFFICIENT, scene, diffuseMaterial);
+            Color diffuse = computeDiffuse(baseColor, Constants.DEFAULT_COEFFICIENT, normalAtHitPoint, directionalLight,
+                    directionToLight);
+            Color specular = computeSpecular(normalAtHitPoint, directionToLight,
+                    Constants.DEFAULT_COEFFICIENT, diffuseMaterial, hitPoint, ray);
+            colorsToCombine.add(this.phongLighting(ambient, diffuse, specular));
+        }
+        for (int i = 0; i < scene.getMiscellaneousLights().size(); i++)
+        {
+            Light currentLight = scene.getMiscellaneousLights().get(i);
+            if (ClassIdentifier.isPointLight(currentLight) && currentLight.isOn())
+            {
+                PointLight pointLight = (PointLight) currentLight;
+                Direction directionToLight = pointLightDirection(pointLight.getLocation(), new Point(hitPoint));
+                // Distance from hit point to ray origin, vs. hit point to point light origin
+                double hitPointToRayOrigin = VectorOperations.subtractVectors(hitPoint, ray.getOrigin().getVector()).length();
+                double hitPointToPointLightOrigin = VectorOperations.subtractVectors(hitPoint, pointLight.getLocation().getVector()).length();
+                if (!isInReachOfPointLight(hitPointToRayOrigin, hitPointToPointLightOrigin))
+                {
+                    continue;
+                }
+                Color ambient = computeAmbient(Constants.DEFAULT_COEFFICIENT, scene, diffuseMaterial);
+                Color diffuse = computeDiffuse(baseColor, Constants.DEFAULT_COEFFICIENT, normalAtHitPoint, directionalLight,
+                        directionToLight);
+                Color specular = computeSpecular(normalAtHitPoint, directionToLight,
+                        Constants.DEFAULT_COEFFICIENT, diffuseMaterial, hitPoint, ray);
+                Vector3D phongVector = this.phongLighting(ambient, diffuse, specular).getVector();
+                Vector3D sum = VectorOperations.addVectors(phongVector, computeLightIntensityAtPoint(directionToLight,
+                        1, pointLight.getLightColor()));
+                Vector3D toReturn = new Vector3D(Math.min(sum.getX(), 1), Math.min(sum.getY(), 1), Math.min(sum.getZ(), 1));
+                colorsToCombine.add(new Color(toReturn));
+            }
+        }
+        if (colorsToCombine.size() > 0)
+        {
+            double runningRed = 0;
+            double runningGreen = 0;
+            double runningBlue = 0;
+            for (int i = 0; i < colorsToCombine.size(); i++)
+            {
+                Color current = colorsToCombine.get(i);
+                runningRed += current.r();
+                runningGreen += current.g();
+                runningBlue += current.b();
+            }
+            runningRed = Math.max(Math.min(runningRed, 1), 0);
+            runningGreen = Math.max(Math.min(runningGreen, 1), 0);
+            runningBlue = Math.max(Math.min(runningBlue, 1), 0);
+            return new Color(runningRed, runningGreen, runningBlue);
+        }
+        return baseColor;
     }
 }

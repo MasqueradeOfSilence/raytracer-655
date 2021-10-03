@@ -33,13 +33,13 @@ public class Shadower
 
     private Ray computeShadowRay(Point hitPoint, Light light)
     {
-        if (ClassIdentifier.isDirectionalLight(light))
+        if (ClassIdentifier.isDirectionalLight(light) && light.isOn())
         {
             Point offsetOrigin = getOffsetPoint(hitPoint);
             DirectionalLight directionalLight = (DirectionalLight) light;
             return new Ray(offsetOrigin, directionalLight.getDirectionToLight());
         }
-        else if (ClassIdentifier.isPointLight(light))
+        else if (ClassIdentifier.isPointLight(light) && light.isOn())
         {
             Point offsetOrigin = getOffsetPoint(hitPoint);
             PointLight pointLight = (PointLight) light;
@@ -48,32 +48,27 @@ public class Shadower
         return null;
     }
 
-    public boolean isInShadow(Scene scene, Shape shape, Hit hit)
+    public boolean isInShadow(Scene scene, Hit hit)
     {
         Ray shadowRay = this.computeShadowRay(hit.getHitPoint(), scene.getDirectionalLight());
-//        ArrayList<Hit> pointHits;
-//        for (int i = 0; i < scene.getMiscellaneousLights().size(); i++)
-//        {
-//            Light currentLight = scene.getMiscellaneousLights().get(i);
-//            if (ClassIdentifier.isPointLight(currentLight))
-//            {
-//                PointLight pointLight = (PointLight) currentLight;
-//                Ray shadowRayPoint = this.computeShadowRay(hit.getHitPoint(), pointLight);
-//                if (shadowRayPoint != null)
-//                {
-//                    pointHits = this.intersector.computeRayShapeHits(shadowRayPoint, scene.getShapes());
-//                    if (pointHits.size() > 0)
-//                    {
-//                        return true;
-//                    }
-//                }
-//            }
-//        }
         if (shadowRay == null)
         {
             return false;
         }
         ArrayList<Hit> hits = this.intersector.computeRayShapeHits(shadowRay, scene.getShapes());
+        for (int i = 0; i < scene.getMiscellaneousLights().size(); i++)
+        {
+            Light currentLight = scene.getMiscellaneousLights().get(i);
+            if (ClassIdentifier.isPointLight(currentLight) && currentLight.isOn())
+            {
+                Ray newShadowRay = this.computeShadowRay(hit.getHitPoint(), currentLight);
+                if (newShadowRay == null)
+                {
+                    continue;
+                }
+                hits.addAll(this.intersector.computeRayShapeHits(newShadowRay, scene.getShapes()));
+            }
+        }
         return hits.size() > 0;
     }
 }

@@ -16,6 +16,11 @@ public final class ClassIdentifier
         return material.getClass().toString().contains("Reflective");
     }
 
+    public static boolean isGlass(Material material)
+    {
+        return material.getClass().toString().contains("Glass");
+    }
+
     public static boolean isTriangle(Shape shape)
     {
         return shape.getClass().toString().contains("Triangle");

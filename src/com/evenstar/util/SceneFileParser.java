@@ -8,6 +8,7 @@ import com.evenstar.model.lights.PointLight;
 import com.evenstar.model.shapes.Sphere;
 import com.evenstar.model.shapes.Triangle;
 import com.evenstar.model.textures.Diffuse;
+import com.evenstar.model.textures.Glass;
 import com.evenstar.model.textures.Reflective;
 import com.evenstar.model.vectors.Color;
 import com.evenstar.model.vectors.Direction;
@@ -86,6 +87,12 @@ public class SceneFileParser
             {
                 Reflective reflective = new Reflective(xyz);
                 Sphere sphere = new Sphere(center, radius, reflective);
+                scene.addShape(sphere);
+            }
+            case "Glass" ->
+            {
+                Glass glass = new Glass(xyz);
+                Sphere sphere = new Sphere(center, radius, glass);
                 scene.addShape(sphere);
             }
             default -> System.err.println("Not a valid material");

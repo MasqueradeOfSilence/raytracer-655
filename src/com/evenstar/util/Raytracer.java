@@ -5,10 +5,8 @@ import com.evenstar.model.PPMImage;
 import com.evenstar.model.Ray;
 import com.evenstar.model.Scene;
 import com.evenstar.model.physics.Hit;
-import com.evenstar.util.physics.Intersector;
-import com.evenstar.util.physics.Lighter;
-import com.evenstar.util.physics.Reflector;
-import com.evenstar.util.physics.Shadower;
+import com.evenstar.model.textures.Glass;
+import com.evenstar.util.physics.*;
 import com.evenstar.model.shapes.Shape;
 import com.evenstar.model.shapes.Sphere;
 import com.evenstar.model.shapes.Triangle;
@@ -25,6 +23,7 @@ public class Raytracer
     private final Shadower shadower;
     private final Intersector intersector;
     private final Reflector reflector;
+    private final Refractor refractor;
 
     public Raytracer(Scene scene)
     {
@@ -33,6 +32,7 @@ public class Raytracer
         this.shadower = new Shadower();
         this.intersector = new Intersector();
         this.reflector = new Reflector();
+        this.refractor = new Refractor();
         this.scene = scene;
     }
 
@@ -73,6 +73,12 @@ public class Raytracer
             {
                 return this.reflector.getReflectionColor(ray, sphereNormal, hit.getHitPoint(), sphere, this.scene,
                         this.intersector, this);
+            }
+            else if (ClassIdentifier.isGlass(sphere.getMaterial()))
+            {
+                Glass glass = (Glass) sphere.getMaterial();
+                return this.refractor.getReflectedAndRefractedColor(ray, sphereNormal, glass, hit.getHitPoint(),
+                        this.intersector, this.scene, this, sphere, this.reflector);
             }
             return new Color(sphere.getMaterial().getVector());
         }
@@ -176,8 +182,8 @@ public class Raytracer
      */
     private PPMImage raytrace(int dimension)
     {
-        this.scene.getDirectionalLight().turnOff();
-        this.scene.getMiscellaneousLights().get(0).turnOff();
+//        this.scene.getDirectionalLight().turnOff();
+//        this.scene.getMiscellaneousLights().get(0).turnOff();
         dimension = antialiasDimension(dimension);
         PPMImage renderedImage = new PPMImage(dimension, dimension);
         renderedImage = shootRayAtEachPixelAndLightIt(dimension, renderedImage);

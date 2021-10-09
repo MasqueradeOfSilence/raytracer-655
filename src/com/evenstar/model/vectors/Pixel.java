@@ -14,6 +14,11 @@ public class Pixel
         this.rgb = new Color(rgb);
     }
 
+    public Pixel(double x, double y, double z)
+    {
+        this.rgb = new Color(x, y, z);
+    }
+
     public Color getColor()
     {
         return rgb;

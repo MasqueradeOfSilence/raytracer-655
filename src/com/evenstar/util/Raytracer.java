@@ -138,7 +138,7 @@ public class Raytracer
         return new Pixel(this.colorShape(closest, ray));
     }
 
-    private double computeDistanceToImagePlane(double fov)
+    public double computeDistanceToImagePlane(double fov)
     {
         double zoomOut = -.12;
         // Negative due to graphics standard.
@@ -187,6 +187,8 @@ public class Raytracer
         dimension = antialiasDimension(dimension);
         PPMImage renderedImage = new PPMImage(dimension, dimension);
         renderedImage = shootRayAtEachPixelAndLightIt(dimension, renderedImage);
+        AcceleratedRaytracer acceleratedRaytracer = new AcceleratedRaytracer();
+        renderedImage = acceleratedRaytracer.drawBoundingBoxes(renderedImage, this.scene, dimension, this);
         return renderedImage;
     }
 }

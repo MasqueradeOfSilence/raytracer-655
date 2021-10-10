@@ -104,7 +104,7 @@ public class AcceleratedRaytracer
     {
         double x = ((2 * (i + .5)) / dimension) - 1;
         double y = 1 - ((2 * (j + .5)) / dimension);
-        double z = raytracer.computeDistanceToImagePlane(camera.getFieldOfView());
+        double z = 0;
         return new Point(x, y, z);
     }
 

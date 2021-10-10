@@ -66,6 +66,11 @@ public class BoundingBox
         return vertex8;
     }
 
+    public Point getVertexWithStrippedZ(Point point)
+    {
+        return new Point(point.getX(), point.getY(), 0);
+    }
+
     @Override
     public String toString()
     {

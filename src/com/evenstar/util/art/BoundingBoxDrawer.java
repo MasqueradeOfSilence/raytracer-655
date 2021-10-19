@@ -2,11 +2,14 @@ package com.evenstar.util.art;
 
 import com.evenstar.model.Camera;
 import com.evenstar.model.PPMImage;
+import com.evenstar.model.Ray;
 import com.evenstar.model.Scene;
 import com.evenstar.model.physics.BoundingBox;
+import com.evenstar.model.vectors.Direction;
 import com.evenstar.model.vectors.Pixel;
 import com.evenstar.model.vectors.Point;
 import com.evenstar.model.vectors.VectorOperations;
+import com.evenstar.util.AcceleratedRaytracer;
 import com.evenstar.util.Raytracer;
 
 import java.util.ArrayList;
@@ -78,6 +81,21 @@ public class BoundingBoxDrawer
         z /= -z;
         return new Point(x, y, z);
     }
+    private boolean doesRayHitBox(Point current, Camera camera, ArrayList<BoundingBox> boundingBoxes)
+    {
+        AcceleratedRaytracer ar = new AcceleratedRaytracer();
+        Ray ray = new Ray(current, new Direction(camera.getLookFrom().getVector()));
+        for (int i = 0; i < boundingBoxes.size(); i++)
+        {
+            BoundingBox currentBox = boundingBoxes.get(i);
+            //doesRayIntersectBoundingBox
+            if (ar.doesRayIntersectBoundingBox(ray, currentBox))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     // It's not perfect, but it at least provides a visual of some approximation.
     public PPMImage drawBoundingBoxes(PPMImage finalImage, Scene scene, int dimension, Raytracer raytracer,
@@ -91,6 +109,10 @@ public class BoundingBoxDrawer
                 if (this.isPointOnBoundingBoxEdge(currentPoint, boundingBoxes))
                 {
                     finalImage.addPixel(new Pixel(1, 0, 0), i, j);
+                }
+                else if (this.doesRayHitBox(currentPoint, scene.getCamera(), boundingBoxes))
+                {
+                    finalImage.addPixel(new Pixel(0, 0, 1), i, j);
                 }
             }
         }

@@ -2,12 +2,14 @@ package com.evenstar.util;
 
 import com.evenstar.model.Camera;
 import com.evenstar.model.PPMImage;
+import com.evenstar.model.Ray;
 import com.evenstar.model.Scene;
 import com.evenstar.model.physics.BoundingBox;
 import com.evenstar.model.shapes.Shape;
 import com.evenstar.model.shapes.Sphere;
 import com.evenstar.model.shapes.Triangle;
 import com.evenstar.model.vectors.Point;
+import com.evenstar.model.vectors.VectorOperations;
 import com.evenstar.util.art.BoundingBoxDrawer;
 
 import java.util.ArrayList;
@@ -70,6 +72,64 @@ public class AcceleratedRaytracer
         Point vertex8 = new Point(maxX, minY, minZ);
         return new BoundingBox(vertex1, vertex2, vertex3, vertex4,
             vertex5, vertex6, vertex7, vertex8);
+    }
+
+    public boolean doesRayIntersectBoundingBox(Ray ray, BoundingBox boundingBox)
+    {
+        Point minimum = boundingBox.getVertex7();
+        Point maximum = boundingBox.getVertex2();
+        double tMinX = (minimum.getX() - ray.getOrigin().getX()) / ray.getDirection().getX();
+        double tMaxX = (maximum.getX() - ray.getOrigin().getX()) / ray.getDirection().getX();
+        if (tMinX > tMaxX)
+        {
+            double savedTMinX = tMinX;
+            double savedTMaxX = tMaxX;
+            tMinX = savedTMaxX;
+            tMaxX = savedTMinX;
+        }
+        double tMinY = (minimum.getY() - ray.getOrigin().getY()) / ray.getDirection().getY();
+        double tMaxY = (maximum.getY() - ray.getOrigin().getY()) / ray.getDirection().getY();
+        if (tMinY > tMaxY)
+        {
+            double savedTMinY = tMinY;
+            double savedTMaxY = tMaxY;
+            tMinY = savedTMaxY;
+            tMaxY = savedTMinY;
+        }
+        if ((tMinX > tMaxY) || (tMinY > tMaxX))
+        {
+            return false;
+        }
+        if (tMinY > tMinX)
+        {
+            tMinX = tMinY;
+        }
+        if (tMaxY < tMaxX)
+        {
+            tMaxX = tMaxY;
+        }
+        double tMinZ = (minimum.getZ() - ray.getOrigin().getZ()) / ray.getDirection().getZ();
+        double tMaxZ = (maximum.getZ() - ray.getOrigin().getZ()) / ray.getDirection().getZ();
+        if (tMinZ > tMaxZ)
+        {
+            double savedTMinZ = tMinZ;
+            double savedTMaxZ = tMaxZ;
+            tMinZ = savedTMaxZ;
+            tMaxZ = savedTMinZ;
+        }
+        if ((tMinX > tMaxZ) || (tMinZ > tMaxX))
+        {
+            return false;
+        }
+        if (tMinZ > tMinX)
+        {
+            tMinX = tMinZ;
+        }
+        if (tMaxZ < tMaxX)
+        {
+            tMaxX = tMaxZ;
+        }
+        return true;
     }
 
     private ArrayList<BoundingBox> computeBoundingBoxes(ArrayList<Shape> shapes)

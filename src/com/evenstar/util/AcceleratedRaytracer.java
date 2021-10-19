@@ -6,10 +6,12 @@ import com.evenstar.model.Scene;
 import com.evenstar.model.physics.BoundingBox;
 import com.evenstar.model.shapes.Shape;
 import com.evenstar.model.shapes.Sphere;
+import com.evenstar.model.shapes.Triangle;
 import com.evenstar.model.vectors.Point;
 import com.evenstar.util.art.BoundingBoxDrawer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * The AcceleratedRaytracer will implement the bounding box and median-split algorithms to speed up the raytracing.
@@ -38,6 +40,38 @@ public class AcceleratedRaytracer
                 vertex5, vertex6, vertex7, vertex8);
     }
 
+    public BoundingBox createBoundingBoxTriangle(Triangle triangle)
+    {
+        ArrayList<Double> xValues = new ArrayList<>();
+        xValues.add(triangle.getVertex1().getX());
+        xValues.add(triangle.getVertex2().getX());
+        xValues.add(triangle.getVertex3().getX());
+        double maxX = Collections.max(xValues);
+        double minX = Collections.min(xValues);
+        ArrayList<Double> yValues = new ArrayList<>();
+        yValues.add(triangle.getVertex1().getY());
+        yValues.add(triangle.getVertex2().getY());
+        yValues.add(triangle.getVertex3().getY());
+        double maxY = Collections.max(yValues);
+        double minY = Collections.min(yValues);
+        ArrayList<Double> zValues = new ArrayList<>();
+        zValues.add(triangle.getVertex1().getZ());
+        zValues.add(triangle.getVertex2().getZ());
+        zValues.add(triangle.getVertex3().getZ());
+        double maxZ = Collections.max(zValues);
+        double minZ = Collections.min(zValues);
+        Point vertex1 = new Point(minX, maxY, maxZ);
+        Point vertex2 = new Point(maxX, maxY, maxZ);
+        Point vertex3 = new Point(minX, minY, maxZ);
+        Point vertex4 = new Point(maxX, minY, maxZ);
+        Point vertex5 = new Point(minX, maxY, minZ);
+        Point vertex6 = new Point(maxX, maxY, minZ);
+        Point vertex7 = new Point(minX, minY, minZ);
+        Point vertex8 = new Point(maxX, minY, minZ);
+        return new BoundingBox(vertex1, vertex2, vertex3, vertex4,
+            vertex5, vertex6, vertex7, vertex8);
+    }
+
     private ArrayList<BoundingBox> computeBoundingBoxes(ArrayList<Shape> shapes)
     {
         ArrayList<BoundingBox> toReturn = new ArrayList<>();
@@ -50,6 +84,12 @@ public class AcceleratedRaytracer
                 toReturn.add(createBoundingBoxSphere(sphere));
                 // Print out created bounding box
                 System.out.println(createBoundingBoxSphere(sphere).toString());
+            }
+            else if (ClassIdentifier.isTriangle(current))
+            {
+                Triangle triangle = (Triangle) current;
+                toReturn.add(createBoundingBoxTriangle(triangle));
+                System.out.println(createBoundingBoxTriangle(triangle).toString());
             }
         }
         return toReturn;

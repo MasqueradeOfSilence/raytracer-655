@@ -2,6 +2,8 @@ package com.evenstar.model.physics;
 
 import com.evenstar.model.vectors.Point;
 
+import java.util.Objects;
+
 public class BoundingBox
 {
     private final Point vertex1;
@@ -66,11 +68,6 @@ public class BoundingBox
         return vertex8;
     }
 
-    public Point getVertexWithStrippedZ(Point point)
-    {
-        return new Point(point.getX(), point.getY(), 0);
-    }
-
     @Override
     public String toString()
     {
@@ -84,5 +81,27 @@ public class BoundingBox
                 ", vertex7=" + vertex7 +
                 ", vertex8=" + vertex8 +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BoundingBox that = (BoundingBox) o;
+        return Objects.equals(vertex1, that.vertex1) &&
+                Objects.equals(vertex2, that.vertex2) &&
+                Objects.equals(vertex3, that.vertex3) &&
+                Objects.equals(vertex4, that.vertex4) &&
+                Objects.equals(vertex5, that.vertex5) &&
+                Objects.equals(vertex6, that.vertex6) &&
+                Objects.equals(vertex7, that.vertex7) &&
+                Objects.equals(vertex8, that.vertex8);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(vertex1, vertex2, vertex3, vertex4, vertex5, vertex6, vertex7, vertex8);
     }
 }

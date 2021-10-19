@@ -1,5 +1,6 @@
 import com.evenstar.model.physics.BoundingBox;
 import com.evenstar.model.shapes.Sphere;
+import com.evenstar.model.shapes.Triangle;
 import com.evenstar.model.textures.Diffuse;
 import com.evenstar.model.vectors.Point;
 import com.evenstar.model.vectors.Vector3D;
@@ -76,5 +77,27 @@ class AcceleratedRaytracerTest
             Negative test cases
          */
         assertNotEquals(boundingBox.getVertex8(), new Point(-0.4, -0.3, -0.3));
+    }
+
+    @Test
+    void createBoundingBoxTriangle()
+    {
+        AcceleratedRaytracer ar = new AcceleratedRaytracer();
+        Triangle triangle1 = new Triangle(new Point(-.2, .1, .1), new Point(-.2, -.5, .2),
+                new Point(-.2, .1, -.3), new Diffuse(new Vector3D(0, 0, 0),
+                new Vector3D(0, 0, 0), 32));
+        BoundingBox boundingBox = ar.createBoundingBoxTriangle(triangle1);
+        BoundingBox comparison = new BoundingBox(new Point(-.2, .1, .2), new Point(-.2, .1, .2),
+                new Point(-.2, -.5, .2), new Point(-.2, -.5, .2), new Point(-.2, .1, -.3),
+                new Point(-.2, .1, -.3), new Point(-.2, -.5, -.3), new Point(-.2, -.5, -.3));
+        assertEquals(boundingBox, comparison);
+        Triangle triangle2 = new Triangle(new Point(.3, -.3, -.4), new Point(0, .3, -.1),
+                new Point(-.3, -.3, .2), new Diffuse(new Vector3D(0, 0, 0),
+                new Vector3D(0, 0, 0), 32));
+        boundingBox = ar.createBoundingBoxTriangle(triangle2);
+        comparison = new BoundingBox(new Point(-.3, .3, .2), new Point(.3, .3, .2),
+                new Point(-.3, -.3, .2), new Point(.3, -.3, .2), new Point(-.3, .3, -.4),
+                new Point(.3, .3, -.4), new Point(-.3, -.3, -.4), new Point(.3, -.3, -.4));
+        assertEquals(boundingBox, comparison);
     }
 }

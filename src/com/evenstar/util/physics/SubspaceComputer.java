@@ -40,6 +40,43 @@ public class SubspaceComputer
         }
     }
 
+    public boolean isVerticalSplit(char aOrB)
+    {
+        return aOrB == 'a';
+    }
+
+    public Subspace computeBottomSubspace(Subspace parent, Midpoint midpoint)
+    {
+        double maxZ = parent.getUpperLeft().getZ();
+        Point upperLeft = new Point(midpoint.getX(), midpoint.getY(), maxZ);
+        Point bottomRight = parent.getBottomRight();
+        return new Subspace(upperLeft, bottomRight);
+    }
+
+    public Subspace computeTopSubspace(Subspace parent, Midpoint midpoint)
+    {
+        double minZ = parent.getBottomRight().getZ();
+        Point upperLeft = parent.getUpperLeft();
+        Point bottomRight = new Point(parent.getBottomRight().getX(), midpoint.getY(), minZ);
+        return new Subspace(upperLeft, bottomRight);
+    }
+
+    public Subspace computeRightSubspace(Subspace parent, Midpoint midpoint)
+    {
+        double maxZ = parent.getUpperLeft().getZ();
+        Point upperLeft = new Point(midpoint.getX(), midpoint.getY(), maxZ);
+        Point bottomRight = parent.getBottomRight();
+        return new Subspace(upperLeft, bottomRight);
+    }
+
+    public Subspace computeLeftSubspace(Subspace parent, Midpoint midpoint)
+    {
+        double minZ = parent.getBottomRight().getZ();
+        Point upperLeft = parent.getUpperLeft();
+        Point lowerRight = new Point(midpoint.getX(), parent.getBottomRight().getY(), minZ);
+        return new Subspace(upperLeft, lowerRight);
+    }
+
     public double computeLargestMagnitudeExtentOfBoundingBox(BoundingBox boundingBox)
     {
         Point p1 = boundingBox.getVertex1();
@@ -109,10 +146,12 @@ public class SubspaceComputer
 
     public ArrayList<Subspace> computeSubspacesForScene(Scene scene)
     {
+        // First iteration
         ArrayList<Subspace> subspaces = new ArrayList<>();
         BoundingBox boxAroundScene = this.computeBoxAroundScene(scene);
         double largestMagnitudeExtent = this.computeLargestMagnitudeExtentOfBoundingBox(boxAroundScene);
         char winningMagnitude = this.didAOrBWin(boxAroundScene);
+
         return subspaces;
     }
 }

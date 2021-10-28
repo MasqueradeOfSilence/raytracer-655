@@ -1,5 +1,6 @@
 import com.evenstar.model.Scene;
 import com.evenstar.model.physics.BoundingBox;
+import com.evenstar.model.physics.Subspace;
 import com.evenstar.model.shapes.Sphere;
 import com.evenstar.model.shapes.Triangle;
 import com.evenstar.model.textures.Diffuse;
@@ -13,11 +14,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SubspaceComputerTest
 {
-    @Test
-    void computeBoxAroundScene()
+    private Scene computeDiffuse1Scene()
     {
-        SubspaceComputer subspaceComputer = new SubspaceComputer();
-        Scene scene = new Scene();
+        Scene diffuse1 = new Scene();
         Sphere sphere1 = new Sphere(new Point(0.35, 0, -0.1), 0.05, new Diffuse(new Vector3D(1, 1, 1),
                 new Vector3D(1, 1, 1), 4));
         Sphere sphere2 = new Sphere(new Point(0.2, 0, -0.1), 0.075, new Diffuse(new Vector3D(1, 0, 0),
@@ -30,11 +29,19 @@ class SubspaceComputerTest
         Triangle triangle2 = new Triangle(new Point(.3, -.3, -.4), new Point(0, .3, -.1),
                 new Point(-.3, -.3, .2), new Diffuse(new Vector3D(0, 0, 1),
                 new Vector3D(1, 1, 1), 32));
-        scene.addShape(sphere1);
-        scene.addShape(sphere2);
-        scene.addShape(sphere3);
-        scene.addShape(triangle1);
-        scene.addShape(triangle2);
+        diffuse1.addShape(sphere1);
+        diffuse1.addShape(sphere2);
+        diffuse1.addShape(sphere3);
+        diffuse1.addShape(triangle1);
+        diffuse1.addShape(triangle2);
+        return diffuse1;
+    }
+
+    @Test
+    void computeBoxAroundScene()
+    {
+        SubspaceComputer subspaceComputer = new SubspaceComputer();
+        Scene scene = computeDiffuse1Scene();
         BoundingBox boxAroundShape = subspaceComputer.computeBoxAroundScene(scene);
         double highestX = boxAroundShape.getVertex2().getX();
         double lowestX = boxAroundShape.getVertex7().getX();
@@ -68,24 +75,7 @@ class SubspaceComputerTest
     void computeLargestMagnitudeExtentOfBoundingBox()
     {
         SubspaceComputer subspaceComputer = new SubspaceComputer();
-        Scene scene = new Scene();
-        Sphere sphere1 = new Sphere(new Point(0.35, 0, -0.1), 0.05, new Diffuse(new Vector3D(1, 1, 1),
-                new Vector3D(1, 1, 1), 4));
-        Sphere sphere2 = new Sphere(new Point(0.2, 0, -0.1), 0.075, new Diffuse(new Vector3D(1, 0, 0),
-                new Vector3D(0.5, 1, 0.5), 32));
-        Sphere sphere3 = new Sphere(new Point(-0.6, 0, 0), 0.3, new Diffuse(new Vector3D(0, 1, 0),
-                new Vector3D(0.5, 1, 0.5), 32));
-        Triangle triangle1 = new Triangle(new Point(-.2, .1, .1), new Point(-.2, -.5, .2),
-                new Point(-.2, .1, -.3), new Diffuse(new Vector3D(1, 1, 0),
-                new Vector3D(1, 1, 1), 4));
-        Triangle triangle2 = new Triangle(new Point(.3, -.3, -.4), new Point(0, .3, -.1),
-                new Point(-.3, -.3, .2), new Diffuse(new Vector3D(0, 0, 1),
-                new Vector3D(1, 1, 1), 32));
-        scene.addShape(sphere1);
-        scene.addShape(sphere2);
-        scene.addShape(sphere3);
-        scene.addShape(triangle1);
-        scene.addShape(triangle2);
+        Scene scene = computeDiffuse1Scene();
         BoundingBox boxAroundShape = subspaceComputer.computeBoxAroundScene(scene);
         double largestMagnitudeExtent = subspaceComputer.computeLargestMagnitudeExtentOfBoundingBox(boxAroundShape);
         assertEquals(largestMagnitudeExtent, 1.3, 0.001);
@@ -105,27 +95,34 @@ class SubspaceComputerTest
     void didAOrBWin()
     {
         SubspaceComputer subspaceComputer = new SubspaceComputer();
-        Scene scene = new Scene();
-        Sphere sphere1 = new Sphere(new Point(0.35, 0, -0.1), 0.05, new Diffuse(new Vector3D(1, 1, 1),
-                new Vector3D(1, 1, 1), 4));
-        Sphere sphere2 = new Sphere(new Point(0.2, 0, -0.1), 0.075, new Diffuse(new Vector3D(1, 0, 0),
-                new Vector3D(0.5, 1, 0.5), 32));
-        Sphere sphere3 = new Sphere(new Point(-0.6, 0, 0), 0.3, new Diffuse(new Vector3D(0, 1, 0),
-                new Vector3D(0.5, 1, 0.5), 32));
-        Triangle triangle1 = new Triangle(new Point(-.2, .1, .1), new Point(-.2, -.5, .2),
-                new Point(-.2, .1, -.3), new Diffuse(new Vector3D(1, 1, 0),
-                new Vector3D(1, 1, 1), 4));
-        Triangle triangle2 = new Triangle(new Point(.3, -.3, -.4), new Point(0, .3, -.1),
-                new Point(-.3, -.3, .2), new Diffuse(new Vector3D(0, 0, 1),
-                new Vector3D(1, 1, 1), 32));
-        scene.addShape(sphere1);
-        scene.addShape(sphere2);
-        scene.addShape(sphere3);
-        scene.addShape(triangle1);
-        scene.addShape(triangle2);
+        Scene scene = computeDiffuse1Scene();
         BoundingBox boxAroundShape = subspaceComputer.computeBoxAroundScene(scene);
         char didAOrBWin = subspaceComputer.didAOrBWin(boxAroundShape);
         assertEquals(didAOrBWin, 'a');
         assertNotEquals(didAOrBWin, 'b');
+    }
+
+    @Test
+    void isVerticalSplit()
+    {
+        SubspaceComputer subspaceComputer = new SubspaceComputer();
+        Scene scene = computeDiffuse1Scene();
+        BoundingBox boxAroundShape = subspaceComputer.computeBoxAroundScene(scene);
+        char didAOrBWin = subspaceComputer.didAOrBWin(boxAroundShape);
+        boolean isVerticalSplit = subspaceComputer.isVerticalSplit(didAOrBWin);
+        assertTrue(isVerticalSplit);
+    }
+
+    @Test
+    void computeLeftSubspace()
+    {
+        SubspaceComputer subspaceComputer = new SubspaceComputer();
+        Scene scene = computeDiffuse1Scene();
+        BoundingBox boxAroundShape = subspaceComputer.computeBoxAroundScene(scene);
+        Subspace leftSubspace = subspaceComputer.computeLeftSubspace(new Subspace(boxAroundShape),
+                new Midpoint(-0.25, 0.3));
+        // really the x is -0.9
+        assertEquals(leftSubspace.getUpperLeft(), new Point(-0.8999999999999999, 0.3, 0.3));
+        assertEquals(leftSubspace.getBottomRight(), new Point(-0.25, -0.5, -0.4));
     }
 }

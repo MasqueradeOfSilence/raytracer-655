@@ -4,6 +4,7 @@ import com.evenstar.model.Scene;
 import com.evenstar.model.physics.BoundingBox;
 import com.evenstar.model.physics.Subspace;
 import com.evenstar.model.shapes.Shape;
+import com.evenstar.model.vectors.Midpoint;
 import com.evenstar.model.vectors.Point;
 import com.evenstar.util.AcceleratedRaytracer;
 
@@ -11,6 +12,44 @@ import java.util.ArrayList;
 
 public class SubspaceComputer
 {
+    public double distance2D(Point a, Point b)
+    {
+        return Math.sqrt(Math.pow(b.getX() - a.getX(), 2) + Math.pow(b.getY() - a.getY(), 2));
+    }
+
+    public Midpoint midpoint2D(Point a, Point b)
+    {
+        return new Midpoint(((a.getX() + b.getX()) / 2), ((a.getY() + b.getY()) / 2));
+    }
+
+    public char didAOrBWin(BoundingBox boundingBox)
+    {
+        Point p1 = boundingBox.getVertex1();
+        Point p2 = boundingBox.getVertex2();
+        Point p3 = boundingBox.getVertex3();
+        double a = this.distance2D(p1, p2);
+        double b = this.distance2D(p1, p3);
+        double winner = Math.max(a, b);
+        if (winner == a)
+        {
+            return 'a';
+        }
+        else
+        {
+            return 'b';
+        }
+    }
+
+    public double computeLargestMagnitudeExtentOfBoundingBox(BoundingBox boundingBox)
+    {
+        Point p1 = boundingBox.getVertex1();
+        Point p2 = boundingBox.getVertex2();
+        Point p3 = boundingBox.getVertex3();
+        double a = this.distance2D(p1, p2);
+        double b = this.distance2D(p1, p3);
+        return Math.max(a, b);
+    }
+
     public BoundingBox computeBoxAroundScene(Scene scene)
     {
         ArrayList<Shape> shapes = scene.getShapes();
@@ -72,8 +111,8 @@ public class SubspaceComputer
     {
         ArrayList<Subspace> subspaces = new ArrayList<>();
         BoundingBox boxAroundScene = this.computeBoxAroundScene(scene);
-        // delete this
-        System.out.println("Computing subspaces...");
+        double largestMagnitudeExtent = this.computeLargestMagnitudeExtentOfBoundingBox(boxAroundScene);
+        char winningMagnitude = this.didAOrBWin(boxAroundScene);
         return subspaces;
     }
 }

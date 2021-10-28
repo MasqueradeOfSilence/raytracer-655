@@ -5,12 +5,14 @@ import com.evenstar.model.PPMImage;
 import com.evenstar.model.Ray;
 import com.evenstar.model.Scene;
 import com.evenstar.model.physics.BoundingBox;
+import com.evenstar.model.physics.Subspace;
 import com.evenstar.model.shapes.Shape;
 import com.evenstar.model.shapes.Sphere;
 import com.evenstar.model.shapes.Triangle;
 import com.evenstar.model.vectors.Point;
 import com.evenstar.model.vectors.VectorOperations;
 import com.evenstar.util.art.BoundingBoxDrawer;
+import com.evenstar.util.physics.SubspaceComputer;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -132,7 +134,7 @@ public class AcceleratedRaytracer
         return true;
     }
 
-    private ArrayList<BoundingBox> computeBoundingBoxes(ArrayList<Shape> shapes)
+    public ArrayList<BoundingBox> computeBoundingBoxes(ArrayList<Shape> shapes)
     {
         ArrayList<BoundingBox> toReturn = new ArrayList<>();
         for (int i = 0; i < shapes.size(); i++)
@@ -143,16 +145,31 @@ public class AcceleratedRaytracer
                 Sphere sphere = (Sphere) current;
                 toReturn.add(createBoundingBoxSphere(sphere));
                 // Print out created bounding box
-                System.out.println(createBoundingBoxSphere(sphere).toString());
+                //System.out.println(createBoundingBoxSphere(sphere).toString());
             }
             else if (ClassIdentifier.isTriangle(current))
             {
                 Triangle triangle = (Triangle) current;
                 toReturn.add(createBoundingBoxTriangle(triangle));
-                System.out.println(createBoundingBoxTriangle(triangle).toString());
+                //System.out.println(createBoundingBoxTriangle(triangle).toString());
             }
         }
         return toReturn;
+    }
+
+    private ArrayList<Subspace> computeSubspacesForScene(Scene scene)
+    {
+        SubspaceComputer subspaceComputer = new SubspaceComputer();
+        return subspaceComputer.computeSubspacesForScene(scene);
+    }
+
+    public boolean rayHitsBoundingBox(Ray ray, Shape current)
+    {
+        ArrayList<Shape> shapes = new ArrayList<>();
+        shapes.add(current);
+        // change to support just one
+        ArrayList<BoundingBox> boundingBoxes = this.computeBoundingBoxes(shapes);
+        return this.doesRayIntersectBoundingBox(ray, boundingBoxes.get(0));
     }
 
     // For testing and visualization purposes

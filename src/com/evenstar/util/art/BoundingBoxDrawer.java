@@ -46,7 +46,7 @@ public class BoundingBoxDrawer
                     || this.almostEqual(point, currentBox.getVertex5()) || this.almostEqual(point, currentBox.getVertex6())
                     || this.almostEqual(point, currentBox.getVertex7()) || this.almostEqual(point, currentBox.getVertex8()))
             {
-                System.out.println("The point: " + point.toString());
+                // System.out.println("The point: " + point.toString());
                 return true;
             }
             else if (isPointCOnLineBetweenTwoPoints(currentBox.getVertex1(), currentBox.getVertex2(), point) ||
@@ -88,7 +88,6 @@ public class BoundingBoxDrawer
         for (int i = 0; i < boundingBoxes.size(); i++)
         {
             BoundingBox currentBox = boundingBoxes.get(i);
-            //doesRayIntersectBoundingBox
             if (ar.doesRayIntersectBoundingBox(ray, currentBox))
             {
                 return true;

@@ -6,8 +6,10 @@ import com.evenstar.model.shapes.Shape;
 import com.evenstar.model.shapes.Sphere;
 import com.evenstar.model.shapes.Triangle;
 import com.evenstar.model.vectors.*;
+import com.evenstar.util.AcceleratedRaytracer;
 import com.evenstar.util.ClassIdentifier;
 import com.evenstar.util.Constants;
+import com.evenstar.util.Globals;
 
 import java.util.ArrayList;
 
@@ -146,9 +148,16 @@ public class Intersector
     public ArrayList<Hit> computeRayShapeHits(Ray ray, ArrayList<Shape> shapes)
     {
         ArrayList<Hit> hits = new ArrayList<>();
+        AcceleratedRaytracer ar = new AcceleratedRaytracer();
         for (int i = 0; i < shapes.size(); i++)
         {
             Shape current = shapes.get(i);
+            Globals.numPixelsExamined++;
+            if (!ar.rayHitsBoundingBox(ray, current))
+            {
+                continue;
+            }
+            Globals.numIntersectionTests++;
             // Sphere case
             if (ClassIdentifier.isSphere(current))
             {

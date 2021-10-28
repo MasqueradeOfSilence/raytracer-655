@@ -2,6 +2,7 @@ package com.evenstar.model.physics;
 
 import com.evenstar.model.vectors.Point;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class BoundingBox
@@ -14,6 +15,7 @@ public class BoundingBox
     private final Point vertex6;
     private final Point vertex7;
     private final Point vertex8;
+    private ArrayList<Point> vertices;
 
     public BoundingBox(Point vertex1, Point vertex2, Point vertex3, Point vertex4,
                        Point vertex5, Point vertex6, Point vertex7, Point vertex8)
@@ -26,6 +28,20 @@ public class BoundingBox
         this.vertex6 = vertex6;
         this.vertex7 = vertex7;
         this.vertex8 = vertex8;
+        this.vertices = new ArrayList<>();
+        this.vertices.add(this.vertex1);
+        this.vertices.add(this.vertex2);
+        this.vertices.add(this.vertex3);
+        this.vertices.add(this.vertex4);
+        this.vertices.add(this.vertex5);
+        this.vertices.add(this.vertex6);
+        this.vertices.add(this.vertex7);
+        this.vertices.add(this.vertex8);
+    }
+
+    public ArrayList<Point> getVertices()
+    {
+        return vertices;
     }
 
     public Point getVertex1()

@@ -168,6 +168,8 @@ public class Raytracer
                 image.addPixel(coloredPixel, i, j);
             }
         }
+        System.out.println("Performed " + Globals.numIntersectionTests + " intersection tests.");
+        System.out.println("Compared to the old: " + Globals.numPixelsExamined);
         return image;
     }
 
@@ -188,7 +190,7 @@ public class Raytracer
         PPMImage renderedImage = new PPMImage(dimension, dimension);
         renderedImage = shootRayAtEachPixelAndLightIt(dimension, renderedImage);
         AcceleratedRaytracer acceleratedRaytracer = new AcceleratedRaytracer();
-        renderedImage = acceleratedRaytracer.drawBoundingBoxes(renderedImage, this.scene, dimension, this);
+        //renderedImage = acceleratedRaytracer.drawBoundingBoxes(renderedImage, this.scene, dimension, this);
         return renderedImage;
     }
 }

@@ -137,4 +137,24 @@ class SubspaceComputerTest
         assertEquals(rightSubspace.getUpperLeft(), new Point(-0.25, 0.3, 0.3));
         assertEquals(rightSubspace.getBottomRight(), new Point(0.39999999999999997, -0.5, -0.4));
     }
+
+    @Test
+    void computeTopSubspace()
+    {
+        SubspaceComputer subspaceComputer = new SubspaceComputer();
+        Subspace parent = new Subspace(new Point(-0.25, 0.3, 0.3), new Point(0.4, -0.5, -0.4));
+        Subspace topSubspace = subspaceComputer.computeTopSubspace(parent, new Midpoint(-0.25, -0.1));
+        assertEquals(topSubspace.getUpperLeft(), new Point(-0.25, 0.3, 0.3));
+        assertEquals(topSubspace.getBottomRight(), new Point(0.4, -0.1, -0.4));
+    }
+
+    @Test
+    void computeBottomSubspace()
+    {
+        SubspaceComputer subspaceComputer = new SubspaceComputer();
+        Subspace parent = new Subspace(new Point(-0.25, 0.3, 0.3), new Point(0.4, -0.5, -0.4));
+        Subspace bottomSubspace = subspaceComputer.computeBottomSubspace(parent, new Midpoint(-0.25, -0.1));
+        assertEquals(bottomSubspace.getUpperLeft(), new Point(-0.25, -0.1, 0.3));
+        assertEquals(bottomSubspace.getBottomRight(), new Point(0.4, -0.5, -0.4));
+    }
 }

@@ -150,9 +150,22 @@ public class SubspaceComputer
         // First iteration
         ArrayList<Subspace> subspaces = new ArrayList<>();
         BoundingBox boxAroundScene = this.computeBoxAroundScene(scene);
-        double largestMagnitudeExtent = this.computeLargestMagnitudeExtentOfBoundingBox(boxAroundScene);
         char winningMagnitude = this.didAOrBWin(boxAroundScene);
-
+        if (winningMagnitude == 'a')
+        {
+            // Vertical split
+            Point p1 = boxAroundScene.getVertex1();
+            Point p2 = boxAroundScene.getVertex2();
+            Midpoint midpoint = this.midpoint2D(p1, p2);
+            Subspace leftSubspace = this.computeLeftSubspace(new Subspace(boxAroundScene), midpoint);
+            Subspace rightSubspace = this.computeRightSubspace(new Subspace(boxAroundScene), midpoint);
+        }
+        else if (winningMagnitude == 'b')
+        {
+            // Horizontal split
+            Point p1 = boxAroundScene.getVertex1();
+            Point p3 = boxAroundScene.getVertex3();
+        }
         return subspaces;
     }
 }

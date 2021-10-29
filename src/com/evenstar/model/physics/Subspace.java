@@ -16,7 +16,7 @@ public class Subspace
     public Subspace(BoundingBox boundingBox)
     {
         this.upperLeft = boundingBox.getVertex1();
-        this.bottomRight = boundingBox.getVertex7();
+        this.bottomRight = boundingBox.getVertex8();
     }
 
     public Point getUpperLeft()

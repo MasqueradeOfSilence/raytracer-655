@@ -118,11 +118,23 @@ class SubspaceComputerTest
     {
         SubspaceComputer subspaceComputer = new SubspaceComputer();
         Scene scene = computeDiffuse1Scene();
-        BoundingBox boxAroundShape = subspaceComputer.computeBoxAroundScene(scene);
-        Subspace leftSubspace = subspaceComputer.computeLeftSubspace(new Subspace(boxAroundShape),
+        BoundingBox boxAroundScene = subspaceComputer.computeBoxAroundScene(scene);
+        Subspace leftSubspace = subspaceComputer.computeLeftSubspace(new Subspace(boxAroundScene),
                 new Midpoint(-0.25, 0.3));
         // really the x is -0.9
         assertEquals(leftSubspace.getUpperLeft(), new Point(-0.8999999999999999, 0.3, 0.3));
         assertEquals(leftSubspace.getBottomRight(), new Point(-0.25, -0.5, -0.4));
+    }
+
+    @Test
+    void computeRightSubspace()
+    {
+        SubspaceComputer subspaceComputer = new SubspaceComputer();
+        Scene scene = computeDiffuse1Scene();
+        BoundingBox boxAroundScene = subspaceComputer.computeBoxAroundScene(scene);
+        Subspace rightSubspace = subspaceComputer.computeRightSubspace(new Subspace(boxAroundScene),
+                new Midpoint(-0.25, 0.3));
+        assertEquals(rightSubspace.getUpperLeft(), new Point(-0.25, 0.3, 0.3));
+        assertEquals(rightSubspace.getBottomRight(), new Point(0.39999999999999997, -0.5, -0.4));
     }
 }

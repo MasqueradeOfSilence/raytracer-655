@@ -66,6 +66,7 @@ public class SubspaceComputer
         double maxZ = parent.getUpperLeft().getZ();
         Point upperLeft = new Point(midpoint.getX(), midpoint.getY(), maxZ);
         Point bottomRight = parent.getBottomRight();
+        System.out.println("Bottom right: " + bottomRight.toString());
         return new Subspace(upperLeft, bottomRight);
     }
 
@@ -73,8 +74,8 @@ public class SubspaceComputer
     {
         double minZ = parent.getBottomRight().getZ();
         Point upperLeft = parent.getUpperLeft();
-        Point lowerRight = new Point(midpoint.getX(), parent.getBottomRight().getY(), minZ);
-        return new Subspace(upperLeft, lowerRight);
+        Point bottomRight = new Point(midpoint.getX(), parent.getBottomRight().getY(), minZ);
+        return new Subspace(upperLeft, bottomRight);
     }
 
     public double computeLargestMagnitudeExtentOfBoundingBox(BoundingBox boundingBox)

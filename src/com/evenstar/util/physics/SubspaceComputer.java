@@ -66,7 +66,6 @@ public class SubspaceComputer
         double maxZ = parent.getUpperLeft().getZ();
         Point upperLeft = new Point(midpoint.getX(), midpoint.getY(), maxZ);
         Point bottomRight = parent.getBottomRight();
-        System.out.println("Bottom right: " + bottomRight.toString());
         return new Subspace(upperLeft, bottomRight);
     }
 

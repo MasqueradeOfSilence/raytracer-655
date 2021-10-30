@@ -1,5 +1,6 @@
 package com.evenstar.model.physics;
 
+import com.evenstar.model.shapes.Shape;
 import com.evenstar.model.vectors.Point;
 
 import java.util.ArrayList;
@@ -15,7 +16,8 @@ public class BoundingBox
     private final Point vertex6;
     private final Point vertex7;
     private final Point vertex8;
-    private ArrayList<Point> vertices;
+    private final ArrayList<Point> vertices;
+    private Shape correspondingShape;
 
     public BoundingBox(Point vertex1, Point vertex2, Point vertex3, Point vertex4,
                        Point vertex5, Point vertex6, Point vertex7, Point vertex8)
@@ -82,6 +84,16 @@ public class BoundingBox
     public Point getVertex8()
     {
         return vertex8;
+    }
+
+    public void setCorrespondingShape(Shape correspondingShape)
+    {
+        this.correspondingShape = correspondingShape;
+    }
+
+    public Shape getCorrespondingShape()
+    {
+        return correspondingShape;
     }
 
     @Override

@@ -143,14 +143,18 @@ public class AcceleratedRaytracer
             if (ClassIdentifier.isSphere(current))
             {
                 Sphere sphere = (Sphere) current;
-                toReturn.add(createBoundingBoxSphere(sphere));
+                BoundingBox bBox = createBoundingBoxSphere(sphere);
+                bBox.setCorrespondingShape(sphere);
+                toReturn.add(bBox);
                 // Print out created bounding box
                 //System.out.println(createBoundingBoxSphere(sphere).toString());
             }
             else if (ClassIdentifier.isTriangle(current))
             {
                 Triangle triangle = (Triangle) current;
-                toReturn.add(createBoundingBoxTriangle(triangle));
+                BoundingBox bBox = createBoundingBoxTriangle(triangle);
+                bBox.setCorrespondingShape(triangle);
+                toReturn.add(bBox);
                 //System.out.println(createBoundingBoxTriangle(triangle).toString());
             }
         }

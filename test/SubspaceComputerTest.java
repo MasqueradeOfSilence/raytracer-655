@@ -7,8 +7,11 @@ import com.evenstar.model.textures.Diffuse;
 import com.evenstar.model.vectors.Midpoint;
 import com.evenstar.model.vectors.Point;
 import com.evenstar.model.vectors.Vector3D;
+import com.evenstar.util.AcceleratedRaytracer;
 import com.evenstar.util.physics.SubspaceComputer;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -156,5 +159,32 @@ class SubspaceComputerTest
         Subspace bottomSubspace = subspaceComputer.computeBottomSubspace(parent, new Midpoint(-0.25, -0.1));
         assertEquals(bottomSubspace.getUpperLeft(), new Point(-0.25, -0.1, 0.3));
         assertEquals(bottomSubspace.getBottomRight(), new Point(0.4, -0.5, -0.4));
+    }
+
+    @Test
+    void computeShapesInSubspace()
+    {
+        SubspaceComputer subspaceComputer = new SubspaceComputer();
+        Scene scene = computeDiffuse1Scene();
+        AcceleratedRaytracer ar = new AcceleratedRaytracer();
+        Subspace subspace2 = new Subspace(new Point(-0.9, 0.3, 0.3), new Point(-0.25, -0.5, -0.4));
+        ArrayList<BoundingBox> shapesInSubspace = subspaceComputer.computeShapesInSubspace(subspace2,
+                ar.computeBoundingBoxes(scene.getShapes()));
+        assertEquals(shapesInSubspace.size(), 2);
+    }
+
+    @Test
+    void step1()
+    {
+        
+    }
+
+    @Test
+    void computeSubspacesForScene()
+    {
+        SubspaceComputer subspaceComputer = new SubspaceComputer();
+        Scene scene = computeDiffuse1Scene();
+        ArrayList<Subspace> subspaces = subspaceComputer.computeSubspacesForScene(scene);
+        assertEquals(subspaces.size(), 21);
     }
 }

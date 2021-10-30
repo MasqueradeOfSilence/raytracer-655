@@ -3,6 +3,7 @@ package com.evenstar.model.physics;
 import com.evenstar.model.vectors.Point;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Subspace
 {
@@ -40,5 +41,32 @@ public class Subspace
     public void setBoxes(ArrayList<BoundingBox> boxes)
     {
         this.boxes = boxes;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Subspace subspace = (Subspace) o;
+        return Objects.equals(upperLeft, subspace.upperLeft) &&
+                Objects.equals(bottomRight, subspace.bottomRight) &&
+                Objects.equals(boxes, subspace.boxes);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(upperLeft, bottomRight, boxes);
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Subspace{" +
+                "upperLeft=" + upperLeft +
+                ", bottomRight=" + bottomRight +
+                ", boxes=" + boxes +
+                '}';
     }
 }

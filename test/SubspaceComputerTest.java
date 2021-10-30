@@ -174,10 +174,57 @@ class SubspaceComputerTest
     }
 
     @Test
-    void step1()
+    void subspaces4And5()
     {
-        
+        SubspaceComputer sc = new SubspaceComputer();
+        Subspace subspace3 = new Subspace(new Point(-0.25, 0.3, 0.3), new Point(0.4, -0.5, -0.4));
+        char aOrB = sc.didAOrBWin(subspace3);
+        assertEquals(aOrB, 'b');
+        Point p1 = sc.computeVertex1(subspace3);
+        Point p3 = sc.computeVertex3(subspace3);
+        Midpoint midpoint = sc.midpoint2D(p1, p3);
+        Subspace subspace4 = sc.computeTopSubspace(subspace3, midpoint);
+        assertEquals(subspace4, new Subspace(new Point(-0.25, 0.3, 0.3), new Point(0.4, -0.1, -0.4)));
     }
+
+    /*
+        Expected subspaces
+
+        SUBSPACE 1:
+        - Upper Left = -0.9, 0.3, 0.3
+        - Bottom Right = 0.4, -0.5, -0.4
+        - SHAPES: All
+
+        SUBSPACE 2:
+        - Upper Left = -0.9, 0.3, 0.3
+        - Bottom Right: -0.25, -0.5, -0.4
+        - Shapes: Sphere 3, Triangle 2
+
+        SUBSPACE 3:
+        - Upper Left: -0.25, 0.3, 0.3
+        - Bottom Right: 0.4, -0.5, -0.4
+        - Shapes: Sphere 1, Sphere 2, Triangle 1, Triangle 2
+
+        SUBSPACE 4:
+        - Upper Left: -0.25, 0.3, 0.3
+        - Bottom Right: 0.4, -0.1, -0.4
+        - Shapes: Sphere 1, Sphere 2, Triangle 1, Triangle 2
+
+        SUBSPACE 5:
+        - Upper Left: -0.25, -0.1, 0.3
+        - Bottom Right: 0.4, -0.5, -0.4
+
+        SUBSPACE 6:
+        - Upper Left: -0.25, 0.3, 0.3
+        - Bottom Right: 0.075, -0.1, -0.4
+
+        SUBSPACE 7:
+        - Upper Left: 0.075, 0.3, 0.3
+        - Bottom Right: 0.4, -0.1, -0.4
+
+        The rest are on my notesheet.
+
+     */
 
     @Test
     void computeSubspacesForScene()
@@ -186,5 +233,47 @@ class SubspaceComputerTest
         Scene scene = computeDiffuse1Scene();
         ArrayList<Subspace> subspaces = subspaceComputer.computeSubspacesForScene(scene);
         assertEquals(subspaces.size(), 21);
+        Subspace subspace1 = subspaces.get(0);
+        assertEquals(subspace1.getBoxes().size(), 5);
+        Subspace subspace2 = subspaces.get(1);
+        assertEquals(subspace2.getBoxes().size(), 2);
+        Subspace subspace3 = subspaces.get(2);
+        assertEquals(subspace3.getBoxes().size(), 4);
+        Subspace subspace4 = subspaces.get(3);
+        assertEquals(subspace4.getBoxes().size(), 4);
+        Subspace subspace5 = subspaces.get(4);
+        assertEquals(subspace5.getBoxes().size(), 2);
+        Subspace subspace6 = subspaces.get(5);
+        assertEquals(subspace6.getBoxes().size(), 2);
+        Subspace subspace7 = subspaces.get(6);
+        assertEquals(subspace7.getBoxes().size(), 3);
+        Subspace subspace8 = subspaces.get(7);
+        assertEquals(subspace8.getBoxes().size(), 1);
+        Subspace subspace9 = subspaces.get(8);
+        assertEquals(subspace9.getBoxes().size(), 3);
+        Subspace subspace10 = subspaces.get(9);
+        assertEquals(subspace10.getBoxes().size(), 2);
+        Subspace subspace11 = subspaces.get(10);
+        assertEquals(subspace11.getBoxes().size(), 3);
+        Subspace subspace12 = subspaces.get(11);
+        assertEquals(subspace12.getBoxes().size(), 3);
+        Subspace subspace13 = subspaces.get(12);
+        assertEquals(subspace13.getBoxes().size(), 3);
+        Subspace subspace14 = subspaces.get(13);
+        assertEquals(subspace14.getBoxes().size(), 3);
+        Subspace subspace15 = subspaces.get(14);
+        assertEquals(subspace15.getBoxes().size(), 1);
+        Subspace subspace16 = subspaces.get(15);
+        assertEquals(subspace16.getBoxes().size(), 3);
+        Subspace subspace17 = subspaces.get(16);
+        assertEquals(subspace17.getBoxes().size(), 3);
+        Subspace subspace18 = subspaces.get(17);
+        assertEquals(subspace18.getBoxes().size(), 2);
+        Subspace subspace19 = subspaces.get(18);
+        assertEquals(subspace19.getBoxes().size(), 2);
+        Subspace subspace20 = subspaces.get(19);
+        assertEquals(subspace20.getBoxes().size(), 2);
+        Subspace subspace21 = subspaces.get(20);
+        assertEquals(subspace21.getBoxes().size(), 2);
     }
 }

@@ -169,10 +169,43 @@ public class SubspaceComputer
         (box.getUpperLeft().getZ() >= p.getZ() && p.getZ() >= box.getBottomRight().getZ());
     }
 
-    public boolean isSubspaceInsideVertex(Point p, Subspace box)
+    public boolean isSubspaceInsideShape(BoundingBox shape, Subspace box)
     {
-        return (p.getX() <= box.getUpperLeft().getX() && box.getBottomRight().getX() <= p.getX())
-                && (p.getY() >= box.getUpperLeft().getY() && box.getBottomRight().getY() >= p.getY());
+        Point v1 = shape.getVertex1();
+        Point v2 = shape.getVertex2();
+        Point v3 = shape.getVertex3();
+        Point v4 = shape.getVertex4();
+        if (v1.getX() <= box.getUpperLeft().getX() && v1.getY() >= box.getUpperLeft().getY()
+            && v4.getX() >= box.getBottomRight().getX() && v4.getY() <= box.getBottomRight().getY())
+        {
+            return true;
+        }
+        if (v1.getX() <= box.getUpperLeft().getX() && v2.getX() >= box.getUpperLeft().getX()
+            && v1.getY() >= box.getBottomRight().getY() && v2.getY() >= box.getBottomRight().getY()
+            && v1.getY() <= box.getUpperLeft().getY() && v2.getY() <= box.getUpperLeft().getY())
+        {
+            return true;
+        }
+        if (v1.getX() >= box.getUpperLeft().getX() && v3.getX() >= box.getUpperLeft().getX()
+                && v1.getX() <= box.getBottomRight().getX() && v3.getX() <= box.getBottomRight().getX()
+                && v1.getY() >= box.getUpperLeft().getY() && v3.getY() <= box.getBottomRight().getY())
+        {
+            return true;
+        }
+        if (v2.getX() >= box.getUpperLeft().getX() && v4.getX() >= box.getUpperLeft().getX()
+                && v2.getX() <= box.getBottomRight().getX() && v4.getX() <= box.getBottomRight().getX()
+                && v2.getY() >= box.getBottomRight().getY() && v4.getY() <= box.getBottomRight().getY())
+        {
+            return true;
+        }
+        if (v3.getX() <= box.getUpperLeft().getX() && v4.getX() >= box.getUpperLeft().getX()
+            && v3.getY() >= box.getBottomRight().getY() && v4.getY() >= box.getBottomRight().getY()
+            && v3.getY() <= box.getUpperLeft().getY() && v4.getY() <= box.getUpperLeft().getY())
+        {
+            return true;
+        }
+        // No corners necessary because that's already covered in the other function!
+        return false;
     }
 
     public ArrayList<BoundingBox> computeShapesInSubspace(Subspace subspace, ArrayList<BoundingBox> boundingBoxes)
@@ -185,28 +218,32 @@ public class SubspaceComputer
             for (int j = 0; j < current.getVertices().size(); j++)
             {
                 Point vertex = current.getVertices().get(j);
-                if (this.isVertexInsideSubspace(vertex, subspace) || this.isSubspaceInsideVertex(vertex, subspace))
+                if (this.isVertexInsideSubspace(vertex, subspace))
                 {
                     shapesInSubspace.add(current);
                     break;
                 }
             }
+            if (!shapesInSubspace.contains(current) && isSubspaceInsideShape(current, subspace))
+            {
+                shapesInSubspace.add(current);
+            }
         }
         return shapesInSubspace;
     }
 
-    private Point computeVertex1(Subspace subspace)
+    public Point computeVertex1(Subspace subspace)
     {
         return subspace.getUpperLeft();
     }
 
-    private Point computeVertex2(Subspace subspace)
+    public Point computeVertex2(Subspace subspace)
     {
         return new Point(subspace.getBottomRight().getX(), subspace.getUpperLeft().getY(),
                 subspace.getUpperLeft().getZ());
     }
 
-    private Point computeVertex3(Subspace subspace)
+    public Point computeVertex3(Subspace subspace)
     {
         return new Point(subspace.getUpperLeft().getX(), subspace.getBottomRight().getY(),
                 subspace.getUpperLeft().getZ());
@@ -215,6 +252,7 @@ public class SubspaceComputer
     private ArrayList<Subspace> medianSplit(Subspace subspace, ArrayList<Subspace> subspaces,
                                             ArrayList<BoundingBox> boundingBoxes)
     {
+
         char winningMagnitude = this.didAOrBWin(subspace);
         if (winningMagnitude == 'a')
         {
@@ -226,16 +264,15 @@ public class SubspaceComputer
             ArrayList<BoundingBox> shapesInLeftSubspace = this.computeShapesInSubspace(leftSubspace, boundingBoxes);
             leftSubspace.setBoxes(shapesInLeftSubspace);
             subspaces.add(leftSubspace);
-            if (subspaces.size() < 20 && shapesInLeftSubspace.size() >2)
-            {
-                subspaces = this.medianSplit(leftSubspace, subspaces, boundingBoxes);
-            }
-            // ignore the IntelliJ warning here; we actually do want subspaces to be re-set after getting modified.
-//            subspaces = this.medianSplit(leftSubspace, subspaces, boundingBoxes);
             Subspace rightSubspace = this.computeRightSubspace(subspace, midpoint);
             ArrayList<BoundingBox> shapesInRightSubspace = this.computeShapesInSubspace(rightSubspace, boundingBoxes);
             rightSubspace.setBoxes(shapesInRightSubspace);
             subspaces.add(rightSubspace);
+            if (subspaces.size() < 20 && shapesInLeftSubspace.size() > 2)
+            {
+                subspaces = this.medianSplit(leftSubspace, subspaces, boundingBoxes);
+            }
+            // ignore the IntelliJ warning here; we actually do want subspaces to be re-set after getting modified.
             if (subspaces.size() > 20 || shapesInRightSubspace.size() < 3)
             {
                 return subspaces;
@@ -252,15 +289,14 @@ public class SubspaceComputer
             ArrayList<BoundingBox> shapesInTopSubspace = this.computeShapesInSubspace(topSubspace, boundingBoxes);
             topSubspace.setBoxes(shapesInTopSubspace);
             subspaces.add(topSubspace);
-            if (subspaces.size() < 20 && shapesInTopSubspace.size() > 2)
-            {
-                subspaces = this.medianSplit(topSubspace, subspaces, boundingBoxes);
-            }
-            subspaces = this.medianSplit(topSubspace, subspaces, boundingBoxes);
             Subspace bottomSubspace = this.computeBottomSubspace(subspace, midpoint);
             ArrayList<BoundingBox> shapesInBottomSubspace = this.computeShapesInSubspace(bottomSubspace, boundingBoxes);
             bottomSubspace.setBoxes(shapesInBottomSubspace);
             subspaces.add(bottomSubspace);
+            if (subspaces.size() < 20 && shapesInTopSubspace.size() > 2)
+            {
+                subspaces = this.medianSplit(topSubspace, subspaces, boundingBoxes);
+            }
             if (subspaces.size() > 20 || shapesInBottomSubspace.size() < 3)
             {
                 return subspaces;
@@ -279,6 +315,7 @@ public class SubspaceComputer
         AcceleratedRaytracer ar = new AcceleratedRaytracer();
         ArrayList<BoundingBox> boundingBoxes = ar.computeBoundingBoxes(scene.getShapes());
         Subspace subspaceAroundScene = new Subspace(boxAroundScene);
+        subspaceAroundScene.setBoxes(boundingBoxes);
         subspaces.add(subspaceAroundScene);
         if (winningMagnitude == 'a')
         {

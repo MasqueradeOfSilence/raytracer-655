@@ -180,11 +180,6 @@ public class Intersector
         }
 
         assert(intersectedSubspaces.size() == rayToSubspaceDistances.size());
-
-        // Next algorithm piece: Find smallest rayToSubspaceDistances number.
-        // See if it intersects any shapes inside of it. If it does, add those to rayShapeHits.
-        // If it doesn't, remove the item from both arrays, then find the smallest one again.
-        // If this doesn't work, just iterate through them all. we still have the min.
         boolean finished = false;
         while (!finished)
         {
@@ -237,37 +232,6 @@ public class Intersector
                 }
             }
         }
-
-//        for (int i = 0; i < shapes.size(); i++)
-//        {
-//            Shape current = shapes.get(i);
-//            Globals.numPixelsExamined++;
-//            if (!ar.rayHitsBoundingBox(ray, current))
-//            {
-//                // this causes clipping and shouldn't be necessary once median split is finished
-////                continue;//
-//            }
-//            Globals.numIntersectionTests++;
-//            // Sphere case
-//            if (ClassIdentifier.isSphere(current))
-//            {
-//                Sphere sphere = (Sphere) current;
-//                Hit sphereHit = computeSphereHit(ray, sphere);
-//                if (sphereHit != null)
-//                {
-//                    hits.add(sphereHit);
-//                }
-//            }
-//            else if (ClassIdentifier.isTriangle(current))
-//            {
-//                Triangle triangle = (Triangle) current;
-//                Hit triangleHit = computeTriangleHit(ray, triangle);
-//                if (triangleHit != null)
-//                {
-//                    hits.add(triangleHit);
-//                }
-//            }
-//        }
         return hits;
     }
 }

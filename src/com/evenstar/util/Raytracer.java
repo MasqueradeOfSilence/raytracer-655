@@ -29,8 +29,8 @@ public class Raytracer
     {
         this.ppmRenderer = new PPMRenderer();
         this.lighter = new Lighter();
-        this.shadower = new Shadower();
-        this.intersector = new Intersector();
+        this.shadower = new Shadower(scene);
+        this.intersector = new Intersector(scene);
         this.reflector = new Reflector();
         this.refractor = new Refractor();
         this.scene = scene;
@@ -129,7 +129,7 @@ public class Raytracer
 
     public Pixel computeColorOfPixel(Ray ray, Color backgroundColor)
     {
-        ArrayList<Hit> rayShapeHits = this.intersector.computeRayShapeHits(ray, this.scene.getShapes());
+        ArrayList<Hit> rayShapeHits = this.intersector.computeRayShapeHits(ray, this.scene.getShapes(), this.scene);
         if (this.nothingHit(rayShapeHits))
         {
             return new Pixel(backgroundColor);

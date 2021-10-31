@@ -20,9 +20,9 @@ public class Shadower
 {
     private final Intersector intersector;
 
-    public Shadower()
+    public Shadower(Scene scene)
     {
-        this.intersector = new Intersector();
+        this.intersector = new Intersector(scene);
     }
 
     private Point getOffsetPoint(Point original)
@@ -55,7 +55,7 @@ public class Shadower
         {
             return false;
         }
-        ArrayList<Hit> hits = this.intersector.computeRayShapeHits(shadowRay, scene.getShapes());
+        ArrayList<Hit> hits = this.intersector.computeRayShapeHits(shadowRay, scene.getShapes(), scene);
         for (int i = 0; i < scene.getMiscellaneousLights().size(); i++)
         {
             Light currentLight = scene.getMiscellaneousLights().get(i);
@@ -66,7 +66,7 @@ public class Shadower
                 {
                     continue;
                 }
-                hits.addAll(this.intersector.computeRayShapeHits(newShadowRay, scene.getShapes()));
+                hits.addAll(this.intersector.computeRayShapeHits(newShadowRay, scene.getShapes(), scene));
             }
         }
         return hits.size() > 0;

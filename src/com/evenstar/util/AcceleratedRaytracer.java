@@ -1,6 +1,5 @@
 package com.evenstar.util;
 
-import com.evenstar.model.Camera;
 import com.evenstar.model.PPMImage;
 import com.evenstar.model.Ray;
 import com.evenstar.model.Scene;
@@ -10,7 +9,6 @@ import com.evenstar.model.shapes.Shape;
 import com.evenstar.model.shapes.Sphere;
 import com.evenstar.model.shapes.Triangle;
 import com.evenstar.model.vectors.Point;
-import com.evenstar.model.vectors.VectorOperations;
 import com.evenstar.util.art.BoundingBoxDrawer;
 import com.evenstar.util.physics.SubspaceComputer;
 
@@ -22,6 +20,9 @@ import java.util.Collections;
  */
 public class AcceleratedRaytracer
 {
+    private Point tMin = new Point(0, 0, 0);
+    private Point tMax = new Point(0, 0, 0);
+
     public BoundingBox createBoundingBoxSphere(Sphere sphere)
     {
         Point center = sphere.getCenter();
@@ -74,6 +75,17 @@ public class AcceleratedRaytracer
         Point vertex8 = new Point(maxX, minY, minZ);
         return new BoundingBox(vertex1, vertex2, vertex3, vertex4,
             vertex5, vertex6, vertex7, vertex8);
+    }
+
+    public boolean doesRayIntersectSubspace(Ray ray, Subspace subspace)
+    {
+        Point bogus = new Point(0, 0, 0);
+        Point vertex2 = new Point(subspace.getBottomRight().getX(), subspace.getUpperLeft().getY(),
+                subspace.getUpperLeft().getZ());
+        Point vertex7 = new Point(subspace.getUpperLeft().getX(), subspace.getBottomRight().getY(),
+                subspace.getBottomRight().getZ());
+        BoundingBox bBox = new BoundingBox(bogus, vertex2, bogus, bogus, bogus, bogus, vertex7, bogus);
+        return this.doesRayIntersectBoundingBox(ray, bBox);
     }
 
     public boolean doesRayIntersectBoundingBox(Ray ray, BoundingBox boundingBox)
@@ -131,6 +143,8 @@ public class AcceleratedRaytracer
         {
             tMaxX = tMaxZ;
         }
+        this.tMin = new Point(tMinX, tMinY, tMinZ);
+        this.tMax = new Point(tMaxX, tMaxY, tMaxZ);
         return true;
     }
 
@@ -161,7 +175,7 @@ public class AcceleratedRaytracer
         return toReturn;
     }
 
-    private ArrayList<Subspace> computeSubspacesForScene(Scene scene)
+    public ArrayList<Subspace> computeSubspacesForScene(Scene scene)
     {
         SubspaceComputer subspaceComputer = new SubspaceComputer();
         return subspaceComputer.computeSubspacesForScene(scene);
@@ -182,5 +196,15 @@ public class AcceleratedRaytracer
         ArrayList<BoundingBox> boundingBoxes = computeBoundingBoxes(scene.getShapes());
         BoundingBoxDrawer boundingBoxDrawer = new BoundingBoxDrawer();
         return boundingBoxDrawer.drawBoundingBoxes(finalImage, scene, dimension, raytracer, boundingBoxes);
+    }
+
+    public Point getTMin()
+    {
+        return tMin;
+    }
+
+    public Point getTMax()
+    {
+        return tMax;
     }
 }

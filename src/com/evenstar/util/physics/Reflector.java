@@ -27,7 +27,7 @@ public class Reflector
         Ray reflectionRay = computeReflectionRay(incidentRay, normalAtIntersectionPoint, intersectionPoint);
         Color reflectiveBackground = new Color(VectorOperations.multiplyVectors(sphere.getMaterial().getVector(),
                 scene.getBackgroundColor().getVector()));
-        ArrayList<Hit> rayShapeHits = intersector.computeRayShapeHits(reflectionRay, scene.getShapes());
+        ArrayList<Hit> rayShapeHits = intersector.computeRayShapeHits(reflectionRay, scene.getShapes(), scene);
         if (raytracer.nothingHit(rayShapeHits))
         {
             return reflectiveBackground;

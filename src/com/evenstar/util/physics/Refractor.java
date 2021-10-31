@@ -72,7 +72,7 @@ public class Refractor
     private Color computeRefractionColorOnly(Intersector intersector, Scene scene, Ray ray, Raytracer raytracer,
                                              Glass glass)
     {
-        ArrayList<Hit> rayShapeHits = intersector.computeRayShapeHits(ray, scene.getShapes());
+        ArrayList<Hit> rayShapeHits = intersector.computeRayShapeHits(ray, scene.getShapes(), scene);
         Color reflectiveBackground = new Color(VectorOperations.multiplyVectors(glass.getVector(),
                 scene.getBackgroundColor().getVector()));
         if (raytracer.nothingHit(rayShapeHits))

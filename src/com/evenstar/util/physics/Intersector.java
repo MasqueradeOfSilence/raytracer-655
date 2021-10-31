@@ -1,20 +1,29 @@
 package com.evenstar.util.physics;
 
 import com.evenstar.model.Ray;
+import com.evenstar.model.Scene;
+import com.evenstar.model.physics.BoundingBox;
 import com.evenstar.model.physics.Hit;
+import com.evenstar.model.physics.Subspace;
 import com.evenstar.model.shapes.Shape;
 import com.evenstar.model.shapes.Sphere;
 import com.evenstar.model.shapes.Triangle;
 import com.evenstar.model.vectors.*;
 import com.evenstar.util.AcceleratedRaytracer;
 import com.evenstar.util.ClassIdentifier;
-import com.evenstar.util.Constants;
 import com.evenstar.util.Globals;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Intersector
 {
+    private ArrayList<Subspace> subspaces;
+    public Intersector(Scene scene)
+    {
+        AcceleratedRaytracer ar = new AcceleratedRaytracer();
+        this.subspaces = ar.computeSubspacesForScene(scene);
+    }
     private boolean notParallel(Vector3D normal, Direction direction)
     {
         return Math.abs(VectorOperations.dotProduct(normal, direction.getVector())) > 0.000001;
@@ -145,39 +154,120 @@ public class Intersector
     }
 
     // REVISED INTERSECTION ALGORITHM
-    public ArrayList<Hit> computeRayShapeHits(Ray ray, ArrayList<Shape> shapes)
+    public ArrayList<Hit> computeRayShapeHits(Ray ray, ArrayList<Shape> shapes, Scene scene)
     {
         ArrayList<Hit> hits = new ArrayList<>();
         AcceleratedRaytracer ar = new AcceleratedRaytracer();
-        for (int i = 0; i < shapes.size(); i++)
+        ArrayList<Subspace> intersectedSubspaces = new ArrayList<>();
+        ArrayList<Double> rayToSubspaceDistances = new ArrayList<>();
+        for (int i = 0; i < this.subspaces.size(); i++)
         {
-            Shape current = shapes.get(i);
-            Globals.numPixelsExamined++;
-            if (!ar.rayHitsBoundingBox(ray, current))
+            Subspace current = this.subspaces.get(i);
+            // if ray intersects subspace, add to list
+            if (ar.doesRayIntersectSubspace(ray, current))
             {
-                continue;
+                intersectedSubspaces.add(current);
+                double rayToSubspaceDistance = Math.min(VectorOperations.distance(ray.getOrigin().getVector(),
+                        ar.getTMin().getVector()), VectorOperations.distance(ray.getOrigin().getVector(),
+                        ar.getTMax().getVector()));
+                rayToSubspaceDistances.add(rayToSubspaceDistance);
             }
-            Globals.numIntersectionTests++;
-            // Sphere case
-            if (ClassIdentifier.isSphere(current))
+        }
+        if (intersectedSubspaces.size() == 0)
+        {
+            // Nothing hit -- eliminate ray, should just be the background color
+            return hits;
+        }
+
+        assert(intersectedSubspaces.size() == rayToSubspaceDistances.size());
+
+        // Next algorithm piece: Find smallest rayToSubspaceDistances number.
+        // See if it intersects any shapes inside of it. If it does, add those to rayShapeHits.
+        // If it doesn't, remove the item from both arrays, then find the smallest one again.
+        // If this doesn't work, just iterate through them all. we still have the min.
+        boolean finished = false;
+        while (!finished)
+        {
+            if (intersectedSubspaces.size() == 0 || rayToSubspaceDistances.size() == 0)
             {
-                Sphere sphere = (Sphere) current;
-                Hit sphereHit = computeSphereHit(ray, sphere);
-                if (sphereHit != null)
+                finished = true;
+            }
+            else
+            {
+                int minIndex = rayToSubspaceDistances.indexOf(Collections.min(rayToSubspaceDistances));
+                Subspace closestSubspace = intersectedSubspaces.get(minIndex);
+                ArrayList<BoundingBox> bBoxesOfShapesInSubspace = closestSubspace.getBoxes();
+                boolean hitSomething = false;
+                for (int i = 0; i < bBoxesOfShapesInSubspace.size(); i++)
                 {
-                    hits.add(sphereHit);
+                    BoundingBox current = bBoxesOfShapesInSubspace.get(i);
+                    Globals.numIntersectionTests++;
+                    if (ClassIdentifier.isSphere(current.getCorrespondingShape()))
+                    {
+                        Sphere sphere = (Sphere) current.getCorrespondingShape();
+                        Hit sphereHit = computeSphereHit(ray, sphere);
+                        if (sphereHit != null)
+                        {
+                            hitSomething = true;
+                            hits.add(sphereHit);
+                        }
+                    }
+                    else if (ClassIdentifier.isTriangle(current.getCorrespondingShape()))
+                    {
+                        Triangle triangle = (Triangle) current.getCorrespondingShape();
+                        Hit triangleHit = computeTriangleHit(ray, triangle);
+                        if (triangleHit != null)
+                        {
+                            hitSomething = true;
+                            hits.add(triangleHit);
+                        }
+                    }
                 }
-            }
-            else if (ClassIdentifier.isTriangle(current))
-            {
-                Triangle triangle = (Triangle) current;
-                Hit triangleHit = computeTriangleHit(ray, triangle);
-                if (triangleHit != null)
+                if (hitSomething)
                 {
-                    hits.add(triangleHit);
+                    finished = true;
+                }
+                else
+                {
+                    if (rayToSubspaceDistances.size() > 0 && intersectedSubspaces.size() > 0)
+                    {
+                        rayToSubspaceDistances.remove(minIndex);
+                        intersectedSubspaces.remove(minIndex);
+                    }
                 }
             }
         }
+
+//        for (int i = 0; i < shapes.size(); i++)
+//        {
+//            Shape current = shapes.get(i);
+//            Globals.numPixelsExamined++;
+//            if (!ar.rayHitsBoundingBox(ray, current))
+//            {
+//                // this causes clipping and shouldn't be necessary once median split is finished
+////                continue;//
+//            }
+//            Globals.numIntersectionTests++;
+//            // Sphere case
+//            if (ClassIdentifier.isSphere(current))
+//            {
+//                Sphere sphere = (Sphere) current;
+//                Hit sphereHit = computeSphereHit(ray, sphere);
+//                if (sphereHit != null)
+//                {
+//                    hits.add(sphereHit);
+//                }
+//            }
+//            else if (ClassIdentifier.isTriangle(current))
+//            {
+//                Triangle triangle = (Triangle) current;
+//                Hit triangleHit = computeTriangleHit(ray, triangle);
+//                if (triangleHit != null)
+//                {
+//                    hits.add(triangleHit);
+//                }
+//            }
+//        }
         return hits;
     }
 }

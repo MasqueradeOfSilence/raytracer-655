@@ -169,7 +169,6 @@ public class Raytracer
             }
         }
         System.out.println("Performed " + Globals.numIntersectionTests + " intersection tests.");
-        System.out.println("Compared to the old: " + Globals.numPixelsExamined);
         return image;
     }
 

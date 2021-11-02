@@ -5,6 +5,7 @@ import com.evenstar.model.PPMImage;
 import com.evenstar.model.Ray;
 import com.evenstar.model.Scene;
 import com.evenstar.model.physics.Hit;
+import com.evenstar.model.textures.Amber;
 import com.evenstar.model.textures.Glass;
 import com.evenstar.util.physics.*;
 import com.evenstar.model.shapes.Shape;
@@ -78,6 +79,13 @@ public class Raytracer
             {
                 Glass glass = (Glass) sphere.getMaterial();
                 return this.refractor.getReflectedAndRefractedColor(ray, sphereNormal, glass, hit.getHitPoint(),
+                        this.intersector, this.scene, this, sphere, this.reflector);
+            }
+            // Amber to test translucent materials
+            else if (ClassIdentifier.isAmber(sphere.getMaterial()))
+            {
+                Amber amber = (Amber) sphere.getMaterial();
+                return this.refractor.getReflectedAndRefractedColor(ray, sphereNormal, amber, hit.getHitPoint(),
                         this.intersector, this.scene, this, sphere, this.reflector);
             }
             return new Color(sphere.getMaterial().getVector());

@@ -7,10 +7,7 @@ import com.evenstar.model.lights.DirectionalLight;
 import com.evenstar.model.lights.PointLight;
 import com.evenstar.model.shapes.Sphere;
 import com.evenstar.model.shapes.Triangle;
-import com.evenstar.model.textures.Amber;
-import com.evenstar.model.textures.Diffuse;
-import com.evenstar.model.textures.Glass;
-import com.evenstar.model.textures.Reflective;
+import com.evenstar.model.textures.*;
 import com.evenstar.model.vectors.Color;
 import com.evenstar.model.vectors.Direction;
 import com.evenstar.model.vectors.Point;
@@ -101,6 +98,20 @@ public class SceneFileParser
             {
                 Amber amber = new Amber(xyz);
                 Sphere sphere = new Sphere(center, radius, amber);
+                scene.addShape(sphere);
+            }
+            case "Phong" ->
+            {
+                this.skipWord(scanner);
+                Vector3D specularHighlight = new Vector3D(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
+                this.skipWord(scanner);
+                int phongConstant = scanner.nextInt();
+                this.skipWord(scanner);
+                int n = scanner.nextInt();
+                this.skipWord(scanner);
+                double specularCoefficient = scanner.nextDouble();
+                Phong phong = new Phong(n, xyz, specularCoefficient, specularHighlight, phongConstant);
+                Sphere sphere = new Sphere(center, radius, phong);
                 scene.addShape(sphere);
             }
             default -> System.err.println("Not a valid material");

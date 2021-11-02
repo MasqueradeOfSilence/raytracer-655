@@ -7,6 +7,7 @@ import com.evenstar.model.Scene;
 import com.evenstar.model.physics.Hit;
 import com.evenstar.model.textures.Amber;
 import com.evenstar.model.textures.Glass;
+import com.evenstar.model.textures.Phong;
 import com.evenstar.util.physics.*;
 import com.evenstar.model.shapes.Shape;
 import com.evenstar.model.shapes.Sphere;
@@ -52,6 +53,7 @@ public class Raytracer
 
     public Color colorShape(Hit hit, Ray ray)
     {
+        int n = 1;
         Shape shape = hit.getCorrespondingShape();
         if (ClassIdentifier.isSphere(shape))
         {
@@ -68,7 +70,7 @@ public class Raytracer
                 }
                 return this.lighter.getFinalColor(new Color(sphere.getMaterial().getVector()),
                         sphereNormal.getVector(), this.scene.getDirectionalLight(), (Diffuse)sphere.getMaterial(),
-                        hit.getHitPoint().getVector(), ray, this.scene);
+                        hit.getHitPoint().getVector(), ray, this.scene, n, Constants.DEFAULT_COEFFICIENT);
             }
             else if (ClassIdentifier.isReflective(sphere.getMaterial()))
             {
@@ -87,6 +89,24 @@ public class Raytracer
                 Amber amber = (Amber) sphere.getMaterial();
                 return this.refractor.getReflectedAndRefractedColor(ray, sphereNormal, amber, hit.getHitPoint(),
                         this.intersector, this.scene, this, sphere, this.reflector);
+            }
+            // Glossy materials
+            else if (ClassIdentifier.isPhong(sphere.getMaterial()))
+            {
+                // can change n based on desired appearance
+                Phong phong = (Phong) sphere.getMaterial();
+                n = phong.getN();
+                if (this.shadower.isInShadow(this.scene, hit))
+                {
+                    // Tint the ambient light
+                    Vector3D combined = VectorOperations.multiplyVectors(sphere.getMaterial().getVector(),
+                            scene.getAmbientLight().getLightColor().getVector());
+                    return new Color(combined);
+                }
+                return this.lighter.getFinalColor(new Color(sphere.getMaterial().getVector()),
+                        sphereNormal.getVector(), this.scene.getDirectionalLight(), new Diffuse(phong.getVector(),
+                        phong.getSpecularHighlight(), phong.getPhongConstant()), hit.getHitPoint().getVector(),
+                        ray, this.scene, n, phong.getSpecularCoefficient());
             }
             return new Color(sphere.getMaterial().getVector());
         }
@@ -108,7 +128,7 @@ public class Raytracer
                 TriangleNormal triangleNormal = new TriangleNormal(ab, ac);
                 return this.lighter.getFinalColor(new Color(triangle.getMaterial().getVector()),
                         triangleNormal.getVector(), this.scene.getDirectionalLight(), (Diffuse)triangle.getMaterial(),
-                        hit.getHitPoint().getVector(), ray, this.scene);
+                        hit.getHitPoint().getVector(), ray, this.scene, n, Constants.DEFAULT_COEFFICIENT);
             }
             return new Color(triangle.getMaterial().getVector());
         }

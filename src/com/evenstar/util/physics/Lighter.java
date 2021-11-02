@@ -6,6 +6,7 @@ import com.evenstar.model.lights.DirectionalLight;
 import com.evenstar.model.lights.Light;
 import com.evenstar.model.lights.PointLight;
 import com.evenstar.model.textures.Diffuse;
+import com.evenstar.model.textures.Phong;
 import com.evenstar.model.vectors.*;
 import com.evenstar.util.ClassIdentifier;
 import com.evenstar.util.Constants;
@@ -61,15 +62,20 @@ public class Lighter
      * @return specular/Phong component of the lighting model
      */
     private Color computeSpecular(Vector3D normal, Direction directionToLight, double specularCoefficient,
-                                  Diffuse diffuse, Vector3D hitPoint, Ray ray)
+                                  Diffuse diffuse, Vector3D hitPoint, Ray ray, int n)
     {
         Vector3D hitToCamera = VectorOperations.subtractVectors(hitPoint, ray.getOrigin().getVector());
         hitToCamera.normalize();
         double dotProduct = Math.max(VectorOperations.dotProduct(normal, directionToLight.getVector()), 0);
         Vector3D shiny = VectorOperations.subtractVectors(VectorOperations.multiplyByScalar(VectorOperations.
                 multiplyByScalar(normal, 2), dotProduct), directionToLight.getVector());
+        double factor = diffuse.getPhongConstant();
+        if (n != 1)
+        {
+            factor = n;
+        }
         Vector3D specular = VectorOperations.multiplyByScalar(diffuse.getSpecularHighlight(),
-                Math.pow((VectorOperations.dotProduct(hitToCamera, shiny)), diffuse.getPhongConstant()));
+                Math.pow((VectorOperations.dotProduct(hitToCamera, shiny)), factor));
 
         return new Color(VectorOperations.multiplyByScalar(specular, specularCoefficient));
     }
@@ -106,7 +112,7 @@ public class Lighter
     }
 
     public Color getFinalColor(Color baseColor, Vector3D normalAtHitPoint, DirectionalLight directionalLight, Diffuse diffuseMaterial,
-                                      Vector3D hitPoint, Ray ray, Scene scene)
+                                      Vector3D hitPoint, Ray ray, Scene scene, int n, double specularCoefficient)
     {
         ArrayList<Color> colorsToCombine = new ArrayList<>();
         if (directionalLight.isOn())
@@ -117,7 +123,7 @@ public class Lighter
             Color diffuse = computeDiffuse(baseColor, Constants.DEFAULT_COEFFICIENT, normalAtHitPoint, directionalLight,
                     directionToLight);
             Color specular = computeSpecular(normalAtHitPoint, directionToLight,
-                    Constants.DEFAULT_COEFFICIENT, diffuseMaterial, hitPoint, ray);
+                    specularCoefficient, diffuseMaterial, hitPoint, ray, n);
             colorsToCombine.add(this.phongLighting(ambient, diffuse, specular));
         }
         for (int i = 0; i < scene.getMiscellaneousLights().size(); i++)
@@ -138,7 +144,7 @@ public class Lighter
                 Color diffuse = computeDiffuse(baseColor, Constants.DEFAULT_COEFFICIENT, normalAtHitPoint, directionalLight,
                         directionToLight);
                 Color specular = computeSpecular(normalAtHitPoint, directionToLight,
-                        Constants.DEFAULT_COEFFICIENT, diffuseMaterial, hitPoint, ray);
+                        Constants.DEFAULT_COEFFICIENT, diffuseMaterial, hitPoint, ray, n);
                 Vector3D phongVector = this.phongLighting(ambient, diffuse, specular).getVector();
                 Vector3D sum = VectorOperations.addVectors(phongVector, computeLightIntensityAtPoint(directionToLight,
                         1, pointLight.getLightColor()));

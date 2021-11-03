@@ -31,6 +31,11 @@ public final class ClassIdentifier
         return material.getClass().toString().contains("Phong");
     }
 
+    public static boolean isEmissive(Material material)
+    {
+        return material.getClass().toString().contains("Emissive");
+    }
+
     public static boolean isTriangle(Shape shape)
     {
         return shape.getClass().toString().contains("Triangle");
@@ -44,6 +49,11 @@ public final class ClassIdentifier
     public static boolean isDirectionalLight(Light light)
     {
         return light.getClass().toString().contains("Directional");
+    }
+
+    public static boolean isAreaLight(Light light)
+    {
+        return light.getClass().toString().contains("Area");
     }
 
     public static boolean isPointLight(Light light)

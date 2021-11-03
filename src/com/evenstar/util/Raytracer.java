@@ -108,6 +108,10 @@ public class Raytracer
                         phong.getSpecularHighlight(), phong.getPhongConstant()), hit.getHitPoint().getVector(),
                         ray, this.scene, n, phong.getSpecularCoefficient());
             }
+            else if (ClassIdentifier.isEmissive(sphere.getMaterial()))
+            {
+                return new Color(sphere.getMaterial().getVector());
+            }
             return new Color(sphere.getMaterial().getVector());
         }
         else if (ClassIdentifier.isTriangle(shape))

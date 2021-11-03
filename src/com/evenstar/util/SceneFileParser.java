@@ -3,6 +3,7 @@ package com.evenstar.util;
 import com.evenstar.model.Camera;
 import com.evenstar.model.Scene;
 import com.evenstar.model.lights.AmbientLight;
+import com.evenstar.model.lights.AreaLight;
 import com.evenstar.model.lights.DirectionalLight;
 import com.evenstar.model.lights.PointLight;
 import com.evenstar.model.shapes.Sphere;
@@ -129,6 +130,20 @@ public class SceneFileParser
         return scene;
     }
 
+    private Scene handleAreaLights(Scanner scanner, Scene scene)
+    {
+        Point location = new Point(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
+        this.skipWord(scanner);
+        Color color = new Color(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
+        this.skipWord(scanner);
+        double radius = scanner.nextDouble();
+        AreaLight areaLight = new AreaLight(color, location, radius);
+        scene.addMiscLight(areaLight);
+        scene.addShape(new Sphere(areaLight.getLocation(), areaLight.getRadius(), new Emissive(new
+                Vector3D(color.getVector().getX(), color.getVector().getY(), color.getVector().getZ()))));
+        return scene;
+    }
+
     private Scene readDynamicObjects(Scanner scanner, Scene scene)
     {
         while (scanner.hasNext())
@@ -153,12 +168,13 @@ public class SceneFileParser
                     scene = this.handlePointLights(scanner, scene);
                     break;
                 }
-                //<editor-fold desc="Not yet implemented switch cases">
-                case "polygon":
+                case "arealight":
                 {
+                    scene = this.handleAreaLights(scanner, scene);
                     break;
                 }
-                case "area_light":
+                //<editor-fold desc="Not yet implemented switch cases">
+                case "polygon":
                 {
                     break;
                 }

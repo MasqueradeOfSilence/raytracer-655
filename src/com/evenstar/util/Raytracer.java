@@ -215,7 +215,7 @@ public class Raytracer
      */
     private PPMImage raytrace(int dimension)
     {
-//        this.scene.getDirectionalLight().turnOff();
+        //this.scene.getDirectionalLight().turnOff();
 //        this.scene.getMiscellaneousLights().get(0).turnOff();
         dimension = antialiasDimension(dimension);
         PPMImage renderedImage = new PPMImage(dimension, dimension);

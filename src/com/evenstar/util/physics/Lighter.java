@@ -2,6 +2,7 @@ package com.evenstar.util.physics;
 
 import com.evenstar.model.Ray;
 import com.evenstar.model.Scene;
+import com.evenstar.model.lights.AreaLight;
 import com.evenstar.model.lights.DirectionalLight;
 import com.evenstar.model.lights.Light;
 import com.evenstar.model.lights.PointLight;
@@ -99,6 +100,7 @@ public class Lighter
         return new Direction(minuend);
     }
 
+    // This gives us soft shadows and light falloff.
     private Vector3D computeLightIntensityAtPoint(Direction lightDirection, double baseIntensity, Color lightColor)
     {
         Vector3D scaled = VectorOperations.multiplyByScalar(lightColor.getVector(), baseIntensity);
@@ -148,6 +150,28 @@ public class Lighter
                 Vector3D phongVector = this.phongLighting(ambient, diffuse, specular).getVector();
                 Vector3D sum = VectorOperations.addVectors(phongVector, computeLightIntensityAtPoint(directionToLight,
                         1, pointLight.getLightColor()));
+                Vector3D toReturn = new Vector3D(Math.min(sum.getX(), 1), Math.min(sum.getY(), 1), Math.min(sum.getZ(), 1));
+                colorsToCombine.add(new Color(toReturn));
+            }
+            else if (ClassIdentifier.isAreaLight(currentLight) && currentLight.isOn())
+            {
+                AreaLight areaLight = (AreaLight) currentLight;
+                Direction directionToLight = pointLightDirection(areaLight.getLocation(), new Point(hitPoint));
+                // Distance from hit point to ray origin, vs. hit point to point light origin
+                double hitPointToRayOrigin = VectorOperations.subtractVectors(hitPoint, ray.getOrigin().getVector()).length();
+                double hitPointToPointLightOrigin = VectorOperations.subtractVectors(hitPoint, areaLight.getLocation().getVector()).length();
+                if (!isInReachOfPointLight(hitPointToRayOrigin, hitPointToPointLightOrigin))
+                {
+                    continue;
+                }
+                Color ambient = computeAmbient(Constants.DEFAULT_COEFFICIENT, scene, diffuseMaterial);
+                Color diffuse = computeDiffuse(baseColor, Constants.DEFAULT_COEFFICIENT, normalAtHitPoint, directionalLight,
+                        directionToLight);
+                Color specular = computeSpecular(normalAtHitPoint, directionToLight,
+                        Constants.DEFAULT_COEFFICIENT, diffuseMaterial, hitPoint, ray, n);
+                Vector3D phongVector = this.phongLighting(ambient, diffuse, specular).getVector();
+                Vector3D sum = VectorOperations.addVectors(phongVector, computeLightIntensityAtPoint(directionToLight,
+                        1, areaLight.getLightColor()));
                 Vector3D toReturn = new Vector3D(Math.min(sum.getX(), 1), Math.min(sum.getY(), 1), Math.min(sum.getZ(), 1));
                 colorsToCombine.add(new Color(toReturn));
             }

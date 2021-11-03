@@ -2,6 +2,7 @@ package com.evenstar.util.physics;
 
 import com.evenstar.model.Ray;
 import com.evenstar.model.Scene;
+import com.evenstar.model.lights.AreaLight;
 import com.evenstar.model.lights.DirectionalLight;
 import com.evenstar.model.lights.Light;
 import com.evenstar.model.lights.PointLight;
@@ -45,21 +46,44 @@ public class Shadower
             PointLight pointLight = (PointLight) light;
             return new Ray(offsetOrigin, new Direction(pointLight.getLocation().getVector()));
         }
+        else if (ClassIdentifier.isAreaLight(light) && light.isOn())
+        {
+            Point offsetOrigin = getOffsetPoint(hitPoint);
+            AreaLight areaLight = (AreaLight) light;
+            return new Ray(offsetOrigin, new Direction(areaLight.getLocation().getVector()));
+        }
         return null;
     }
 
     public boolean isInShadow(Scene scene, Hit hit)
     {
+        // Area lights should not be in shadow
+        if (ClassIdentifier.isEmissive(hit.getCorrespondingShape().getMaterial()))
+        {
+            return false;
+        }
         Ray shadowRay = this.computeShadowRay(hit.getHitPoint(), scene.getDirectionalLight());
         if (shadowRay == null)
         {
             return false;
         }
-        ArrayList<Hit> hits = this.intersector.computeRayShapeHits(shadowRay, scene.getShapes(), scene);
+        ArrayList<Shape> shapesMinusAreaLights = new ArrayList<>();
+        ArrayList<Shape> sceneShapes = scene.getShapes();
+        // Area lights should not cast shadows.
+        for (int i = 0; i < sceneShapes.size(); i++)
+        {
+            Shape currentShape = scene.getShapes().get(i);
+            if (!ClassIdentifier.isEmissive(currentShape.getMaterial()))
+            {
+                shapesMinusAreaLights.add(currentShape);
+            }
+        }
+        ArrayList<Hit> hits = this.intersector.computeRayShapeHits(shadowRay, shapesMinusAreaLights, scene);
         for (int i = 0; i < scene.getMiscellaneousLights().size(); i++)
         {
             Light currentLight = scene.getMiscellaneousLights().get(i);
-            if (ClassIdentifier.isPointLight(currentLight) && currentLight.isOn())
+            if ((ClassIdentifier.isPointLight(currentLight) || ClassIdentifier.isAreaLight(currentLight))
+                    && currentLight.isOn())
             {
                 Ray newShadowRay = this.computeShadowRay(hit.getHitPoint(), currentLight);
                 if (newShadowRay == null)

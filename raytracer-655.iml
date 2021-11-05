@@ -25,5 +25,39 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://D:/coding/LWJGL/lwjgl-assimp-natives-windows.jar!/" />
+          <root url="jar://D:/coding/LWJGL/lwjgl-assimp.jar!/" />
+          <root url="jar://D:/coding/LWJGL/lwjgl-glfw-natives-windows.jar!/" />
+          <root url="jar://D:/coding/LWJGL/lwjgl-glfw.jar!/" />
+          <root url="jar://D:/coding/LWJGL/lwjgl-natives-windows.jar!/" />
+          <root url="jar://D:/coding/LWJGL/lwjgl-openal-natives-windows.jar!/" />
+          <root url="jar://D:/coding/LWJGL/lwjgl-openal.jar!/" />
+          <root url="jar://D:/coding/LWJGL/lwjgl-opengl-natives-windows.jar!/" />
+          <root url="jar://D:/coding/LWJGL/lwjgl-opengl.jar!/" />
+          <root url="jar://D:/coding/LWJGL/lwjgl-stb-natives-windows.jar!/" />
+          <root url="jar://D:/coding/LWJGL/lwjgl-stb.jar!/" />
+          <root url="jar://D:/coding/LWJGL/lwjgl.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://D:/coding/LWJGL/lwjgl-assimp-javadoc.jar!/" />
+          <root url="jar://D:/coding/LWJGL/lwjgl-glfw-javadoc.jar!/" />
+          <root url="jar://D:/coding/LWJGL/lwjgl-javadoc.jar!/" />
+          <root url="jar://D:/coding/LWJGL/lwjgl-openal-javadoc.jar!/" />
+          <root url="jar://D:/coding/LWJGL/lwjgl-opengl-javadoc.jar!/" />
+          <root url="jar://D:/coding/LWJGL/lwjgl-stb-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://D:/coding/LWJGL/lwjgl-assimp-sources.jar!/" />
+          <root url="jar://D:/coding/LWJGL/lwjgl-glfw-sources.jar!/" />
+          <root url="jar://D:/coding/LWJGL/lwjgl-openal-sources.jar!/" />
+          <root url="jar://D:/coding/LWJGL/lwjgl-opengl-sources.jar!/" />
+          <root url="jar://D:/coding/LWJGL/lwjgl-sources.jar!/" />
+          <root url="jar://D:/coding/LWJGL/lwjgl-stb-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
   </component>
 </module>

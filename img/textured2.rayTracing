@@ -1,0 +1,10 @@
+CameraLookAt 0 0 0
+CameraLookFrom 0 0 1
+CameraLookUp 0 1 0
+FieldOfView 28
+DirectionToLight 1 0 0 LightColor 1 1 1
+AmbientLight .1 .1 .1
+BackgroundColor .537 .854 .984
+Sphere Center 0 -110 -1 Radius 100 Material Diffuse .015 .145 .925 SpecularHighlight 1 1 1 PhongConstant 4
+Sphere Center .25 0 -.21 Radius .2 Material Phong .54118 .54118 .54118 SpecularHighlight 1 1 1 PhongConstant 32 N 50 KS 1.1
+Sphere Center -.25 .3 -.21 Radius .2 Material Textured 0 0 1 SpecularHighlight .5 1 .5 PhongConstant 32 FileName sea.jpg

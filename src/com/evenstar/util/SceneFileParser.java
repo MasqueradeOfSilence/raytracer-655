@@ -13,7 +13,11 @@ import com.evenstar.model.vectors.Color;
 import com.evenstar.model.vectors.Direction;
 import com.evenstar.model.vectors.Point;
 import com.evenstar.model.vectors.Vector3D;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.stb.STBImage;
 
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.Scanner;
 
 public class SceneFileParser
@@ -101,6 +105,7 @@ public class SceneFileParser
                 Sphere sphere = new Sphere(center, radius, amber);
                 scene.addShape(sphere);
             }
+            // Glossy
             case "Phong" ->
             {
                 this.skipWord(scanner);
@@ -113,6 +118,39 @@ public class SceneFileParser
                 double specularCoefficient = scanner.nextDouble();
                 Phong phong = new Phong(n, xyz, specularCoefficient, specularHighlight, phongConstant);
                 Sphere sphere = new Sphere(center, radius, phong);
+                scene.addShape(sphere);
+            }
+            case "Textured" ->
+            {
+                this.skipWord(scanner);
+                Vector3D specularHighlight = new Vector3D(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
+                this.skipWord(scanner);
+                int phongConstant = scanner.nextInt();
+                this.skipWord(scanner);
+                String fileName = "texture/" + scanner.next();
+                System.out.println("File Name: " + fileName);
+                Diffuse diffuse = new Diffuse(xyz, specularHighlight, phongConstant);
+                //int[] x = new int[1];
+                //x[0] = 512;
+                //int[] y = new int[1];
+                //y[0] = 512;
+                //int[] channels = new int[1];
+                //channels[0] = 3;
+                IntBuffer xBuffer = BufferUtils.createIntBuffer(1);
+                xBuffer.put(512);
+                xBuffer.flip();
+                IntBuffer yBuffer = BufferUtils.createIntBuffer(1);
+                yBuffer.put(512);
+                yBuffer.flip();
+                IntBuffer channelBuffer = BufferUtils.createIntBuffer(1);
+                channelBuffer.put(3);
+                channelBuffer.flip();
+                ByteBuffer bb = STBImage.stbi_load(fileName, xBuffer, yBuffer, channelBuffer, 0);
+                assert bb != null;
+                System.out.println("BB: " + bb.toString());
+                // Images must be 512x512 or potentially smaller
+                ImageTexture imageTexture = new ImageTexture(bb, 512, 512, diffuse, fileName);
+                Sphere sphere = new Sphere(center, radius, imageTexture);
                 scene.addShape(sphere);
             }
             default -> System.err.println("Not a valid material");

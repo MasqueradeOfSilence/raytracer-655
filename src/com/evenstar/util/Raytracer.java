@@ -5,15 +5,13 @@ import com.evenstar.model.PPMImage;
 import com.evenstar.model.Ray;
 import com.evenstar.model.Scene;
 import com.evenstar.model.physics.Hit;
-import com.evenstar.model.textures.Amber;
-import com.evenstar.model.textures.Glass;
-import com.evenstar.model.textures.Phong;
+import com.evenstar.model.textures.*;
 import com.evenstar.util.physics.*;
 import com.evenstar.model.shapes.Shape;
 import com.evenstar.model.shapes.Sphere;
 import com.evenstar.model.shapes.Triangle;
-import com.evenstar.model.textures.Diffuse;
 import com.evenstar.model.vectors.*;
+import org.lwjgl.stb.STBImage;
 
 import java.util.ArrayList;
 
@@ -26,6 +24,7 @@ public class Raytracer
     private final Intersector intersector;
     private final Reflector reflector;
     private final Refractor refractor;
+    private final Texturer texturer;
 
     public Raytracer(Scene scene)
     {
@@ -35,6 +34,7 @@ public class Raytracer
         this.intersector = new Intersector(scene);
         this.reflector = new Reflector();
         this.refractor = new Refractor();
+        this.texturer = new Texturer();
         this.scene = scene;
     }
 
@@ -108,9 +108,26 @@ public class Raytracer
                         phong.getSpecularHighlight(), phong.getPhongConstant()), hit.getHitPoint().getVector(),
                         ray, this.scene, n, phong.getSpecularCoefficient());
             }
+            // Area lights should just return the basic light color
             else if (ClassIdentifier.isEmissive(sphere.getMaterial()))
             {
                 return new Color(sphere.getMaterial().getVector());
+            }
+            else if (ClassIdentifier.isTexture(sphere.getMaterial()))
+            {
+                ImageTexture imageTexture = (ImageTexture) sphere.getMaterial();
+                Color diffuseColor = this.texturer.getTextureColor(sphere, hit);
+                //if (this.shadower.isInShadow(this.scene, hit))
+                //{
+                    // Tint the ambient light
+                   // Vector3D combined = VectorOperations.multiplyVectors(diffuseColor.getVector(),
+                           // scene.getAmbientLight().getLightColor().getVector());
+                    //return new Color(combined);
+                //}
+                //return this.lighter.getFinalColor(diffuseColor,
+                        //sphereNormal.getVector(), this.scene.getDirectionalLight(), imageTexture.getDiffuse(),
+                       // hit.getHitPoint().getVector(), ray, this.scene, n, Constants.DEFAULT_COEFFICIENT);
+                return diffuseColor;
             }
             return new Color(sphere.getMaterial().getVector());
         }
@@ -215,13 +232,13 @@ public class Raytracer
      */
     private PPMImage raytrace(int dimension)
     {
-        //this.scene.getDirectionalLight().turnOff();
+        // this.scene.getDirectionalLight().turnOff();
 //        this.scene.getMiscellaneousLights().get(0).turnOff();
         dimension = antialiasDimension(dimension);
         PPMImage renderedImage = new PPMImage(dimension, dimension);
         renderedImage = shootRayAtEachPixelAndLightIt(dimension, renderedImage);
         AcceleratedRaytracer acceleratedRaytracer = new AcceleratedRaytracer();
-        //renderedImage = acceleratedRaytracer.drawBoundingBoxes(renderedImage, this.scene, dimension, this);
+        // renderedImage = acceleratedRaytracer.drawBoundingBoxes(renderedImage, this.scene, dimension, this);
         return renderedImage;
     }
 }

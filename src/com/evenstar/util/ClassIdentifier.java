@@ -36,6 +36,11 @@ public final class ClassIdentifier
         return material.getClass().toString().contains("Emissive");
     }
 
+    public static boolean isTexture(Material material)
+    {
+        return material.getClass().toString().contains("Texture");
+    }
+
     public static boolean isTriangle(Shape shape)
     {
         return shape.getClass().toString().contains("Triangle");

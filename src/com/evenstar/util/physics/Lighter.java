@@ -39,7 +39,7 @@ public class Lighter
      * @param directionToLight if the light is directional, this will simply be the light's direction
      * @return diffuse component
      */
-    private Color computeDiffuse(Color diffuseColor, double diffuseCoefficient, Vector3D normalAtHitPoint,
+    public Color computeDiffuse(Color diffuseColor, double diffuseCoefficient, Vector3D normalAtHitPoint,
                                  Light light, Direction directionToLight)
     {
         Vector3D strengthened = VectorOperations.multiplyByScalar(diffuseColor.getVector(),

@@ -117,17 +117,17 @@ public class Raytracer
             {
                 ImageTexture imageTexture = (ImageTexture) sphere.getMaterial();
                 Color diffuseColor = this.texturer.getTextureColor(sphere, hit);
-                //if (this.shadower.isInShadow(this.scene, hit))
-                //{
+                if (this.shadower.isInShadow(this.scene, hit))
+                {
                     // Tint the ambient light
-                   // Vector3D combined = VectorOperations.multiplyVectors(diffuseColor.getVector(),
-                           // scene.getAmbientLight().getLightColor().getVector());
-                    //return new Color(combined);
-                //}
-                //return this.lighter.getFinalColor(diffuseColor,
-                        //sphereNormal.getVector(), this.scene.getDirectionalLight(), imageTexture.getDiffuse(),
-                       // hit.getHitPoint().getVector(), ray, this.scene, n, Constants.DEFAULT_COEFFICIENT);
-                return diffuseColor;
+                    Vector3D combined = VectorOperations.multiplyVectors(diffuseColor.getVector(),
+                            scene.getAmbientLight().getLightColor().getVector());
+                    return new Color(combined);
+                }
+                return this.lighter.getFinalColor(diffuseColor,
+                        sphereNormal.getVector(), this.scene.getDirectionalLight(), imageTexture.getDiffuse(),
+                        hit.getHitPoint().getVector(), ray, this.scene, n, Constants.DEFAULT_COEFFICIENT);
+                //return diffuseColor;
             }
             return new Color(sphere.getMaterial().getVector());
         }

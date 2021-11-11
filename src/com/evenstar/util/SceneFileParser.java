@@ -130,12 +130,6 @@ public class SceneFileParser
                 String fileName = "texture/" + scanner.next();
                 System.out.println("File Name: " + fileName);
                 Diffuse diffuse = new Diffuse(xyz, specularHighlight, phongConstant);
-                //int[] x = new int[1];
-                //x[0] = 512;
-                //int[] y = new int[1];
-                //y[0] = 512;
-                //int[] channels = new int[1];
-                //channels[0] = 3;
                 IntBuffer xBuffer = BufferUtils.createIntBuffer(1);
                 xBuffer.put(512);
                 xBuffer.flip();
@@ -149,7 +143,7 @@ public class SceneFileParser
                 assert bb != null;
                 System.out.println("BB: " + bb.toString());
                 // Images must be 512x512 or potentially smaller
-                ImageTexture imageTexture = new ImageTexture(bb, 512, 512, diffuse, fileName);
+                ImageTexture imageTexture = new ImageTexture(bb, 512, 256, diffuse, fileName);
                 Sphere sphere = new Sphere(center, radius, imageTexture);
                 scene.addShape(sphere);
             }

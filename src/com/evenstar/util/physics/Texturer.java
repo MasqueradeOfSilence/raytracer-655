@@ -10,12 +10,12 @@ public class Texturer
 {
     public Color getTextureColor(Sphere sphere, Hit hit)
     {
-        return this.getTextureDiffuse(hit, (ImageTexture) sphere.getMaterial());
+        return this.getTextureDiffuse(hit, (ImageTexture) sphere.getMaterial(), sphere);
     }
 
-    private Color getTextureDiffuse(Hit hit, ImageTexture imageTexture)
+    private Color getTextureDiffuse(Hit hit, ImageTexture imageTexture, Sphere sphere)
     {
-        UV uv = new UV(hit);
+        UV uv = new UV(hit, sphere);
         return imageTexture.getColorAtUV(uv.getU(), uv.getV());
     }
 }

@@ -27,17 +27,10 @@ public class ImageTexture implements Material
 
     public Color getColorAtUV(double u, double v)
     {
+//        System.out.println("UV: " + u + ", " + v);
         ByteBuffer copy = this.deepCopy(this.pixels);
-//        System.out.println("Pixels remaining: " + pixels.remaining());
         byte[] arr = new byte[pixels.remaining()];
-        //System.out.println("Arr length: " + arr.length);
-
         pixels.get(arr);
-        //final CharBuffer charBuffer = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(arr));
-        //char[] arr2 = Arrays.copyOf(charBuffer.array(), charBuffer.limit());
-//        System.out.println("ARRAY: " + Arrays.toString(arr));
-
-        // for blue expecting 0.10588 0.65882 0.94118
         double i = u * nx;
         double j = (1 - v) * ny - 0.001;
         // Edge cases
@@ -46,13 +39,9 @@ public class ImageTexture implements Material
         i = Math.min(i, nx - 1);
         j = Math.min(j, ny - 1);
 //        System.out.println("i, j: " + i + ", " + j);
-        i = Math.ceil(i);
-        j = Math.ceil(j);
-//        System.out.println("First index: " + (int)(3 * i + 3 * nx * j));
-//        System.out.println("Second index: " + (int)(3 * i + 3 * nx * j + 1));
-//        System.out.println("Third index: " + (int)(3 * i + 3 * nx * j + 2));
+        i = Math.round(i);
+        j = Math.round(j);
 
-        // Now we have the right numbers, but they're not indexed properly
         double rNumerator = (arr[(int)(3 * i + 3 * nx * j)]);
         if (rNumerator < 0)
         {

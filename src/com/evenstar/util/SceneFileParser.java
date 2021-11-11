@@ -142,8 +142,11 @@ public class SceneFileParser
                 ByteBuffer bb = STBImage.stbi_load(fileName, xBuffer, yBuffer, channelBuffer, 0);
                 assert bb != null;
                 System.out.println("BB: " + bb.toString());
+                this.skipWord(scanner);
+                double nx = scanner.nextInt();
+                double ny = scanner.nextInt();
                 // Images must be 512x512 or potentially smaller
-                ImageTexture imageTexture = new ImageTexture(bb, 512, 256, diffuse, fileName);
+                ImageTexture imageTexture = new ImageTexture(bb, nx, ny, diffuse, fileName);
                 Sphere sphere = new Sphere(center, radius, imageTexture);
                 scene.addShape(sphere);
             }

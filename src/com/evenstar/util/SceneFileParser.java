@@ -145,7 +145,6 @@ public class SceneFileParser
                 this.skipWord(scanner);
                 double nx = scanner.nextInt();
                 double ny = scanner.nextInt();
-                // Images must be 512x512 or potentially smaller
                 ImageTexture imageTexture = new ImageTexture(bb, nx, ny, diffuse, fileName);
                 Sphere sphere = new Sphere(center, radius, imageTexture);
                 scene.addShape(sphere);

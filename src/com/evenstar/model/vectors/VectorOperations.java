@@ -95,4 +95,12 @@ public final class VectorOperations
         double z = Math.abs(vector.getZ());
         return new Vector3D(x, y, z);
     }
+
+    public static Vector3D divideVectors(Vector3D vector1, Vector3D vector2)
+    {
+        double x = vector1.getX() / vector2.getX();
+        double y = vector1.getY() / vector2.getY();
+        double z = vector1.getZ() / vector2.getZ();
+        return new Vector3D(x, y, z);
+    }
 }

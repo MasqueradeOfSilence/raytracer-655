@@ -1,6 +1,7 @@
 package com.evenstar;
 
 import com.evenstar.model.Scene;
+import com.evenstar.util.PathTracer;
 import com.evenstar.util.Raytracer;
 import com.evenstar.util.SceneFileParser;
 
@@ -24,13 +25,23 @@ public class Main
     {
         Scanner scanner;
         SceneFileParser sceneFileParser = new SceneFileParser();
+        // I set this boolean manually for now
+        boolean pathTrace = true;
         try
         {
             scanner = new Scanner(new FileReader(sceneDescriptionFileName));
             // parse information from file into Scene object, then put the Scene object into the Raytracer.
             Scene scene = sceneFileParser.parseSceneFile(scanner);
-            Raytracer raytracer = new Raytracer(scene);
-            raytracer.render(dimension, sceneDescriptionFileName);
+            if (pathTrace)
+            {
+                PathTracer pathtracer = new PathTracer(scene);
+                pathtracer.render(dimension, sceneDescriptionFileName);
+            }
+            else
+            {
+                Raytracer raytracer = new Raytracer(scene);
+                raytracer.render(dimension, sceneDescriptionFileName);
+            }
             scanner.close();
         }
         catch (FileNotFoundException e)

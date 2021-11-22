@@ -11,7 +11,6 @@ import com.evenstar.model.shapes.Shape;
 import com.evenstar.model.shapes.Sphere;
 import com.evenstar.model.shapes.Triangle;
 import com.evenstar.model.vectors.*;
-import org.lwjgl.stb.STBImage;
 
 import java.util.ArrayList;
 
@@ -221,7 +220,7 @@ public class Raytracer
         return image;
     }
 
-    private int antialiasDimension(int dimension)
+    public int antialiasDimension(int dimension)
     {
         return dimension * 2;
     }

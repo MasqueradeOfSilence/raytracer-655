@@ -10,6 +10,12 @@ public class SphereNormal implements Normal
         this.normal.normalize();
     }
 
+    public SphereNormal(Vector3D vector3D)
+    {
+        this.normal = vector3D;
+        this.normal.normalize();
+    }
+
     public void makeNegative()
     {
         this.normal = new Vector3D(-this.normal.getX(), -this.normal.getY(), -this.normal.getZ());

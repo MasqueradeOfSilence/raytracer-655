@@ -178,6 +178,13 @@ public class SceneFileParser
         return scene;
     }
 
+    private Scene handleBackgroundImages(Scanner scanner, Scene scene)
+    {
+        BackgroundImage backgroundImage = new BackgroundImage(scanner.next());
+        scene.setBackgroundImage(backgroundImage);
+        return scene;
+    }
+
     private Scene readDynamicObjects(Scanner scanner, Scene scene)
     {
         while (scanner.hasNext())
@@ -185,6 +192,11 @@ public class SceneFileParser
             String objectType = scanner.next();
             switch (objectType.toLowerCase())
             {
+                case "backgroundimage":
+                {
+                    scene = this.handleBackgroundImages(scanner, scene);
+                    break;
+                }
                 case "sphere":
                 {
                     // Reassigning "scene" because Java passes by value, not reference, and we modify it

@@ -4,6 +4,7 @@ import com.evenstar.model.lights.AmbientLight;
 import com.evenstar.model.lights.DirectionalLight;
 import com.evenstar.model.lights.Light;
 import com.evenstar.model.shapes.Shape;
+import com.evenstar.model.textures.BackgroundImage;
 import com.evenstar.model.textures.Material;
 import com.evenstar.model.vectors.Color;
 
@@ -18,6 +19,7 @@ public class Scene
     private ArrayList<Shape> shapes;
     private DirectionalLight directionalLight;
     private AmbientLight ambientLight;
+    private BackgroundImage backgroundImage = null;
 
     public Scene()
     {
@@ -94,6 +96,16 @@ public class Scene
     public AmbientLight getAmbientLight()
     {
         return ambientLight;
+    }
+
+    public void setBackgroundImage(BackgroundImage backgroundImage)
+    {
+        this.backgroundImage = backgroundImage;
+    }
+
+    public BackgroundImage getBackgroundImage()
+    {
+        return backgroundImage;
     }
 
     @Override

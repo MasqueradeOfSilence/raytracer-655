@@ -7,6 +7,7 @@ import com.evenstar.model.math.CoordinateSystem;
 import com.evenstar.model.physics.Hit;
 import com.evenstar.model.shapes.Shape;
 import com.evenstar.model.shapes.Sphere;
+import com.evenstar.model.textures.BackgroundImage;
 import com.evenstar.model.textures.Diffuse;
 import com.evenstar.model.vectors.*;
 import com.evenstar.util.physics.Intersector;
@@ -144,11 +145,20 @@ public class PathTracer
         return hitColor;
     }
 
-    public Pixel computeColorOfPixel(Ray ray, Color backgroundColor)
+    private Color getColorAtPosition(BackgroundImage image, int i, int j)
+    {
+        return image.getColorAtIndex(j, i);
+    }
+
+    public Pixel computeColorOfPixel(Ray ray, Color backgroundColor, int i, int j)
     {
         ArrayList<Hit> rayShapeHits = this.intersector.computeRayShapeHits(ray, this.scene.getShapes(), this.scene);
         if (this.raytracer.nothingHit(rayShapeHits))
         {
+            if (this.scene.getBackgroundImage() != null)
+            {
+                return new Pixel(this.getColorAtPosition(scene.getBackgroundImage(), i, j));
+            }
             return new Pixel(backgroundColor);
         }
         Hit closest = this.raytracer.getClosestHit(rayShapeHits);
@@ -164,7 +174,7 @@ public class PathTracer
             {
                 // j and i must be switched due to how a PPM is structured
                 Ray ray = this.raytracer.buildRay(j, i, dimension, this.scene.getCamera());
-                Pixel coloredPixel = this.computeColorOfPixel(ray, this.scene.getBackgroundColor());
+                Pixel coloredPixel = this.computeColorOfPixel(ray, this.scene.getBackgroundColor(), i, j);
                 image.addPixel(coloredPixel, i, j);
             }
         }

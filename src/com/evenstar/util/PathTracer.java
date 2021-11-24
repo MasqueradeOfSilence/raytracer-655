@@ -7,24 +7,25 @@ import com.evenstar.model.math.CoordinateSystem;
 import com.evenstar.model.physics.Hit;
 import com.evenstar.model.shapes.Shape;
 import com.evenstar.model.shapes.Sphere;
-import com.evenstar.model.textures.BackgroundImage;
-import com.evenstar.model.textures.Diffuse;
+import com.evenstar.model.shapes.Triangle;
+import com.evenstar.model.textures.*;
 import com.evenstar.model.vectors.*;
-import com.evenstar.util.physics.Intersector;
-import com.evenstar.util.physics.Lighter;
-import com.evenstar.util.physics.Shadower;
+import com.evenstar.util.physics.*;
 import org.apache.commons.math3.distribution.UniformRealDistribution;
 
 import java.util.ArrayList;
 
 public class PathTracer
 {
-    private Raytracer raytracer;
+    private final Raytracer raytracer;
     private final PPMRenderer ppmRenderer;
-    private Scene scene;
+    private final Scene scene;
     private final Intersector intersector;
     private final Lighter lighter;
     private final Shadower shadower;
+    private final Reflector reflector;
+    private final Refractor refractor;
+    private final Texturer texturer;
 
     public PathTracer(Scene scene)
     {
@@ -34,6 +35,9 @@ public class PathTracer
         this.intersector = new Intersector(scene);
         this.lighter = new Lighter();
         this.shadower = new Shadower(scene);
+        this.reflector = new Reflector();
+        this.refractor = new Refractor();
+        this.texturer = new Texturer();
     }
 
     private String getFileName(String fileName)
@@ -140,7 +144,88 @@ public class PathTracer
                 Vector3D minuend = VectorOperations.divideByScalar(product, Math.PI);
                 hitColorVector = minuend;
                 hitColor = new Color(hitColorVector);
+                return hitColor;
             }
+            else if (ClassIdentifier.isReflective(sphere.getMaterial()))
+            {
+                return this.reflector.getReflectionColor(ray, sphereNormal, hit.getHitPoint(), sphere, this.scene,
+                        this.intersector, this.raytracer, i, j);
+            }
+            else if (ClassIdentifier.isGlass(sphere.getMaterial()))
+            {
+                Glass glass = (Glass) sphere.getMaterial();
+                return this.refractor.getReflectedAndRefractedColor(ray, sphereNormal, glass, hit.getHitPoint(),
+                        this.intersector, this.scene, this.raytracer, sphere, this.reflector, i, j);
+            }
+            // Amber to test translucent materials
+            else if (ClassIdentifier.isAmber(sphere.getMaterial()))
+            {
+                Amber amber = (Amber) sphere.getMaterial();
+                return this.refractor.getReflectedAndRefractedColor(ray, sphereNormal, amber, hit.getHitPoint(),
+                        this.intersector, this.scene, this.raytracer, sphere, this.reflector, i, j);
+            }
+            // Glossy materials
+            else if (ClassIdentifier.isPhong(sphere.getMaterial()))
+            {
+                // can change n based on desired appearance
+                Phong phong = (Phong) sphere.getMaterial();
+                n = phong.getN();
+                if (this.shadower.isInShadow(this.scene, hit))
+                {
+                    // Tint the ambient light
+                    Vector3D combined = VectorOperations.multiplyVectors(sphere.getMaterial().getVector(),
+                            scene.getAmbientLight().getLightColor().getVector());
+                    return new Color(combined);
+                }
+                return this.lighter.getFinalColor(new Color(sphere.getMaterial().getVector()),
+                        sphereNormal.getVector(), this.scene.getDirectionalLight(), new Diffuse(phong.getVector(),
+                                phong.getSpecularHighlight(), phong.getPhongConstant()), hit.getHitPoint().getVector(),
+                        ray, this.scene, n, phong.getSpecularCoefficient(), i, j);
+            }
+            // Area lights should just return the basic light color
+            else if (ClassIdentifier.isEmissive(sphere.getMaterial()))
+            {
+                return new Color(sphere.getMaterial().getVector());
+            }
+            else if (ClassIdentifier.isTexture(sphere.getMaterial()))
+            {
+                ImageTexture imageTexture = (ImageTexture) sphere.getMaterial();
+                Color diffuseColor = this.texturer.getTextureColor(sphere, hit);
+                if (this.shadower.isInShadow(this.scene, hit))
+                {
+                    // Tint the ambient light
+                    Vector3D combined = VectorOperations.multiplyVectors(diffuseColor.getVector(),
+                            scene.getAmbientLight().getLightColor().getVector());
+                    return new Color(combined);
+                }
+                return this.lighter.getFinalColor(diffuseColor,
+                        sphereNormal.getVector(), this.scene.getDirectionalLight(), imageTexture.getDiffuse(),
+                        hit.getHitPoint().getVector(), ray, this.scene, n, Constants.DEFAULT_COEFFICIENT, i, j);
+                //return diffuseColor;
+            }
+            return new Color(sphere.getMaterial().getVector());
+        }
+        else if (ClassIdentifier.isTriangle(shape))
+        {
+            Triangle triangle = (Triangle) shape;
+            if (ClassIdentifier.isDiffuse(triangle.getMaterial()))
+            {
+                if (this.shadower.isInShadow(this.scene, hit))
+                {
+                    Vector3D combined = VectorOperations.multiplyVectors(triangle.getMaterial().getVector(),
+                            scene.getAmbientLight().getLightColor().getVector());
+                    return new Color(combined);
+                }
+                Vector3D ab = VectorOperations.subtractVectors(triangle.getVertex2().getVector(),
+                        triangle.getVertex1().getVector());
+                Vector3D ac = VectorOperations.subtractVectors(triangle.getVertex3().getVector(),
+                        triangle.getVertex1().getVector());
+                TriangleNormal triangleNormal = new TriangleNormal(ab, ac);
+                return this.lighter.getFinalColor(new Color(triangle.getMaterial().getVector()),
+                        triangleNormal.getVector(), this.scene.getDirectionalLight(), (Diffuse)triangle.getMaterial(),
+                        hit.getHitPoint().getVector(), ray, this.scene, n, Constants.DEFAULT_COEFFICIENT, i, j);
+            }
+            return new Color(triangle.getMaterial().getVector());
         }
         return hitColor;
     }
@@ -184,6 +269,8 @@ public class PathTracer
 
     private PPMImage pathTrace(int dimension)
     {
+        // Uncomment this if you want area/point lights ONLY
+        this.scene.getDirectionalLight().turnOff();
         dimension = this.raytracer.antialiasDimension(dimension);
         PPMImage renderedImage = new PPMImage(dimension, dimension);
         renderedImage = shootRayAtEachPixelAndLightIt(dimension, renderedImage);

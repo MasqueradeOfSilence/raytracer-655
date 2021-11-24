@@ -1,0 +1,15 @@
+CameraLookAt 0 0 0
+CameraLookFrom 0 0 1
+CameraLookUp 0 1 0
+FieldOfView 28
+DirectionToLight 1 0 0 LightColor 1 1 1
+AmbientLight .1 .1 .1
+BackgroundColor .537 .854 .984
+BackgroundImage comet.jpg
+Sphere Center 0 .3 0  Radius .12 Material Textured 0 0 1 SpecularHighlight .52941 .80784 1 PhongConstant 32 FileName map_night.jpg Dimensions 512 256
+Sphere Center .2 .15 0 Radius .12 Material Amber .83137 .54902 .01961
+Sphere Center -.2 .15 0 Radius .12 Material Reflective .25098  .87843  .81569
+Sphere Center .2 -.15 0 Radius .12 Material Diffuse 0 0 1 SpecularHighlight .5 1 .5 PhongConstant 32
+Sphere Center -.2 -.15 0 Radius .12 Material Phong .54118 .54118 .54118 SpecularHighlight 1 1 1 PhongConstant 32 N 50 KS 1.1
+Sphere Center 0 -.3 0  Radius .12 Material Glass .75 .75 .75
+AreaLight 0 0 0 LightColor 1 1 1 Radius .08

@@ -50,7 +50,7 @@ public class Raytracer
         return "output/" + fileName.split("\\.")[0] + ".ppm";
     }
 
-    public Color colorShape(Hit hit, Ray ray)
+    public Color colorShape(Hit hit, Ray ray, int i, int j)
     {
         int n = 1;
         Shape shape = hit.getCorrespondingShape();
@@ -69,25 +69,25 @@ public class Raytracer
                 }
                 return this.lighter.getFinalColor(new Color(sphere.getMaterial().getVector()),
                         sphereNormal.getVector(), this.scene.getDirectionalLight(), (Diffuse)sphere.getMaterial(),
-                        hit.getHitPoint().getVector(), ray, this.scene, n, Constants.DEFAULT_COEFFICIENT);
+                        hit.getHitPoint().getVector(), ray, this.scene, n, Constants.DEFAULT_COEFFICIENT, i, j);
             }
             else if (ClassIdentifier.isReflective(sphere.getMaterial()))
             {
                 return this.reflector.getReflectionColor(ray, sphereNormal, hit.getHitPoint(), sphere, this.scene,
-                        this.intersector, this);
+                        this.intersector, this, i, j);
             }
             else if (ClassIdentifier.isGlass(sphere.getMaterial()))
             {
                 Glass glass = (Glass) sphere.getMaterial();
                 return this.refractor.getReflectedAndRefractedColor(ray, sphereNormal, glass, hit.getHitPoint(),
-                        this.intersector, this.scene, this, sphere, this.reflector);
+                        this.intersector, this.scene, this, sphere, this.reflector, i, j);
             }
             // Amber to test translucent materials
             else if (ClassIdentifier.isAmber(sphere.getMaterial()))
             {
                 Amber amber = (Amber) sphere.getMaterial();
                 return this.refractor.getReflectedAndRefractedColor(ray, sphereNormal, amber, hit.getHitPoint(),
-                        this.intersector, this.scene, this, sphere, this.reflector);
+                        this.intersector, this.scene, this, sphere, this.reflector, i, j);
             }
             // Glossy materials
             else if (ClassIdentifier.isPhong(sphere.getMaterial()))
@@ -105,7 +105,7 @@ public class Raytracer
                 return this.lighter.getFinalColor(new Color(sphere.getMaterial().getVector()),
                         sphereNormal.getVector(), this.scene.getDirectionalLight(), new Diffuse(phong.getVector(),
                         phong.getSpecularHighlight(), phong.getPhongConstant()), hit.getHitPoint().getVector(),
-                        ray, this.scene, n, phong.getSpecularCoefficient());
+                        ray, this.scene, n, phong.getSpecularCoefficient(), i, j);
             }
             // Area lights should just return the basic light color
             else if (ClassIdentifier.isEmissive(sphere.getMaterial()))
@@ -125,7 +125,7 @@ public class Raytracer
                 }
                 return this.lighter.getFinalColor(diffuseColor,
                         sphereNormal.getVector(), this.scene.getDirectionalLight(), imageTexture.getDiffuse(),
-                        hit.getHitPoint().getVector(), ray, this.scene, n, Constants.DEFAULT_COEFFICIENT);
+                        hit.getHitPoint().getVector(), ray, this.scene, n, Constants.DEFAULT_COEFFICIENT, i, j);
                 //return diffuseColor;
             }
             return new Color(sphere.getMaterial().getVector());
@@ -148,7 +148,7 @@ public class Raytracer
                 TriangleNormal triangleNormal = new TriangleNormal(ab, ac);
                 return this.lighter.getFinalColor(new Color(triangle.getMaterial().getVector()),
                         triangleNormal.getVector(), this.scene.getDirectionalLight(), (Diffuse)triangle.getMaterial(),
-                        hit.getHitPoint().getVector(), ray, this.scene, n, Constants.DEFAULT_COEFFICIENT);
+                        hit.getHitPoint().getVector(), ray, this.scene, n, Constants.DEFAULT_COEFFICIENT, i, j);
             }
             return new Color(triangle.getMaterial().getVector());
         }
@@ -175,7 +175,7 @@ public class Raytracer
         return distancesFromRayToShapes.size() == 0;
     }
 
-    public Pixel computeColorOfPixel(Ray ray, Color backgroundColor)
+    public Pixel computeColorOfPixel(Ray ray, Color backgroundColor, int i, int j)
     {
         ArrayList<Hit> rayShapeHits = this.intersector.computeRayShapeHits(ray, this.scene.getShapes(), this.scene);
         if (this.nothingHit(rayShapeHits))
@@ -183,7 +183,7 @@ public class Raytracer
             return new Pixel(backgroundColor);
         }
         Hit closest = getClosestHit(rayShapeHits);
-        return new Pixel(this.colorShape(closest, ray));
+        return new Pixel(this.colorShape(closest, ray, i, j));
     }
 
     public double computeDistanceToImagePlane(double fov)
@@ -212,7 +212,7 @@ public class Raytracer
             {
                 // j and i must be switched due to how a PPM is structured
                 Ray ray = buildRay(j, i, dimension, scene.getCamera());
-                Pixel coloredPixel = this.computeColorOfPixel(ray, scene.getBackgroundColor());
+                Pixel coloredPixel = this.computeColorOfPixel(ray, scene.getBackgroundColor(), i, j);
                 image.addPixel(coloredPixel, i, j);
             }
         }

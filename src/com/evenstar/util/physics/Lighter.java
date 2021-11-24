@@ -21,10 +21,15 @@ public class Lighter
         return light.getClass().toString().contains("Directional");
     }
 
-    private Color computeAmbient(double ambientCoefficient, Scene scene, Diffuse diffuse)
+    private Color computeAmbient(double ambientCoefficient, Scene scene, Diffuse diffuse, int i, int j)
     {
         Vector3D combined = VectorOperations.multiplyVectors(diffuse.getVector(),
                 scene.getAmbientLight().getLightColor().getVector());
+        if (scene.getBackgroundImage() != null)
+        {
+            // Light from sky/background
+            combined = VectorOperations.multiplyVectors(combined, scene.getBackgroundImage().getColorAtIndex(j, i).getVector());
+        }
         return new Color(VectorOperations.multiplyByScalar(combined,
                 ambientCoefficient));
     }
@@ -114,23 +119,23 @@ public class Lighter
     }
 
     public Color getFinalColor(Color baseColor, Vector3D normalAtHitPoint, DirectionalLight directionalLight, Diffuse diffuseMaterial,
-                                      Vector3D hitPoint, Ray ray, Scene scene, int n, double specularCoefficient)
+                                      Vector3D hitPoint, Ray ray, Scene scene, int n, double specularCoefficient, int i, int j)
     {
         ArrayList<Color> colorsToCombine = new ArrayList<>();
         if (directionalLight.isOn())
         {
             // Ambient lights won't have a direction, but all others will, and no ambient lights will be passed here
             Direction directionToLight = directionalLight.getDirectionToLight();
-            Color ambient = computeAmbient(Constants.DEFAULT_COEFFICIENT, scene, diffuseMaterial);
+            Color ambient = computeAmbient(Constants.DEFAULT_COEFFICIENT, scene, diffuseMaterial, i, j);
             Color diffuse = computeDiffuse(baseColor, Constants.DEFAULT_COEFFICIENT, normalAtHitPoint, directionalLight,
                     directionToLight);
             Color specular = computeSpecular(normalAtHitPoint, directionToLight,
                     specularCoefficient, diffuseMaterial, hitPoint, ray, n);
             colorsToCombine.add(this.phongLighting(ambient, diffuse, specular));
         }
-        for (int i = 0; i < scene.getMiscellaneousLights().size(); i++)
+        for (int i1 = 0; i1 < scene.getMiscellaneousLights().size(); i1++)
         {
-            Light currentLight = scene.getMiscellaneousLights().get(i);
+            Light currentLight = scene.getMiscellaneousLights().get(i1);
             if (ClassIdentifier.isPointLight(currentLight) && currentLight.isOn())
             {
                 PointLight pointLight = (PointLight) currentLight;
@@ -142,7 +147,7 @@ public class Lighter
                 {
                     continue;
                 }
-                Color ambient = computeAmbient(Constants.DEFAULT_COEFFICIENT, scene, diffuseMaterial);
+                Color ambient = computeAmbient(Constants.DEFAULT_COEFFICIENT, scene, diffuseMaterial, i, j);
                 Color diffuse = computeDiffuse(baseColor, Constants.DEFAULT_COEFFICIENT, normalAtHitPoint, directionalLight,
                         directionToLight);
                 Color specular = computeSpecular(normalAtHitPoint, directionToLight,
@@ -164,7 +169,7 @@ public class Lighter
                 {
                     continue;
                 }
-                Color ambient = computeAmbient(Constants.DEFAULT_COEFFICIENT, scene, diffuseMaterial);
+                Color ambient = computeAmbient(Constants.DEFAULT_COEFFICIENT, scene, diffuseMaterial, i, j);
                 Color diffuse = computeDiffuse(baseColor, Constants.DEFAULT_COEFFICIENT, normalAtHitPoint, directionalLight,
                         directionToLight);
                 Color specular = computeSpecular(normalAtHitPoint, directionToLight,
@@ -181,9 +186,9 @@ public class Lighter
             double runningRed = 0;
             double runningGreen = 0;
             double runningBlue = 0;
-            for (int i = 0; i < colorsToCombine.size(); i++)
+            for (int i2 = 0; i2 < colorsToCombine.size(); i2++)
             {
-                Color current = colorsToCombine.get(i);
+                Color current = colorsToCombine.get(i2);
                 runningRed += current.r();
                 runningGreen += current.g();
                 runningBlue += current.b();

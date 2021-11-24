@@ -70,7 +70,7 @@ public class Refractor
     }
 
     private Color computeRefractionColorOnly(Intersector intersector, Scene scene, Ray ray, Raytracer raytracer,
-                                             Glass glass)
+                                             Glass glass, int i, int j)
     {
         ArrayList<Hit> rayShapeHits = intersector.computeRayShapeHits(ray, scene.getShapes(), scene);
         Color reflectiveBackground = new Color(VectorOperations.multiplyVectors(glass.getVector(),
@@ -80,7 +80,7 @@ public class Refractor
             return reflectiveBackground;
         }
         Hit closest = raytracer.getClosestHit(rayShapeHits);
-        return raytracer.colorShape(closest, ray);
+        return raytracer.colorShape(closest, ray, i, j);
     }
 
     private double fresnel(Direction incomingRayDirection, SphereNormal normalAtIntersectionPoint, Glass glass)
@@ -111,7 +111,7 @@ public class Refractor
 
     public Color getReflectedAndRefractedColor(Ray ray, SphereNormal normal, Glass glass, Point hitPoint,
                                                Intersector intersector, Scene scene, Raytracer raytracer, Sphere sphere,
-                                               Reflector reflector)
+                                               Reflector reflector, int i, int j)
     {
         Direction refractionDirection = computeRefractionDirection(ray.getDirection(), normal, glass);
         Point refractionOrigin = getRefractionOrigin(ray.getDirection(), normal, hitPoint);
@@ -121,10 +121,10 @@ public class Refractor
         double kr = fresnel(ray.getDirection(), normal, glass);
         if (kr < 1)
         {
-            refractionColor = computeRefractionColorOnly(intersector, scene, refractionRay, raytracer, glass);
+            refractionColor = computeRefractionColorOnly(intersector, scene, refractionRay, raytracer, glass, i, j);
         }
         Color reflectionColor = reflector.getReflectionColor(ray, normal, hitPoint, sphere, scene,
-                        intersector, raytracer);
+                        intersector, raytracer, i, j);
         Vector3D firstHalf = VectorOperations.multiplyByScalar(reflectionColor.getVector(), kr);
         Vector3D secondHalf = VectorOperations.multiplyByScalar(refractionColor.getVector(), (1 - kr));
         Vector3D sum = VectorOperations.addVectors(firstHalf, secondHalf);

@@ -21,7 +21,7 @@ public class Reflector
     }
 
     public Color getReflectionColor(Ray incidentRay, Normal normalAtIntersectionPoint, Point intersectionPoint, Sphere sphere,
-                         Scene scene, Intersector intersector, Raytracer raytracer)
+                         Scene scene, Intersector intersector, Raytracer raytracer, int i, int j)
     {
         // If I decide to make reflection recursive later, I'll start by looking here.
         Ray reflectionRay = computeReflectionRay(incidentRay, normalAtIntersectionPoint, intersectionPoint);
@@ -33,6 +33,6 @@ public class Reflector
             return reflectiveBackground;
         }
         Hit closest = raytracer.getClosestHit(rayShapeHits);
-        return raytracer.colorShape(closest, reflectionRay);
+        return raytracer.colorShape(closest, reflectionRay, i, j);
     }
 }

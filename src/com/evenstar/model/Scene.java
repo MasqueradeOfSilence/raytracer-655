@@ -47,7 +47,6 @@ public class Scene
         this.backgroundColor = backgroundColor;
     }
 
-
     public void setShapes(ArrayList<Shape> shapes)
     {
         this.shapes = shapes;

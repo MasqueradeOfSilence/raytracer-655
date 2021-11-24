@@ -59,20 +59,20 @@ class RaytracerTest
         Raytracer raytracer = new Raytracer(scene);
         Ray ray = raytracer.buildRay(i1, j1, dimension, camera);
         Color backgroundColor = new Color(.2, .2, .2);
-        Pixel greenColor = raytracer.computeColorOfPixel(ray, backgroundColor);
+        Pixel greenColor = raytracer.computeColorOfPixel(ray, backgroundColor, 0, 0);
         assertNotEquals(greenColor.getColor(), backgroundColor);
 
         Ray ray2 = raytracer.buildRay(i2, j2, dimension, camera);
-        Pixel greenColor2 = raytracer.computeColorOfPixel(ray2, backgroundColor);
+        Pixel greenColor2 = raytracer.computeColorOfPixel(ray2, backgroundColor, 0, 0);
         assertNotEquals(greenColor2.getColor(), backgroundColor);
         Ray ray3 = raytracer.buildRay(i3, j3, dimension, camera);
-        Pixel grayColor = raytracer.computeColorOfPixel(ray3, backgroundColor);
+        Pixel grayColor = raytracer.computeColorOfPixel(ray3, backgroundColor, 0, 0);
         assertEquals(grayColor.getColor(), backgroundColor);
         Ray ray4 = raytracer.buildRay(i4, j4, dimension, camera);
-        Pixel redColor = raytracer.computeColorOfPixel(ray4, backgroundColor);
+        Pixel redColor = raytracer.computeColorOfPixel(ray4, backgroundColor, 0, 0);
         assertNotEquals(redColor.getColor(), backgroundColor);
         Ray ray5 = raytracer.buildRay(i5, j5, dimension, camera);
-        Pixel whiteColor = raytracer.computeColorOfPixel(ray5, backgroundColor);
+        Pixel whiteColor = raytracer.computeColorOfPixel(ray5, backgroundColor, 0, 0);
         assertNotEquals(whiteColor.getColor(), backgroundColor);
     }
 }

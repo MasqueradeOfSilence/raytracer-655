@@ -68,7 +68,7 @@ public class PathTracer
         return new CoordinateSystem(N, NT, Nb);
     }
 
-    public Color colorShape(Hit hit, Ray ray, int depth)
+    public Color colorShape(Hit hit, Ray ray, int depth, int i, int j)
     {
         if (depth == 2)
         {
@@ -93,7 +93,7 @@ public class PathTracer
                 }
                 directLighting = this.lighter.getFinalColor(new Color(sphere.getMaterial().getVector()),
                         sphereNormal.getVector(), this.scene.getDirectionalLight(), (Diffuse)sphere.getMaterial(),
-                        hit.getHitPoint().getVector(), ray, this.scene, n, Constants.DEFAULT_COEFFICIENT);
+                        hit.getHitPoint().getVector(), ray, this.scene, n, Constants.DEFAULT_COEFFICIENT, i, j);
                 //return directLighting;
                 // This is where we do the fancy stuff
                 int numberOfSamples = 128;
@@ -101,7 +101,7 @@ public class PathTracer
                 double pdf = 1 / (2 * Math.PI);
                 UniformRealDistribution ur = new UniformRealDistribution(0, 1);
                 Vector3D indirectLighting = new Vector3D(0, 0, 0);
-                for (int i = 0; i < numberOfSamples; i++)
+                for (int i1 = 0; i1 < numberOfSamples; i1++)
                 {
                     double r1 = ur.sample();
                     double r2 = ur.sample();
@@ -129,7 +129,7 @@ public class PathTracer
                     Hit closest = this.raytracer.getClosestHit(rayShapeHits);
                     indirectLighting = VectorOperations.addVectors(indirectLighting,
                             VectorOperations.multiplyByScalar(this.colorShape(
-                                closest, ray2, depth
+                                closest, ray2, depth, i, j
                             ).getVector(), r1));
                     indirectLighting = VectorOperations.divideByScalar(indirectLighting, pdf);
                 }
@@ -162,7 +162,7 @@ public class PathTracer
             return new Pixel(backgroundColor);
         }
         Hit closest = this.raytracer.getClosestHit(rayShapeHits);
-        return new Pixel(this.colorShape(closest, ray, 0));
+        return new Pixel(this.colorShape(closest, ray, 0, i, j));
     }
 
     private PPMImage shootRayAtEachPixelAndLightIt(int dimension, PPMImage image)
